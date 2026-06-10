@@ -4,9 +4,8 @@ import "./App.css";
 
 /* ------------------------------------------------------------------ */
 /* Data contract                                                       */
-/* Same shape your mock already used. The only additions are OPTIONAL  */
-/* citation fields, so a backend that only sends id/title/source/url   */
-/* still renders fine. Nothing here breaks the existing wiring.        */
+/* These are the shapes the UI renders. They describe what the backend */
+/* will eventually return. Nothing here ships any sample content.      */
 /* ------------------------------------------------------------------ */
 
 type ArtifactType = "document" | "table" | "geospatial";
@@ -16,7 +15,6 @@ type Citation = {
   title: string;
   source: string;
   url?: string;
-  // optional, for the three NatureDesk retrieval artifact types
   artifactType?: ArtifactType;
   locator?: string; // e.g. "p. 12", "rows 4-9", "tile EPSG:28992"
   excerpt?: string; // short supporting snippet
@@ -38,9 +36,9 @@ type SynthesisResponse =
 type Status = "idle" | "loading" | "answer" | "refusal" | "error";
 
 /* ------------------------------------------------------------------ */
-/* Backend wiring                                                      */
-/* Right now this returns mock data so the page runs standalone.       */
-/* To go live, replace the body with a real call, e.g.:                */
+/* Backend seam                                                        */
+/* This is the ONLY place that needs to change to go live. Wire it to  */
+/* your endpoint, e.g.:                                                */
 /*                                                                     */
 /*   const res = await fetch("/api/query", {                           */
 /*     method: "POST",                                                 */
@@ -50,62 +48,18 @@ type Status = "idle" | "loading" | "answer" | "refusal" | "error";
 /*   if (!res.ok) throw new Error("query failed");                     */
 /*   return (await res.json()) as SynthesisResponse;                   */
 /*                                                                     */
-/* The component below does not care which one it is.                  */
+/* Until that's wired, it throws so the UI shows its "not connected"   */
+/* state instead of inventing an answer.                               */
 /* ------------------------------------------------------------------ */
 
 async function fetchSynthesis(question: string): Promise<SynthesisResponse> {
-  await new Promise((r) => setTimeout(r, 850)); // simulate network
-
-  // mock trigger: type "refuse" to preview the honest-refusal state
-  if (question.toLowerCase().includes("refuse")) {
-    return {
-      refused: true,
-      answer:
-        "I can't answer this from the approved evidence. The corpus doesn't contain a source that supports a claim here, so I'm not going to guess.",
-      citations: [],
-      refusalReason: "no_supporting_source_in_corpus",
-    };
-  }
-
-  return {
-    refused: false,
-    answer:
-      "Wetland restoration tends to improve habitat connectivity when it's planned around existing Natura 2000 areas [1] and follows local hydrology and species movement corridors [2]. Modelled connectivity gains were strongest where restored patches sat within 2 km of protected sites [3].",
-    citations: [
-      {
-        id: "1",
-        title: "Natura 2000 site management guidance",
-        source: "European Commission",
-        url: "https://environment.ec.europa.eu/topics/nature-and-biodiversity/natura-2000_en",
-        artifactType: "document",
-        locator: "Section 3.2",
-        excerpt:
-          "Restoration measures should be coordinated with the conservation objectives of adjacent Natura 2000 sites.",
-      },
-      {
-        id: "2",
-        title: "Wetland restoration and biodiversity outcomes",
-        source: "NatureDesk corpus",
-        artifactType: "document",
-        locator: "p. 14",
-      },
-      {
-        id: "3",
-        title: "Connectivity index by restored patch",
-        source: "BON in a Box pipeline output",
-        artifactType: "table",
-        locator: "connectivity_scores.tsv, rows 4-9",
-      },
-    ],
-  };
+  await new Promise((r) => setTimeout(r, 900)); // simulate the round-trip
+  // No backend yet: signal "not connected" so the UI never invents an answer.
+  // Replace this whole function body with the real fetch (see note above).
+  throw new Error(`not_connected: ${question.length} chars pending a backend`);
 }
 
 /* ------------------------------------------------------------------ */
-
-const EXAMPLES = [
-  "How does wetland restoration affect habitat connectivity?",
-  "Which species are listed for the Meijendel dunes?",
-];
 
 function App() {
   const [question, setQuestion] = useState("");
@@ -126,18 +80,15 @@ function App() {
       setStatus(result.refused ? "refusal" : "answer");
     } catch {
       setStatus("error");
-      setError("The desk couldn't be reached. Check the connection and try again.");
+      setError(
+        "The desk isn't connected to its evidence backend yet. Once the API is wired, answers will appear here.",
+      );
     }
   }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     void runQuery(question);
-  }
-
-  function handleExample(example: string) {
-    setQuestion(example);
-    void runQuery(example);
   }
 
   return (
@@ -165,7 +116,7 @@ function App() {
               id="question"
               value={question}
               onChange={(e) => setQuestion(e.target.value)}
-              placeholder="e.g. How does wetland restoration affect habitat connectivity?"
+              placeholder="Ask a biodiversity question…"
               autoComplete="off"
             />
             <button type="submit" disabled={status === "loading" || !question.trim()}>
@@ -173,20 +124,10 @@ function App() {
               {status === "loading" ? "Searching" : "Search evidence"}
             </button>
           </div>
-
-          <div className="examples">
-            <span className="label">Try:</span>
-            {EXAMPLES.map((ex) => (
-              <button
-                key={ex}
-                type="button"
-                className="chip"
-                onClick={() => handleExample(ex)}
-              >
-                {ex}
-              </button>
-            ))}
-          </div>
+          <p className="query-hint">
+            Press Enter to search. The desk returns a written answer with the
+            exact sources behind it.
+          </p>
         </form>
 
         <OutputPanel status={status} response={response} error={error} />
@@ -254,7 +195,7 @@ function OutputPanel({
     return (
       <section className="output-panel" {...live}>
         <div className="panel-head">
-          <span className="tag">Error</span>
+          <span className="tag">Not connected</span>
         </div>
         <div className="panel-body">
           <p className="error-text">{error}</p>
@@ -324,45 +265,47 @@ function AnswerView({
           <AnswerText text={response.answer} onCite={focusSource} />
         </p>
 
-        <div className="sources">
-          <div className="sources-head">
-            <h3>Sources</h3>
-            <span className="count">traceable evidence</span>
-          </div>
-          <ol className="source-list">
-            {response.citations.map((c) => (
-              <li
-                key={c.id}
-                id={`source-${c.id}`}
-                className="source-card"
-                ref={(el) => {
-                  cardRefs.current[c.id] = el;
-                }}
-              >
-                <span className="source-num">{c.id}</span>
-                <div className="source-main">
-                  <p className="source-title">{c.title}</p>
-                  <div className="source-meta">
-                    <span className="pub">{c.source}</span>
-                    {c.artifactType && <ArtifactBadge type={c.artifactType} />}
-                    {c.locator && <span className="source-locator">{c.locator}</span>}
+        {response.citations.length > 0 && (
+          <div className="sources">
+            <div className="sources-head">
+              <h3>Sources</h3>
+              <span className="count">traceable evidence</span>
+            </div>
+            <ol className="source-list">
+              {response.citations.map((c) => (
+                <li
+                  key={c.id}
+                  id={`source-${c.id}`}
+                  className="source-card"
+                  ref={(el) => {
+                    cardRefs.current[c.id] = el;
+                  }}
+                >
+                  <span className="source-num">{c.id}</span>
+                  <div className="source-main">
+                    <p className="source-title">{c.title}</p>
+                    <div className="source-meta">
+                      <span className="pub">{c.source}</span>
+                      {c.artifactType && <ArtifactBadge type={c.artifactType} />}
+                      {c.locator && <span className="source-locator">{c.locator}</span>}
+                    </div>
+                    {c.excerpt && <p className="source-excerpt">{c.excerpt}</p>}
+                    {c.url && (
+                      <a
+                        className="source-link"
+                        href={c.url}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        <LinkIcon /> Open source
+                      </a>
+                    )}
                   </div>
-                  {c.excerpt && <p className="source-excerpt">{c.excerpt}</p>}
-                  {c.url && (
-                    <a
-                      className="source-link"
-                      href={c.url}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      <LinkIcon /> Open source
-                    </a>
-                  )}
-                </div>
-              </li>
-            ))}
-          </ol>
-        </div>
+                </li>
+              ))}
+            </ol>
+          </div>
+        )}
       </div>
     </section>
   );
