@@ -93,17 +93,37 @@ function App() {
 
   return (
     <main className="app-shell">
-      <div className="workspace">
-        <header className="masthead">
-          <p className="wordmark">
+      {/* decorative, non-interactive background layers */}
+      <div className="aurora" aria-hidden="true">
+        <span className="aurora-blob blob-1" />
+        <span className="aurora-blob blob-2" />
+        <span className="aurora-blob blob-3" />
+      </div>
+      <div className="grain" aria-hidden="true" />
+      <FloatingLeaves />
+
+      <nav className="topbar">
+        <span className="wordmark">
+          <span className="brand-mark" aria-hidden="true">
             <LeafIcon />
-            <span className="name">NatureDesk</span>
-            <span className="scope">biodiversity evidence</span>
-          </p>
-          <p className="boundary-note">
+          </span>
+          <span className="name">NatureDesk</span>
+        </span>
+        <span className="scope-pill">biodiversity evidence</span>
+      </nav>
+
+      <div className="workspace">
+        <header className="hero">
+          <span className="eyebrow">
             <span className="dot" aria-hidden="true" />
-            Answers are drawn only from the approved NatureDesk evidence corpus.
-            Every claim is traced to a source, or the question is declined.
+            Grounded synthesis &middot; every claim traced
+          </span>
+          <h1 className="hero-title">
+            Evidence you can <span className="accent">actually trace.</span>
+          </h1>
+          <p className="hero-sub">
+            Ask a biodiversity question and the desk answers only from its
+            approved corpus, with the exact sources in hand, or it declines.
           </p>
         </header>
 
@@ -111,7 +131,10 @@ function App() {
           <label className="query-label" htmlFor="question">
             Ask the desk
           </label>
-          <div className="query-row">
+          <div className={`query-field${question.trim() ? " has-text" : ""}`}>
+            <span className="field-icon" aria-hidden="true">
+              <SearchIcon />
+            </span>
             <input
               id="question"
               value={question}
@@ -120,19 +143,48 @@ function App() {
               autoComplete="off"
             />
             <button type="submit" disabled={status === "loading" || !question.trim()}>
-              <SearchIcon />
-              {status === "loading" ? "Searching" : "Search evidence"}
+              <span className="btn-label">
+                {status === "loading" ? "Searching" : "Search evidence"}
+              </span>
+              <ArrowIcon />
             </button>
           </div>
           <p className="query-hint">
-            Press Enter to search. The desk returns a written answer with the
-            exact sources behind it.
+            Press Enter to search. Answers come back with the exact sources
+            behind them.
           </p>
         </form>
 
         <OutputPanel status={status} response={response} error={error} />
       </div>
     </main>
+  );
+}
+
+/* Soft, slow-drifting leaves in the background. Purely decorative. */
+function FloatingLeaves() {
+  return (
+    <div className="leaves" aria-hidden="true">
+      {[0, 1, 2, 3, 4].map((i) => (
+        <span key={i} className={`drift-leaf leaf-${i}`}>
+          <LeafIcon />
+        </span>
+      ))}
+    </div>
+  );
+}
+
+function ArrowIcon() {
+  return (
+    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" aria-hidden="true">
+      <path
+        d="M5 12h13M13 6l6 6-6 6"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
   );
 }
 
