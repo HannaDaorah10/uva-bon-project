@@ -289,12 +289,14 @@ function OutputPanel({
   if (!response) return null;
 
   if (response.refused) {
+    const isBackendPending = response.refusalReason === "backend_pipeline_not_connected";
+
     return (
       <section className="output-panel is-refusal" {...live}>
         <div className="panel-head">
           <span className="refusal-badge">
             <ShieldIcon />
-            Declined, no supporting evidence
+            {isBackendPending ? "Router connected, pipeline pending" : "Declined, no supporting evidence"}
           </span>
         </div>
         <div className="panel-body">
@@ -303,9 +305,9 @@ function OutputPanel({
             Reason: <code>{response.refusalReason}</code>
           </p>
           <p className="refusal-next">
-            Try rephrasing, narrowing the area or species, or this may sit
-            outside the approved corpus. The desk won't answer without a source
-            to back it.
+            {isBackendPending
+              ? "The router has classified the question. Retrieval and synthesis still need to be connected before cited answers can appear here."
+              : "Try rephrasing, narrowing the area or species, or this may sit outside the approved corpus. The desk won't answer without a source to back it."}
           </p>
         </div>
       </section>
