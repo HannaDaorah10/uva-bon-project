@@ -38,15 +38,18 @@ The classifier must refuse legal/policy/high-stakes questions, live/current data
 
 ## Current behavior
 
-The route classifier is connected. Retrieval and synthesis are not connected yet.
+The route classifier, frozen evidence gate, and minimal demo handlers are connected.
 
 That means:
 
 - If the classifier chooses `refusal`, the API returns a domain refusal.
-- If the classifier chooses `text_rag`, `score_table`, or `map_raster`, the API still fails closed with `refusalReason: backend_pipeline_not_connected`.
+- If a route has no approved readable evidence, the API refuses before a handler runs.
+- If approved evidence is readable but answer-facing readiness is closed, the API refuses with `readiness_gate_blocked`.
+- If future manifest rows open the required readiness gates, the score-table and map/raster demo handlers can return small cited previews or pointers.
+- `text_rag` still refuses factual synthesis until retrieval and synthesis are implemented.
 - Every response keeps the frontend fields `refused`, `answer`, `citations`, and `refusalReason`. Router details are exposed only in the optional `router` object.
 
-This is intentional. It lets the frontend and backend route meet without returning fake evidence.
+This is intentional. It lets the frontend and backend route meet without returning fake evidence or bypassing the frozen evidence gates.
 
 ## Test
 
@@ -71,4 +74,4 @@ The gate is intentionally fail-closed:
 
 Current Spark runtime caveat: the approved evidence paths are under `/home/hans/.openclaw/...`; if the `uva-bon` backend process cannot read those files, `/api/query` returns `no_approved_evidence` instead of proceeding.
 
-Even when a route has valid approved manifest rows, the API still returns `backend_pipeline_not_connected` until retrieval handlers, citation validation, and synthesis are connected.
+With the current manifest, answer-facing readiness gates are closed, so live route questions should refuse rather than expose factual evidence previews. To return demo answers, update the governed manifest/readiness package first, then keep citation validation and handler tests aligned with those gates.

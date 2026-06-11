@@ -20,6 +20,15 @@ type Citation = {
   excerpt?: string; // short supporting snippet
 };
 
+type BackendCitation = Partial<Citation> & {
+  manifest_id?: unknown;
+  citation?: unknown;
+  path?: unknown;
+  relative_path?: unknown;
+  family?: unknown;
+  type?: unknown;
+};
+
 type SynthesisResponse =
   | {
       refused: false;
@@ -58,8 +67,15 @@ function toSynthesisResponse(payload: unknown): SynthesisResponse {
     throw new Error("query returned no JSON response");
   }
 
-  const data = payload as Partial<SynthesisResponse>;
-  const citations = Array.isArray(data.citations) ? data.citations : [];
+  const data = payload as {
+    refused?: unknown;
+    answer?: unknown;
+    citations?: unknown;
+    refusalReason?: unknown;
+  };
+  const citations = Array.isArray(data.citations)
+    ? data.citations.map((citation, index) => toCitation(citation, index))
+    : [];
 
   if (data.refused === true) {
     return {
@@ -80,6 +96,36 @@ function toSynthesisResponse(payload: unknown): SynthesisResponse {
   }
 
   throw new Error("query returned an unexpected response shape");
+}
+
+function toCitation(value: unknown, index: number): Citation {
+  const raw = value && typeof value === "object" ? (value as BackendCitation) : {};
+  const id = stringValue(raw.id) ?? String(index + 1);
+  const manifestId = stringValue(raw.manifest_id);
+  const relativePath = stringValue(raw.relative_path);
+  const artifactType = toArtifactType(stringValue(raw.artifactType) ?? stringValue(raw.type));
+
+  return {
+    id,
+    title: stringValue(raw.title) ?? relativePath ?? manifestId ?? `Source ${index + 1}`,
+    source: stringValue(raw.source) ?? stringValue(raw.citation) ?? stringValue(raw.family) ?? "Frozen evidence manifest",
+    url: stringValue(raw.url),
+    artifactType,
+    locator: stringValue(raw.locator) ?? relativePath ?? manifestId,
+    excerpt: stringValue(raw.excerpt),
+  };
+}
+
+function stringValue(value: unknown): string | undefined {
+  return typeof value === "string" && value.trim() ? value : undefined;
+}
+
+function toArtifactType(value: string | undefined): ArtifactType | undefined {
+  if (!value) return undefined;
+  if (value === "score_table" || value === "table" || value === "artifact_catalog") return "table";
+  if (value === "map_raster_pointer" || value === "geospatial") return "geospatial";
+  if (value === "document" || value.includes("text") || value.includes("note")) return "document";
+  return undefined;
 }
 
 function readBackendError(payload: unknown): string | null {

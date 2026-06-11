@@ -14,12 +14,12 @@ from frozen_evidence import (
 
 READY = {
     "retrieve_allowed": True,
-    "quote_allowed": False,
+    "quote_allowed": True,
     "export_allowed": False,
     "share_external_llm_allowed": False,
     "train_allowed": False,
-    "citation_ready": False,
-    "user_facing_ready": False,
+    "citation_ready": True,
+    "user_facing_ready": True,
 }
 
 
@@ -80,6 +80,21 @@ class FrozenEvidenceTests(unittest.TestCase):
         self.assertTrue(result.refused)
         self.assertEqual(result.refusal_reason, "readiness_gate_blocked")
         self.assertTrue(result.missing_metadata)
+
+    def test_route_with_closed_answer_readiness_fails_closed(self):
+        closed_readiness = dict(READY)
+        closed_readiness["quote_allowed"] = False
+        closed_readiness["citation_ready"] = False
+        closed_readiness["user_facing_ready"] = False
+        manifest = FrozenEvidenceIndex([row(readiness=closed_readiness)])
+
+        with mock.patch("frozen_evidence.ALLOWED_ROOTS", ("/tmp",)):
+            with mock.patch("frozen_evidence.is_readable_file", return_value=True):
+                result = manifest.gate_route("score_table")
+
+        self.assertTrue(result.refused)
+        self.assertEqual(result.refusal_reason, "readiness_gate_blocked")
+        self.assertIn("test-score-row.readiness.citation_ready", result.blocked_gates)
 
     def test_route_with_denylisted_path_is_not_approved_evidence(self):
         manifest = FrozenEvidenceIndex([row(path="/home/hans/.openclaw/workspace/uva-ai-challenge/Team Platypus/uva-bon-id")])

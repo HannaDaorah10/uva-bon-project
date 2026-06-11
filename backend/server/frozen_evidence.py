@@ -218,7 +218,10 @@ class FrozenEvidenceIndex:
                 evidence_family=evidence_family,
             )
 
-        reason = "readiness_gate_blocked" if missing_metadata else "no_approved_evidence"
+        readiness_blocked = any(".readiness." in gate for gate in blocked_gates)
+        reason = (
+            "readiness_gate_blocked" if missing_metadata or readiness_blocked else "no_approved_evidence"
+        )
         answer = (
             "The frozen evidence manifest has route candidates, but their readiness "
             "metadata is missing or closed."
@@ -311,6 +314,10 @@ def validate_row(row: FrozenEvidenceRow) -> tuple[list[str], list[str]]:
 
     if readiness.get("retrieve_allowed") is not True:
         blocked.append(f"{row.row_id}.readiness.retrieve_allowed")
+    for gate_name in ("quote_allowed", "citation_ready", "user_facing_ready"):
+        if readiness.get(gate_name) is not True:
+            blocked.append(f"{row.row_id}.readiness.{gate_name}")
+
     for gate_name in ("export_allowed", "share_external_llm_allowed", "train_allowed"):
         if readiness.get(gate_name) is not False:
             blocked.append(f"{row.row_id}.readiness.{gate_name}")

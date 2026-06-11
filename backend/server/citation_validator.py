@@ -27,11 +27,17 @@ def is_valid_citation(citation: Any) -> bool:
         return False
     if readiness.get("retrieve_allowed") is not True:
         return False
+    if readiness.get("quote_allowed") is not True:
+        return False
     if readiness.get("export_allowed") is not False:
         return False
     if readiness.get("share_external_llm_allowed") is not False:
         return False
     if readiness.get("train_allowed") is not False:
         return False
-    
+    if readiness.get("citation_ready") is not True:
+        return False
+    if readiness.get("user_facing_ready") is not True:
+        return False
+
     return True

@@ -55,13 +55,19 @@ from main import QueryRequest, query
 
 READY = {
     "retrieve_allowed": True,
-    "quote_allowed": False,
+    "quote_allowed": True,
     "export_allowed": False,
     "share_external_llm_allowed": False,
     "train_allowed": False,
-    "citation_ready": False,
-    "user_facing_ready": False,
+    "citation_ready": True,
+    "user_facing_ready": True,
 }
+
+
+CLOSED_ANSWER_READINESS = dict(READY)
+CLOSED_ANSWER_READINESS["quote_allowed"] = False
+CLOSED_ANSWER_READINESS["citation_ready"] = False
+CLOSED_ANSWER_READINESS["user_facing_ready"] = False
 
 
 DENIALS = [
@@ -133,7 +139,7 @@ class DemoHandlerSmokeTests(unittest.TestCase):
         self.assertTrue(result.refused)
         self.assertEqual(result.refusal_reason, "no_approved_evidence")
 
-    def test_text_rag_refuses_when_quote_or_citation_gate_closed(self):
+    def test_text_rag_refuses_when_answer_readiness_is_closed(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             chunks_path = Path(tmpdir) / "chunks.jsonl"
             chunks_path.write_text(json.dumps({"chunk_text": "approved fixture text"}) + "\n", encoding="utf-8")
@@ -142,6 +148,7 @@ class DemoHandlerSmokeTests(unittest.TestCase):
                 "south_holland_student_retrieval",
                 "text_chunk_export",
                 chunks_path,
+                readiness=CLOSED_ANSWER_READINESS,
             )
 
             with mock.patch("handlers.FrozenEvidenceIndex.load", return_value=FrozenEvidenceIndex([row])):
@@ -149,7 +156,7 @@ class DemoHandlerSmokeTests(unittest.TestCase):
                     result = handle_text_rag("What does the text say?", gate("text-row", "south_holland_student_retrieval"))
 
         self.assertTrue(result.refused)
-        self.assertEqual(result.refusal_reason, "readiness_gate_blocked")
+        self.assertEqual(result.refusal_reason, "no_approved_evidence")
 
     def test_map_raster_returns_pointer_with_citation(self):
         with tempfile.TemporaryDirectory() as tmpdir:
