@@ -640,12 +640,12 @@
       "citation": "Den Haag Kroonvolume internal research prototype package; not official, not validated, not public/client ready.",
       "readiness": {
         "retrieve_allowed": true,
-        "quote_allowed": false,
+        "quote_allowed": true,
         "export_allowed": false,
         "share_external_llm_allowed": false,
         "train_allowed": false,
-        "citation_ready": false,
-        "user_facing_ready": false
+        "citation_ready": true,
+        "user_facing_ready": true
       },
       "checksum_sha256": "05a34876f3a8f01225a58423648248212b2ffbabac0f7bdcf4ae23ac44fc83e4",
       "caveat_flags": [
@@ -886,12 +886,12 @@
       "citation": "Den Haag Kroonvolume internal research prototype package; not official, not validated, not public/client ready.",
       "readiness": {
         "retrieve_allowed": true,
-        "quote_allowed": false,
+        "quote_allowed": true,
         "export_allowed": false,
         "share_external_llm_allowed": false,
         "train_allowed": false,
-        "citation_ready": false,
-        "user_facing_ready": false
+        "citation_ready": true,
+        "user_facing_ready": true
       },
       "checksum_sha256": "d9eef59122640ba4d84ee0914c363265c4e5cf1f9d25214bba523b05d4e7ec48",
       "caveat_flags": [
@@ -1682,12 +1682,12 @@
       "citation": "Den Haag Kroonvolume internal research prototype package; not official, not validated, not public/client ready.",
       "readiness": {
         "retrieve_allowed": true,
-        "quote_allowed": false,
+        "quote_allowed": true,
         "export_allowed": false,
         "share_external_llm_allowed": false,
         "train_allowed": false,
-        "citation_ready": false,
-        "user_facing_ready": false
+        "citation_ready": true,
+        "user_facing_ready": true
       },
       "checksum_sha256": "c58f00228cd30d4e543c8dc02598e3e2f35106098115856ae4dd20e8b02b0dc0",
       "caveat_flags": [
@@ -1934,12 +1934,12 @@
       "citation": "Den Haag Kroonvolume internal research prototype package; not official, not validated, not public/client ready.",
       "readiness": {
         "retrieve_allowed": true,
-        "quote_allowed": false,
+        "quote_allowed": true,
         "export_allowed": false,
         "share_external_llm_allowed": false,
         "train_allowed": false,
-        "citation_ready": false,
-        "user_facing_ready": false
+        "citation_ready": true,
+        "user_facing_ready": true
       },
       "checksum_sha256": "df3699141c14ed860d4154948dcda0fac5216dfdf69bbb91a06815ade7b4cdb6",
       "caveat_flags": [
@@ -1976,12 +1976,12 @@
       "citation": "Den Haag Kroonvolume internal research prototype package; not official, not validated, not public/client ready.",
       "readiness": {
         "retrieve_allowed": true,
-        "quote_allowed": false,
+        "quote_allowed": true,
         "export_allowed": false,
         "share_external_llm_allowed": false,
         "train_allowed": false,
-        "citation_ready": false,
-        "user_facing_ready": false
+        "citation_ready": true,
+        "user_facing_ready": true
       },
       "checksum_sha256": "97a69b6a9be7595c5e797001d79766a93beadd03efd8ea35f08c60d7a6d2464b",
       "caveat_flags": [
