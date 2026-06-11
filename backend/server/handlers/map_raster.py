@@ -11,10 +11,9 @@ from handlers import (
     approved_rows_for_route,
     citation_for_row,
     concise_gate_refusal,
-    route_caveat_sentence,
     safe_refusal,
-    truncate,
 )
+from synthesis import synthesize_map_raster_pointer, truncate
 
 
 def handle_map_raster(question: str, gate: EvidenceGateResult) -> HandlerResponse:
@@ -36,12 +35,11 @@ def handle_map_raster(question: str, gate: EvidenceGateResult) -> HandlerRespons
     item_count = len(payload.get("links") or []) if isinstance(payload.get("links"), list) else 0
     relative_path = str(row.raw.get("relative_path", Path(row.path).name))
 
-    answer = (
-        f"Approved map/raster pointer available for human review: `{relative_path}`. "
-        f"Catalog id/title: {collection_id} / {title}. "
-        f"Catalog link count: {item_count}. "
-        "I am not exporting files, rendering a map, calling live services, or making "
-        f"new ecological conclusions. {route_caveat_sentence()}"
+    answer = synthesize_map_raster_pointer(
+        relative_path=relative_path,
+        collection_id=collection_id,
+        title=title,
+        item_count=item_count,
     )
 
     return HandlerResponse(

@@ -71,6 +71,24 @@ class RouterClassifierTests(unittest.TestCase):
         self.assertTrue(decision.refused)
         self.assertEqual(decision.refusal_reason, "classifier_unavailable")
 
+    def test_crown_surface_question_routes_to_score_table_without_model(self):
+        with mock.patch("router_classifier._call_ollama") as model:
+            decision = classify_question(
+                "What is the crown surface area in the municipality of The Hague at the end of 2021?"
+            )
+
+        self.assertFalse(model.called)
+        self.assertEqual(decision.route, "score_table")
+
+    def test_dutch_kroonoppervlakte_question_routes_to_score_table_without_model(self):
+        with mock.patch("router_classifier._call_ollama") as model:
+            decision = classify_question(
+                "Wat is de kroonoppervlakte in gemeente Den Haag aan het eind van 2021?"
+            )
+
+        self.assertFalse(model.called)
+        self.assertEqual(decision.route, "score_table")
+
     def test_classifier_uses_mocked_model_payload(self):
         with mock.patch(
             "router_classifier._call_ollama",

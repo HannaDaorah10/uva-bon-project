@@ -1,4 +1,4 @@
-"""Minimal safe handler for approved frozen score tables."""
+"""Safe retrieval handler for approved frozen score tables."""
 
 from __future__ import annotations
 
@@ -12,19 +12,34 @@ from handlers import (
     approved_rows_for_route,
     citation_for_row,
     concise_gate_refusal,
-    route_caveat_sentence,
     safe_refusal,
-    truncate,
 )
+from synthesis import synthesize_crown_surface_answer, synthesize_score_table_preview
 
 
 TOKEN_RE = re.compile(r"[a-z0-9_]+", re.IGNORECASE)
+CROWN_SURFACE_RE = re.compile(
+    r"(crown\s+surface|crown\s+area|tree\s+crown\s+area|kroonoppervlakte|kroon\s+oppervlakte)",
+    re.IGNORECASE,
+)
+THE_HAGUE_RE = re.compile(r"(the\s+hague|den\s+haag|'s-gravenhage|gemeente\s+den\s+haag|gm0518)", re.IGNORECASE)
+YEAR_2021_RE = re.compile(r"(2021|end\s+of\s+2021|eind\s+van\s+2021)", re.IGNORECASE)
 
 
 def handle_score_table(question: str, gate: EvidenceGateResult) -> HandlerResponse:
     rows = approved_rows_for_route("score_table", gate)
     if not rows:
         return concise_gate_refusal("score-table")
+
+    if _is_crown_surface_question(question):
+        crown_answer = _answer_crown_surface_question(rows)
+        if crown_answer is not None:
+            answer, source_row = crown_answer
+            return HandlerResponse(
+                refused=False,
+                answer=answer,
+                citations=[citation_for_row(source_row)],
+            )
 
     ranked_rows = sorted(
         rows,
@@ -33,12 +48,14 @@ def handle_score_table(question: str, gate: EvidenceGateResult) -> HandlerRespon
     )
 
     for row in ranked_rows:
-        table = _read_table_preview(row)
+        table = _read_table(row)
         if table is None:
             continue
-        fields, first_row, row_count = table
+        fields, records = table
+        if not records:
+            continue
         relative_path = str(row.raw.get("relative_path", Path(row.path).name))
-        answer = _answer_from_preview(relative_path, fields, first_row, row_count)
+        answer = synthesize_score_table_preview(relative_path, fields, records[0], len(records))
         return HandlerResponse(
             refused=False,
             answer=answer,
@@ -51,41 +68,46 @@ def handle_score_table(question: str, gate: EvidenceGateResult) -> HandlerRespon
     )
 
 
-def _read_table_preview(row: FrozenEvidenceRow) -> tuple[list[str], dict[str, str], int] | None:
+def _answer_crown_surface_question(rows: list[FrozenEvidenceRow]) -> tuple[str, FrozenEvidenceRow] | None:
+    for row in rows:
+        if row.raw.get("relative_path") != "gm0518_kroonvolume_proxy_v1.csv":
+            continue
+        table = _read_table(row)
+        if table is None:
+            continue
+        _fields, records = table
+        for record in records:
+            if _is_target_crown_surface_row(record):
+                relative_path = str(row.raw.get("relative_path", Path(row.path).name))
+                return synthesize_crown_surface_answer(relative_path, record), row
+    return None
+
+
+def _is_target_crown_surface_row(record: dict[str, str]) -> bool:
+    return (
+        record.get("aggregation_level") == "gemeente"
+        and record.get("municipality_code") == "GM0518"
+        and record.get("ahn_generation") == "AHN4"
+        and record.get("acquisition_period") == "2020-2022"
+    )
+
+
+def _read_table(row: FrozenEvidenceRow) -> tuple[list[str], list[dict[str, str]]] | None:
     try:
         with Path(row.path).open("r", encoding="utf-8", newline="") as handle:
             reader = csv.DictReader(handle)
             fields = [field for field in (reader.fieldnames or []) if field]
-            first_row: dict[str, str] | None = None
-            row_count = 0
-            for item in reader:
-                if first_row is None:
-                    first_row = {key: item.get(key, "") for key in fields}
-                row_count += 1
+            records = [{key: item.get(key, "") for key in fields} for item in reader]
     except (OSError, csv.Error, UnicodeDecodeError):
         return None
 
-    if not fields or first_row is None:
+    if not fields:
         return None
-    return fields, first_row, row_count
+    return fields, records
 
 
-def _answer_from_preview(
-    relative_path: str,
-    fields: list[str],
-    first_row: dict[str, str],
-    row_count: int,
-) -> str:
-    shown_fields = ", ".join(fields[:8])
-    shown_cells = "; ".join(
-        f"{field}={truncate(first_row.get(field, ''), 80)}" for field in fields[:6]
-    )
-    return (
-        f"Approved score-table evidence is readable: `{relative_path}`. "
-        f"Rows detected: {row_count}. Columns include: {shown_fields}. "
-        f"First available row preview: {shown_cells}. "
-        f"{route_caveat_sentence()}"
-    )
+def _is_crown_surface_question(question: str) -> bool:
+    return bool(CROWN_SURFACE_RE.search(question) and THE_HAGUE_RE.search(question) and YEAR_2021_RE.search(question))
 
 
 def _question_overlap(question: str, value: str) -> int:
