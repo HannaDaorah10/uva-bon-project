@@ -35,28 +35,58 @@ type SynthesisResponse =
 
 type Status = "idle" | "loading" | "answer" | "refusal" | "error";
 
-/* ------------------------------------------------------------------ */
-/* Backend seam                                                        */
-/* This is the ONLY place that needs to change to go live. Wire it to  */
-/* your endpoint, e.g.:                                                */
-/*                                                                     */
-/*   const res = await fetch("/api/query", {                           */
-/*     method: "POST",                                                 */
-/*     headers: { "Content-Type": "application/json" },                */
-/*     body: JSON.stringify({ question }),                             */
-/*   });                                                               */
-/*   if (!res.ok) throw new Error("query failed");                     */
-/*   return (await res.json()) as SynthesisResponse;                   */
-/*                                                                     */
-/* Until that's wired, it throws so the UI shows its "not connected"   */
-/* state instead of inventing an answer.                               */
-/* ------------------------------------------------------------------ */
+const ROUTER_ENDPOINT = "/api/query";
 
 async function fetchSynthesis(question: string): Promise<SynthesisResponse> {
-  await new Promise((r) => setTimeout(r, 900)); // simulate the round-trip
-  // No backend yet: signal "not connected" so the UI never invents an answer.
-  // Replace this whole function body with the real fetch (see note above).
-  throw new Error(`not_connected: ${question.length} chars pending a backend`);
+  const res = await fetch(ROUTER_ENDPOINT, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ question }),
+  });
+
+  const payload: unknown = await res.json().catch(() => null);
+
+  if (!res.ok) {
+    throw new Error(readBackendError(payload) ?? `query failed: ${res.status}`);
+  }
+
+  return toSynthesisResponse(payload);
+}
+
+function toSynthesisResponse(payload: unknown): SynthesisResponse {
+  if (!payload || typeof payload !== "object") {
+    throw new Error("query returned no JSON response");
+  }
+
+  const data = payload as Partial<SynthesisResponse>;
+  const citations = Array.isArray(data.citations) ? data.citations : [];
+
+  if (data.refused === true) {
+    return {
+      refused: true,
+      answer: typeof data.answer === "string" ? data.answer : "I can't answer from the approved evidence.",
+      citations,
+      refusalReason:
+        typeof data.refusalReason === "string" ? data.refusalReason : "router_refused",
+    };
+  }
+
+  if (data.refused === false && typeof data.answer === "string") {
+    return {
+      refused: false,
+      answer: data.answer,
+      citations,
+    };
+  }
+
+  throw new Error("query returned an unexpected response shape");
+}
+
+function readBackendError(payload: unknown): string | null {
+  if (!payload || typeof payload !== "object") return null;
+  const data = payload as { detail?: unknown; error?: unknown; message?: unknown };
+  const value = data.detail ?? data.error ?? data.message;
+  return typeof value === "string" ? value : null;
 }
 
 /* ------------------------------------------------------------------ */
