@@ -8,6 +8,7 @@ except ModuleNotFoundError:  # Allows helper tests to run before requirements ar
     query = None
 
 from frozen_evidence import EvidenceGateResult
+from handlers import HandlerResponse
 from router_classifier import BACKEND_PIPELINE_NOT_CONNECTED, RouterDecision
 from router_classifier import (
     RouterClassificationError,
@@ -125,9 +126,17 @@ class QueryApiTests(unittest.TestCase):
             evidence_family="kroonvolume_internal_proxy",
         )
 
+        handler_result = HandlerResponse(
+            refused=True,
+            answer="Handler refuses until retrieval is ready.",
+            citations=[],
+            refusal_reason=BACKEND_PIPELINE_NOT_CONNECTED,
+        )
+
         with mock.patch("main.classify_question", return_value=decision):
             with mock.patch("main.gate_query_evidence", return_value=gate):
-                response = query(QueryRequest(question="What does the NDVI table show?"))
+                with mock.patch.dict("main.HANDLERS", {"score_table": lambda question, gate: handler_result}):
+                    response = query(QueryRequest(question="What does the NDVI table show?"))
 
         payload = response.model_dump(exclude_none=True)
         self.assertTrue(payload["refused"])
