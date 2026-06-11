@@ -1,0 +1,1 @@
+Run NDVI voor Zuid-Holland in groeiseizoen 2024 met median
