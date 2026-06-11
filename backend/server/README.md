@@ -56,3 +56,19 @@ The unit tests do not require live Ollama:
 cd backend/server
 python3 -m unittest -v
 ```
+
+## Frozen evidence manifest
+
+`POST /api/query` now enforces a frozen local evidence manifest before any future retrieval handler can run. The manifest is `backend/server/frozen_evidence_manifest.json`.
+
+The gate is intentionally fail-closed:
+
+- source families are separated by route: South Holland controlled JSONL only for `text_rag`, Kroonvolume score tables only for `score_table`, and Kroonvolume raster/catalog pointers only for `map_raster`.
+- missing readiness fields, closed readiness gates, denied paths, missing files, unreadable files, and checksum mismatches refuse.
+- export/archive/attach/bundle requests refuse with `export_gate_required`.
+- update/install/restart/rerun/service/database/vector/evidence-gate mutation requests refuse with `action_gate_required`.
+- official, municipal, validated, public-ready, client-ready, legal, ecological decision, or management-action claims refuse with `unsupported_claim`.
+
+Current Spark runtime caveat: the approved evidence paths are under `/home/hans/.openclaw/...`; if the `uva-bon` backend process cannot read those files, `/api/query` returns `no_approved_evidence` instead of proceeding.
+
+Even when a route has valid approved manifest rows, the API still returns `backend_pipeline_not_connected` until retrieval handlers, citation validation, and synthesis are connected.

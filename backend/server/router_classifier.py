@@ -24,8 +24,13 @@ REFUSAL_REASONS = {
     "policy_restricted",
     "live_data_not_allowed",
     "unsupported_causal_claim",
+    "unsupported_claim",
     "classifier_unavailable",
     "invalid_question",
+    "no_approved_evidence",
+    "readiness_gate_blocked",
+    "export_gate_required",
+    "action_gate_required",
 }
 
 ROUTER_SYSTEM_PROMPT = """
@@ -104,6 +109,25 @@ def refusal_answer(refusal_reason: str | None) -> str:
             "available."
         ),
         "invalid_question": "Please enter a question for the NatureDesk router.",
+        "unsupported_claim": (
+            "I cannot support that claim from the approved frozen evidence and "
+            "safe-use gates for this service."
+        ),
+        "no_approved_evidence": (
+            "No approved local frozen evidence is available for this request."
+        ),
+        "readiness_gate_blocked": (
+            "The matching frozen evidence is missing required readiness metadata "
+            "or has a closed readiness gate."
+        ),
+        "export_gate_required": (
+            "I cannot export, archive, attach, or bundle evidence from this route "
+            "without a separate approved export gate."
+        ),
+        "action_gate_required": (
+            "I cannot update, install, restart, mutate, or rerun services, "
+            "databases, vectors, gates, or pipelines from this route."
+        ),
     }
     return answers.get(refusal_reason or "no_evidence", answers["no_evidence"])
 

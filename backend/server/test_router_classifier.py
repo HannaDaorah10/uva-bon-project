@@ -7,6 +7,7 @@ except ModuleNotFoundError:  # Allows helper tests to run before requirements ar
     QueryRequest = None
     query = None
 
+from frozen_evidence import EvidenceGateResult
 from router_classifier import BACKEND_PIPELINE_NOT_CONNECTED, RouterDecision
 from router_classifier import (
     RouterClassificationError,
@@ -109,17 +110,24 @@ class QueryApiTests(unittest.TestCase):
         self.assertEqual(payload["refusalReason"], "policy_restricted")
         self.assertEqual(payload["router"]["route"], "refusal")
         self.assertNotIn("explanation", payload["router"])
+        self.assertNotIn("evidence", payload)
 
-    def test_query_non_refusal_route_fails_closed(self):
+    def test_query_non_refusal_route_fails_closed_after_manifest_gate(self):
         decision = RouterDecision(
             route="score_table",
             refusal_reason=None,
             confidence=0.88,
             explanation="The question asks for a table value.",
         )
+        gate = EvidenceGateResult(
+            refused=False,
+            manifest_ids=["kroonvolume_v1_gm0518_kroonvolume_proxy_v1_csv"],
+            evidence_family="kroonvolume_internal_proxy",
+        )
 
         with mock.patch("main.classify_question", return_value=decision):
-            response = query(QueryRequest(question="What does the NDVI table show?"))
+            with mock.patch("main.gate_query_evidence", return_value=gate):
+                response = query(QueryRequest(question="What does the NDVI table show?"))
 
         payload = response.model_dump(exclude_none=True)
         self.assertTrue(payload["refused"])
@@ -127,7 +135,46 @@ class QueryApiTests(unittest.TestCase):
         self.assertEqual(payload["refusalReason"], BACKEND_PIPELINE_NOT_CONNECTED)
         self.assertEqual(payload["router"]["route"], "score_table")
         self.assertEqual(payload["router"]["confidence"], 0.88)
+        self.assertEqual(payload["router"]["evidence_family"], "kroonvolume_internal_proxy")
+        self.assertEqual(
+            payload["evidence"]["manifest_ids"],
+            ["kroonvolume_v1_gm0518_kroonvolume_proxy_v1_csv"],
+        )
         self.assertNotIn("explanation", payload["router"])
+
+    def test_query_non_refusal_route_refuses_when_manifest_gate_blocks(self):
+        decision = RouterDecision(
+            route="text_rag",
+            refusal_reason=None,
+            confidence=0.77,
+            explanation="The question asks for text evidence.",
+        )
+        gate = EvidenceGateResult(
+            refused=True,
+            refusal_reason="no_approved_evidence",
+            answer="No approved local frozen evidence is available to the backend.",
+            blocked_gates=["south_holland_chunks_vector_ready_jsonl.path_unavailable"],
+        )
+
+        with mock.patch("main.classify_question", return_value=decision):
+            with mock.patch("main.gate_query_evidence", return_value=gate):
+                response = query(QueryRequest(question="What does the South Holland source say?"))
+
+        payload = response.model_dump(exclude_none=True)
+        self.assertTrue(payload["refused"])
+        self.assertEqual(payload["refusalReason"], "no_approved_evidence")
+        self.assertIn("path_unavailable", payload["evidence"]["blocked_gates"][0])
+
+    def test_query_export_request_refuses_before_classifier(self):
+        with mock.patch("main.classify_question") as classifier:
+            response = query(QueryRequest(question="Export the source index as a zip"))
+
+        payload = response.model_dump(exclude_none=True)
+        self.assertFalse(classifier.called)
+        self.assertTrue(payload["refused"])
+        self.assertEqual(payload["refusalReason"], "export_gate_required")
+        self.assertEqual(payload["router"]["route"], "refusal")
+        self.assertIn("export_allowed", payload["evidence"]["blocked_gates"])
 
 
 if __name__ == "__main__":
