@@ -9,7 +9,7 @@ from citation_validator import citations_are_valid
 from frozen_evidence import EvidenceGateResult, gate_query_evidence, preflight_question_gate
 from handlers import HandlerResponse
 from handlers.map_raster import handle_map_raster
-from handlers.score_table import handle_score_table
+from handlers.score_table_dynamic import handle_score_table
 from handlers.text_rag import handle_text_rag
 from handlers.workflow_rag import handle_workflow_rag
 from router_classifier import (

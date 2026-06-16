@@ -9,9 +9,9 @@ from unittest import mock
 from frozen_evidence import EvidenceGateResult, FrozenEvidenceIndex
 from handlers import HandlerResponse
 from handlers.map_raster import handle_map_raster
-from handlers.score_table import handle_score_table
+from handlers.score_table_dynamic import handle_score_table
 from handlers.text_rag import handle_text_rag
-from handlers.workflow_rag import handle_workflow_rag
+from handlers.workflow_rag import THE_HAGUE_OVERVIEW_QUERY, handle_workflow_rag
 from router_classifier import RouterDecision
 
 try:
@@ -185,6 +185,40 @@ class DemoHandlerSmokeTests(unittest.TestCase):
         self.assertIn("Rows detected: 1", result.answer)
         self.assertEqual(result.citations[0]["manifest_id"], "score-row")
 
+    def test_crown_surface_2020_uses_municipality_proxy_row(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            table_path = Path(tmpdir) / "gm0518_kroonvolume_proxy_v1.csv"
+            table_path.write_text(
+                "\n".join(
+                    [
+                        "ahn_generation,acquisition_period,aggregation_level,aggregation_unit_id,aggregation_unit_name,municipality_code,candidate_area_m2,candidate_area_ha,uncertainty_class,caveat_flags",
+                        "AHN3,2014-2019,gemeente,GM0518,'s-Gravenhage,GM0518,12191374.5,1219.13745,high,not_official",
+                        "AHN4,2020-2022,gemeente,GM0518,'s-Gravenhage,GM0518,11187481.25,1118.748125,high,not_official",
+                    ]
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+            row = manifest_row(
+                "score-row",
+                "kroonvolume_internal_proxy",
+                "score_table",
+                table_path,
+            )
+            row["relative_path"] = "gm0518_kroonvolume_proxy_v1.csv"
+
+            with mock.patch("handlers.FrozenEvidenceIndex.load", return_value=FrozenEvidenceIndex([row])):
+                with mock.patch("frozen_evidence.ALLOWED_ROOTS", (str(tmpdir),)):
+                    result = handle_score_table(
+                        "What is the crown surface area in the municipliaty of The Hague at the end of 2020?",
+                        gate("score-row"),
+                    )
+
+        self.assertFalse(result.refused)
+        self.assertIn("11,187,481.25 m2", result.answer)
+        self.assertIn("AHN4", result.answer)
+        self.assertIn("2020-2022", result.answer)
+
     def test_score_table_refuses_when_approved_file_unreadable(self):
         row = manifest_row(
             "score-row",
@@ -254,6 +288,19 @@ class DemoHandlerSmokeTests(unittest.TestCase):
         self.assertIn("Diver/Curator retrieval", result.answer)
         self.assertEqual(result.citations[0]["trace_type"], "retrieval_package.v1")
         self.assertEqual(result.citations[0]["readiness"]["user_facing_ready"], False)
+
+    def test_workflow_rag_expands_broad_the_hague_inventory_question(self):
+        with mock.patch(
+            "handlers.workflow_rag.run_diver_curator_workflow",
+            return_value=(workflow_payload(), None),
+        ) as workflow:
+            result = handle_workflow_rag(
+                "What information of The Hague do you have?",
+                workflow_gate(),
+            )
+
+        self.assertFalse(result.refused)
+        workflow.assert_called_once_with(THE_HAGUE_OVERVIEW_QUERY)
 
     def test_workflow_rag_refuses_weak_evidence(self):
         with mock.patch(

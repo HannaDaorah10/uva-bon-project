@@ -94,6 +94,15 @@ class RouterClassifierTests(unittest.TestCase):
         self.assertFalse(model.called)
         self.assertEqual(decision.route, "score_table")
 
+    def test_crown_surface_2020_question_routes_to_score_table_without_model(self):
+        with mock.patch("router_classifier._call_ollama") as model:
+            decision = classify_question(
+                "What is the crown surface area in the municipliaty of The Hague at the end of 2020?"
+            )
+
+        self.assertFalse(model.called)
+        self.assertEqual(decision.route, "score_table")
+
     def test_dutch_kroonoppervlakte_question_routes_to_score_table_without_model(self):
         with mock.patch("router_classifier._call_ollama") as model:
             decision = classify_question(
@@ -120,6 +129,20 @@ class RouterClassifierTests(unittest.TestCase):
 
         self.assertFalse(model.called)
         self.assertEqual(decision.route, "workflow_rag")
+
+    def test_broad_the_hague_inventory_question_routes_to_workflow_without_model(self):
+        with mock.patch("router_classifier._call_ollama") as model:
+            decision = classify_question("What information of The Hague do you have?")
+
+        self.assertFalse(model.called)
+        self.assertEqual(decision.route, "workflow_rag")
+
+    def test_kroonvolume_map_question_routes_to_map_raster_without_model(self):
+        with mock.patch("router_classifier._call_ollama") as model:
+            decision = classify_question("Show the Kroonvolume Den Haag map raster pointer.")
+
+        self.assertFalse(model.called)
+        self.assertEqual(decision.route, "map_raster")
 
     def test_classifier_uses_mocked_model_payload(self):
         with mock.patch(

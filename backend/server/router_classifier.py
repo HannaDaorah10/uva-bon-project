@@ -24,7 +24,10 @@ CROWN_SURFACE_RE = re.compile(
     re.IGNORECASE,
 )
 THE_HAGUE_RE = re.compile(r"(the\s+hague|den\s+haag|'s-gravenhage|gemeente\s+den\s+haag|gm0518)", re.IGNORECASE)
-YEAR_2021_RE = re.compile(r"(2021|end\s+of\s+2021|eind\s+van\s+2021)", re.IGNORECASE)
+MAP_RASTER_RE = re.compile(
+    r"\b(map|raster|geotiff|geojson|gpkg|stac|spatial\s+layer|catalog(?:ue)?|pointer)\b",
+    re.IGNORECASE,
+)
 WORKFLOW_BASELINE_RE = re.compile(
     r"("
     r"\biucn\b|red\s+list|bon\s+in\s+a\s+box|"
@@ -197,13 +200,19 @@ def heuristic_decision(question: str) -> RouterDecision | None:
     if (
         CROWN_SURFACE_RE.search(question)
         and THE_HAGUE_RE.search(question)
-        and YEAR_2021_RE.search(question)
     ):
         return RouterDecision(
             route="score_table",
             refusal_reason=None,
             confidence=0.98,
-            explanation="Heuristic route for The Hague crown surface area question.",
+            explanation="Heuristic route for The Hague crown surface area table question.",
+        )
+    if MAP_RASTER_RE.search(question):
+        return RouterDecision(
+            route="map_raster",
+            refusal_reason=None,
+            confidence=0.9,
+            explanation="Heuristic route for map/raster pointer request.",
         )
     if WORKFLOW_BASELINE_RE.search(question):
         return RouterDecision(

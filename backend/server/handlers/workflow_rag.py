@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -26,6 +27,20 @@ DEFAULT_TIMEOUT_SECONDS = 75
 NEO_NAMESPACE = "neo_den_haag_student_baseline"
 NEO_TOP_K = 8
 NEO_QUERY_TERMS = ("neo", "signaleyes", "signal eyes", "boombasis")
+THE_HAGUE_RE = re.compile(r"\b(the\s+hague|den\s+haag|'s-gravenhage|gm0518)\b", re.IGNORECASE)
+OVERVIEW_RE = re.compile(
+    r"\b("
+    r"what\s+(information|data|evidence)\s+.*\b(have|contain|available)|"
+    r"what\s+do\s+you\s+(know|have)|"
+    r"what\s+.*\b(information|data|evidence)\b|"
+    r"overview|summary|summarize|available"
+    r")\b",
+    re.IGNORECASE,
+)
+THE_HAGUE_OVERVIEW_QUERY = (
+    "Den Haag The Hague Kroonvolume Groenmonitor NEO Boombasis urban biodiversity "
+    "tree canopy evidence overview source holdings caveats"
+)
 USABLE_RELEVANCE_LABELS = {"strong", "moderate", "usable", "partial"}
 INTERNAL_ALLOWED_USES = {
     "internal_student_prototype_retrieval_assessment",
@@ -42,7 +57,8 @@ def handle_workflow_rag(question: str, gate: EvidenceGateResult) -> HandlerRespo
             gate.answer or "The retrieval contract gate refused this request.",
         )
 
-    payload, failure = run_diver_curator_workflow(question)
+    retrieval_question = retrieval_question_for_user_question(question)
+    payload, failure = run_diver_curator_workflow(retrieval_question)
     if failure is not None:
         return safe_refusal("retrieval_contract_unavailable", failure)
 
@@ -128,6 +144,13 @@ def run_diver_curator_workflow(question: str) -> tuple[dict[str, Any] | None, st
     if not isinstance(payload, dict):
         return None, "The controlled retrieval workflow returned an unexpected payload."
     return payload, None
+
+
+def retrieval_question_for_user_question(question: str) -> str:
+    """Expand broad place-inventory questions into the approved evidence vocabulary."""
+    if THE_HAGUE_RE.search(question) and OVERVIEW_RE.search(question):
+        return THE_HAGUE_OVERVIEW_QUERY
+    return question
 
 
 def namespace_for_question(question: str) -> str:
