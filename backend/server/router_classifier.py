@@ -28,6 +28,7 @@ YEAR_2021_RE = re.compile(r"(2021|end\s+of\s+2021|eind\s+van\s+2021)", re.IGNORE
 WORKFLOW_BASELINE_RE = re.compile(
     r"("
     r"\biucn\b|red\s+list|bon\s+in\s+a\s+box|"
+    r"\bneo\b|signaleyes|signal\s+eyes|boombasis|"
     r"kroonvolume|groenmonitor|tree\s+canopy|urban\s+biodiversity|"
     r"den\s+haag|the\s+hague|zuid[-\s]?holland|south\s+holland|"
     r"ndvi|verspreidingsatlas|pdok|ngr|protected\s+areas?|"

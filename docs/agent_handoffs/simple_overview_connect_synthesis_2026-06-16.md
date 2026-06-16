@@ -26,6 +26,9 @@ That combined baseline is meant to cover:
 - BON in a Box student summaries.
 - IUCN Red List CSV student summaries.
 - Kroonvolume Den Haag curated summaries.
+- NEO SignalEyes / Boombasis Den Haag explainer chunks.
+
+NEO questions are handled as a special safe subset of `workflow_rag`: the backend routes NEO/SignalEyes/Boombasis wording to the dedicated `neo_den_haag_student_baseline` namespace, which contains the 8 approved explainer chunks. It does not expose raw NEO coordinates, credentials, raw GeoJSON, query exports, feature-level dumps, external LLM sharing, model training, or commercial/fee-for-data use.
 
 The existing safer routes are still present:
 
@@ -58,8 +61,8 @@ frontend question
 
 Important safety order:
 
-1. The preflight gate refuses export, archive, download, service mutation, database/vector changes, official claims, public-ready claims, and similar unsafe requests before routing.
-2. The router can now choose `workflow_rag`. There are also simple keyword heuristics for IUCN, BON, Red List, Kroonvolume, Groenmonitor, The Hague, South Holland, NDVI, protected areas, indigenous peoples, and related baseline topics.
+1. The preflight gate refuses export, archive, download, service mutation, database/vector changes, official claims, public-ready claims, unsafe NEO ground-truth/proof/equivalence claims, and similar unsafe requests before routing.
+2. The router can now choose `workflow_rag`. There are also simple keyword heuristics for IUCN, BON, Red List, Kroonvolume, NEO, SignalEyes, Boombasis, Groenmonitor, The Hague, South Holland, NDVI, protected areas, indigenous peoples, and related baseline topics.
 3. `workflow_rag` does not open a frozen manifest row. Instead, it is gated by the retrieval contract.
 4. The new handler runs the Diver/Curator script as a subprocess and expects JSON containing both `retrieval_package.v1` and `source_assessment.v1`.
 5. The handler refuses if the workflow is missing, times out, fails, returns invalid JSON, lacks the required schemas, says evidence is insufficient, or returns only weak/unusable traces.
@@ -79,6 +82,8 @@ The answer text for `workflow_rag` is extractive and cautious. It lists the retr
 - Added retrieval-contract citation validation.
 - Added deterministic workflow answer synthesis.
 - Updated the frozen evidence gate so `workflow_rag` uses the retrieval contract instead of pretending to be a normal frozen-manifest row.
+- Added NEO to the combined retrieval namespace and routed NEO-specific questions to the dedicated NEO explainer namespace.
+- Added a NEO preflight refusal for ground-truth, proof, official-alignment, municipal-equivalence, and Groenmonitor-equivalence framing.
 - Updated frontend citation parsing and display for retrieval traces.
 - Updated backend README with the new route, environment variables, and runtime caveat.
 - Added tests for router parsing, workflow routing, evidence gating, workflow handler success/refusal, and final citation validation.
@@ -87,6 +92,7 @@ The answer text for `workflow_rag` is extractive and cautious. It lists the retr
 ## Weak points and blockers
 
 - This remains internal prototype behavior. The workflow can return internal traces that are not public, not client-ready, not official, and not citation-ready for final use.
+- NEO is available to the assistant only as a local NEO dataset source-of-truth baseline under licence for non-commercial/no-fee student use. It is citable through governed explainer traces, not as raw exportable feature data.
 - The workflow route depends on local runtime access to the Diver/Curator script, Ollama, and pgvector/PostgreSQL.
 - If the backend runs as Linux user `uva-bon`, PostgreSQL may still need a read-only `uva-bon` role or authentication rule for the local `biodiversity` database.
 - The route should refuse if that DB access is missing. It should not fall back to raw files or filesystem search.
@@ -100,9 +106,9 @@ The answer text for `workflow_rag` is extractive and cautious. It lists the retr
 1. Keep this branch as an internal/student prototype until an explicit readiness decision changes that.
 2. Fix or confirm PostgreSQL read-only access for the runtime identity that will run the backend.
 3. Start the backend and test the two important live paths:
-   - an IUCN/BON/Kroonvolume broad question that should route to `workflow_rag`;
+   - an IUCN/BON/Kroonvolume/NEO broad question that should route to `workflow_rag`;
    - a The Hague crown-surface 2021 question that should route to `score_table`.
-4. Test refusals for official, public-ready, export, download, service-change, live-data, and unsupported causal questions.
+4. Test refusals for official, public-ready, export, download, service-change, live-data, unsupported causal questions, and unsafe NEO ground-truth/proof/equivalence wording.
 5. Decide whether `workflow_rag` should return trace-only answers in the student UI or whether it should first show a review-only result.
 6. If more evidence should become answer-facing, update the governed manifest/readiness package and tests. Do not mass-open rows in code.
 7. If the UI should help students debug routing, expose the backend `router` and `evidence` metadata in a small internal-only panel.
@@ -123,10 +129,11 @@ I did not rerun backend tests or frontend build in this final overview pass beca
 
 Verification reported by the latest handoff:
 
-- Backend unit tests: `python3 -m unittest -v` passed, 39 tests.
+- Backend unit tests: `python3 -m unittest test_router_classifier test_frozen_evidence test_demo_handlers` passed, 41 tests with 4 optional skips.
 - Frontend type checks and lint passed.
 - Frontend build passed after repairing local generated-cache/output ACLs.
 - API smoke for an IUCN indigenous/protected-area question routed to `workflow_rag` and returned 5 source traces.
+- API smoke for a NEO SignalEyes / Boombasis Den Haag question routed to `workflow_rag` and returned a `neo_den_haag_student_baseline` source trace.
+- API smoke for a NEO ground-truth/proof/Groenmonitor-equivalence question refused with `unsupported_claim`.
 - API smoke for The Hague crown-surface 2021 routed to `score_table` and returned 1 frozen-manifest citation.
 - API smoke for official/validated/public-ready claims refused with `unsupported_claim`.
-

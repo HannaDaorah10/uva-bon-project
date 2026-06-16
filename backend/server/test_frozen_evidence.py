@@ -72,6 +72,13 @@ class FrozenEvidenceTests(unittest.TestCase):
         self.assertTrue(result.refused)
         self.assertEqual(result.refusal_reason, "unsupported_claim")
 
+    def test_neo_ground_truth_claim_refuses_before_evidence(self):
+        result = preflight_question_gate("Can we use NEO as ground truth proof for Groenmonitor equivalence?")
+
+        self.assertTrue(result.refused)
+        self.assertEqual(result.refusal_reason, "unsupported_claim")
+        self.assertIn("neo_validation_or_equivalence_claim", result.blocked_gates)
+
     def test_route_with_missing_readiness_fails_closed(self):
         manifest = FrozenEvidenceIndex([row(readiness={"retrieve_allowed": True})])
 

@@ -169,6 +169,14 @@ No strong or moderate source traces were available.
 
     answer_parts = []
     evidence_rows = []
+    namespaces = sorted(
+        {
+            str(item["chunk"].get("namespace", "")).strip()
+            for item in items
+            if str(item["chunk"].get("namespace", "")).strip()
+        }
+    )
+    namespace_text = ", ".join(namespaces) if namespaces else "the controlled student baseline"
     for index, item in enumerate(items, start=1):
         chunk = item["chunk"]
         assessment = item["assessment"]
@@ -204,7 +212,7 @@ This is an extractive internal-prototype answer from the retrieval package, not 
 
 ## Assumptions
 
-I used the combined student baseline when the backend route selected `workflow_rag`. I did not use web browsing, model memory, raw filesystem search, exports, live GBIF, or BON runtime execution.
+I used the controlled student-baseline retrieval route selected by `workflow_rag`; returned namespace(s): {namespace_text}. I did not use web browsing, model memory, raw filesystem search, exports, live GBIF, or BON runtime execution.
 
 ## Human review needed
 

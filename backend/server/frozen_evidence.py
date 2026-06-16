@@ -112,6 +112,11 @@ OFFICIAL_CLAIM_RE = re.compile(
     r"\b(official|municipal|city-endorsed|validated|validation-ready|client-ready|public-ready|ecological decision|management action)\b",
     re.IGNORECASE,
 )
+NEO_RE = re.compile(r"\b(neo|signaleyes|signal\s+eyes|boombasis)\b", re.IGNORECASE)
+NEO_FORBIDDEN_FRAMING_RE = re.compile(
+    r"\b(ground\s+truth|proof|official\s+alignment|municipal\s+equivalence|groenmonitor\s+equivalence)\b",
+    re.IGNORECASE,
+)
 
 
 @dataclass(frozen=True)
@@ -250,6 +255,19 @@ class FrozenEvidenceIndex:
 
 
 def preflight_question_gate(question: str) -> EvidenceGateResult | None:
+    if NEO_RE.search(question) and NEO_FORBIDDEN_FRAMING_RE.search(question):
+        return EvidenceGateResult(
+            refused=True,
+            refusal_reason="unsupported_claim",
+            answer=(
+                "I cannot frame NEO as ground truth, proof, official alignment, "
+                "municipal equivalence, or Groenmonitor equivalence. The approved "
+                "framing is a local NEO dataset source-of-truth baseline under "
+                "licence for non-commercial/no-fee student use, with descriptive "
+                "comparison caveats."
+            ),
+            blocked_gates=["neo_validation_or_equivalence_claim"],
+        )
     if EXPORT_RE.search(question):
         return EvidenceGateResult(
             refused=True,

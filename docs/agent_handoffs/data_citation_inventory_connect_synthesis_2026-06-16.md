@@ -49,8 +49,11 @@ That combined namespace is the broad source surface currently wired to the assis
 - BON in a Box student baseline summaries
 - IUCN Red List CSV student baseline summaries
 - Kroonvolume Den Haag curated summary baseline
+- NEO SignalEyes / Boombasis Den Haag explainer-chunk baseline
 
-The route uses `retrieval_package.v1` plus `source_assessment.v1`. It answers only from chunks assessed as strong/moderate or usable/partial, with source traces. It refuses on workflow failure, insufficient evidence, weak-only evidence, missing trace fields, or external/training gate problems.
+NEO-specific questions are routed to `neo_den_haag_student_baseline` by the backend handler so the assistant searches the 8 approved NEO explainer chunks instead of diluting them with unrelated Den Haag evidence. The NEO namespace exposes only explainer chunks and controlled provenance references, not raw GeoJSON, credentials, feature-level exports, or direct `neo_features`/`neo_comparison_rows` dumps.
+
+The route uses `retrieval_package.v1` plus `source_assessment.v1`. It answers only from chunks assessed as strong/moderate or usable/partial, with source traces. It refuses on workflow failure, insufficient evidence, weak-only evidence, missing trace fields, unsafe NEO validation/equivalence framing, or external/training gate problems.
 
 ## Visible But Blocked Data
 
@@ -62,6 +65,7 @@ These files or rows are visible but should not be treated as answer-ready just b
 - Method-context YAML files: visible, but answer gates remain closed.
 - `backend/inputRouting/runs/*`: BON/NDVI run artifacts from a standalone workflow path; not governed by `/api/query` answer gates.
 - `backend/synthesis/*`: prompt/prototype synthesis material; not the active server synthesis path.
+- Raw NEO feature payloads, feature-level database exports, query dumps, and raw coordinates remain outside assistant answer/export scope. The assistant may cite the local NEO dataset source-of-truth baseline under licence through the governed explainer traces only.
 
 ## Remaining Runtime Caveat
 
@@ -77,14 +81,17 @@ The remaining Spark wiring weak point is PostgreSQL authentication: the local `b
 - Do not use raw filesystem search as a fallback for answer evidence.
 - Do not send chunks to external LLMs while `share_with_external_llm=false`.
 - Do not claim public/client/official/validated/municipal readiness.
+- Do not frame NEO as ground truth, proof, official alignment, municipal equivalence, or Groenmonitor equivalence.
 
 ## Verification Snapshot
 
 From the current runtime:
 
-- Backend unit tests: `python3 -m unittest -v` passed, 39 tests.
+- Backend unit tests: `python3 -m unittest test_router_classifier test_frozen_evidence test_demo_handlers` passed, 41 tests with 4 optional skips.
 - Frontend type checks and lint passed.
 - Frontend build passed after repairing local generated-cache/output ACLs.
 - API smoke: IUCN indigenous/protected-area question routed to `workflow_rag`, returned `refused=false` with 5 source traces.
+- API smoke: NEO SignalEyes / Boombasis Den Haag question routed to `workflow_rag`, returned `refused=false` with a `neo_den_haag_student_baseline` source trace.
+- API smoke: NEO ground-truth/proof/Groenmonitor-equivalence question refused with `unsupported_claim` and `neo_validation_or_equivalence_claim`.
 - API smoke: The Hague crown-surface 2021 question routed to `score_table`, returned `refused=false` with 1 frozen-manifest citation.
 - API smoke: official/validated/public-ready claim refused with `unsupported_claim`.

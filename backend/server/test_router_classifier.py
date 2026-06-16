@@ -112,6 +112,15 @@ class RouterClassifierTests(unittest.TestCase):
         self.assertFalse(model.called)
         self.assertEqual(decision.route, "workflow_rag")
 
+    def test_neo_question_routes_to_workflow_without_model(self):
+        with mock.patch("router_classifier._call_ollama") as model:
+            decision = classify_question(
+                "What does the NEO SignalEyes Boombasis Den Haag baseline contain?"
+            )
+
+        self.assertFalse(model.called)
+        self.assertEqual(decision.route, "workflow_rag")
+
     def test_classifier_uses_mocked_model_payload(self):
         with mock.patch(
             "router_classifier._call_ollama",

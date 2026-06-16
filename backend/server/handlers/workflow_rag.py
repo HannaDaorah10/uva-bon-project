@@ -23,6 +23,9 @@ DEFAULT_WORKFLOW_PATH = "/home/hans/.openclaw/workspace/tools/diver_curator_work
 DEFAULT_NAMESPACE = "student_combined_baseline"
 DEFAULT_TOP_K = 5
 DEFAULT_TIMEOUT_SECONDS = 75
+NEO_NAMESPACE = "neo_den_haag_student_baseline"
+NEO_TOP_K = 8
+NEO_QUERY_TERMS = ("neo", "signaleyes", "signal eyes", "boombasis")
 USABLE_RELEVANCE_LABELS = {"strong", "moderate", "usable", "partial"}
 INTERNAL_ALLOWED_USES = {
     "internal_student_prototype_retrieval_assessment",
@@ -81,8 +84,9 @@ def handle_workflow_rag(question: str, gate: EvidenceGateResult) -> HandlerRespo
 
 def run_diver_curator_workflow(question: str) -> tuple[dict[str, Any] | None, str | None]:
     workflow_path = os.environ.get("NATUREDESK_DIVER_CURATOR_WORKFLOW", DEFAULT_WORKFLOW_PATH)
-    namespace = os.environ.get("NATUREDESK_RETRIEVAL_NAMESPACE", DEFAULT_NAMESPACE)
-    top_k = _int_from_env("NATUREDESK_RETRIEVAL_TOP_K", DEFAULT_TOP_K)
+    namespace = os.environ.get("NATUREDESK_RETRIEVAL_NAMESPACE") or namespace_for_question(question)
+    default_top_k = NEO_TOP_K if namespace == NEO_NAMESPACE else DEFAULT_TOP_K
+    top_k = _int_from_env("NATUREDESK_RETRIEVAL_TOP_K", default_top_k)
     timeout_seconds = _int_from_env("NATUREDESK_RETRIEVAL_TIMEOUT_SECONDS", DEFAULT_TIMEOUT_SECONDS)
 
     script = Path(workflow_path)
@@ -124,6 +128,13 @@ def run_diver_curator_workflow(question: str) -> tuple[dict[str, Any] | None, st
     if not isinstance(payload, dict):
         return None, "The controlled retrieval workflow returned an unexpected payload."
     return payload, None
+
+
+def namespace_for_question(question: str) -> str:
+    lowered = question.lower()
+    if any(term in lowered for term in NEO_QUERY_TERMS):
+        return NEO_NAMESPACE
+    return DEFAULT_NAMESPACE
 
 
 def usable_workflow_items(
