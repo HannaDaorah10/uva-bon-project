@@ -779,19 +779,115 @@ input {
 }
 
 .answer-text {
+  display: grid;
+  gap: 14px;
+}
+
+.answer-para {
   margin: 0;
-  font-size: 1.1rem;
-  line-height: 1.72;
+  font-size: 1.06rem;
+  line-height: 1.7;
   color: var(--ink);
 }
 
+/* the lead paragraph (intro + first source) reads as the headline claim */
+.answer-para:first-child {
+  font-size: 1.14rem;
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.answer-code {
+  padding: 1px 6px;
+  border-radius: 5px;
+  background: var(--line-soft);
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 0.86em;
+  color: var(--evergreen-deep);
+}
+
 .answer-foot {
-  margin: 18px 0 0;
+  margin: 16px 0 0;
   padding-top: 14px;
   border-top: 1px solid var(--line-soft);
   font-size: 0.84rem;
   line-height: 1.5;
   color: var(--ink-faint);
+}
+
+/* ---------- notes & limitations (collapsible) ---------- */
+
+.answer-notes {
+  margin-top: 16px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface-2);
+  overflow: hidden;
+}
+
+.answer-notes > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 15px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--ink-soft);
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+}
+
+.answer-notes > summary::-webkit-details-marker {
+  display: none;
+}
+
+.answer-notes > summary svg {
+  width: 15px;
+  height: 15px;
+  color: var(--gold);
+}
+
+.answer-notes > summary::after {
+  content: "";
+  width: 8px;
+  height: 8px;
+  margin-left: auto;
+  border-right: 2px solid var(--ink-faint);
+  border-bottom: 2px solid var(--ink-faint);
+  transform: rotate(45deg);
+  transition: transform 0.2s ease;
+}
+
+.answer-notes[open] > summary::after {
+  transform: rotate(-135deg);
+}
+
+.answer-notes[open] > summary {
+  border-bottom: 1px solid var(--line);
+}
+
+.answer-notes-body {
+  display: grid;
+  gap: 14px;
+  padding: 15px;
+}
+
+.answer-note-title {
+  margin: 0 0 4px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+.answer-note-text {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.6;
+  color: var(--ink-soft);
 }
 
 .inline-link {

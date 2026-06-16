@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import "./App.css";
 
@@ -624,6 +624,63 @@ function OutputPanel({
 }
 
 /* ------------------------------------------------------------------ */
+/* Answer markdown parsing                                             */
+/* The backend returns one markdown document: a "## Answer" section    */
+/* with inline [n] citations, a "## Evidence used" table, then caveat  */
+/* sections. We split it on its top-level headings so each part can be */
+/* rendered as structured UI instead of one undifferentiated wall.     */
+/* ------------------------------------------------------------------ */
+
+type AnswerSection = { heading: string; body: string };
+
+function parseAnswerSections(answer: string): { lead: string; sections: AnswerSection[] } {
+  const lines = answer.split(/\r?\n/);
+  const sections: AnswerSection[] = [];
+  const leadLines: string[] = [];
+  let current: AnswerSection | null = null;
+
+  for (const line of lines) {
+    const heading = line.match(/^#{1,6}\s+(.+?)\s*$/);
+    if (heading) {
+      current = { heading: heading[1].trim(), body: "" };
+      sections.push(current);
+    } else if (current) {
+      current.body += (current.body ? "\n" : "") + line;
+    } else {
+      leadLines.push(line);
+    }
+  }
+
+  for (const section of sections) section.body = section.body.trim();
+  return { lead: leadLines.join("\n").trim(), sections };
+}
+
+/*
+ * Break the answer prose into one paragraph per cited claim. The body is a
+ * single run-on line shaped like "<intro> <excerpt> [1] <excerpt> [2] …", so
+ * we cut after each [n] marker — each source's snippet becomes its own block.
+ */
+function splitCitedParagraphs(body: string): string[] {
+  const paragraphs: string[] = [];
+  const marker = /\[\d+\]/g;
+  let last = 0;
+  let match: RegExpExecArray | null;
+
+  while ((match = marker.exec(body)) !== null) {
+    const end = match.index + match[0].length;
+    const piece = body.slice(last, end).trim();
+    if (piece) paragraphs.push(piece);
+    last = end;
+  }
+  const tail = body.slice(last).trim();
+  if (tail) paragraphs.push(tail);
+
+  return paragraphs.length ? paragraphs : [body.trim()].filter(Boolean);
+}
+
+const NOTE_HEADING_RE = /^(answer|evidence used)$/i;
+
+/* ------------------------------------------------------------------ */
 
 type AnswerTab = "answer" | "sources" | "trace";
 
@@ -641,6 +698,20 @@ function AnswerView({
   const hasTrace = response.citations.some(
     (c) => c.locator || c.traceLabel || c.readinessLabel,
   );
+
+  const { answerParagraphs, notes } = useMemo(() => {
+    const { lead, sections } = parseAnswerSections(response.answer);
+    const answerSection = sections.find((s) => /^answer$/i.test(s.heading));
+    const answerBody = (answerSection?.body || lead || response.answer).trim();
+    return {
+      // drop stray markdown heading markers ("# …") left inline by the
+      // flattened source excerpts, at the start or mid-paragraph
+      answerParagraphs: splitCitedParagraphs(answerBody).map((p) =>
+        p.replace(/(^|\s)#{1,6}\s+/g, "$1").trim(),
+      ),
+      notes: sections.filter((s) => !NOTE_HEADING_RE.test(s.heading.trim())),
+    };
+  }, [response.answer]);
 
   // A citation chip lives only on the Answer tab, so clicking one always
   // switches to Sources. Once that tab renders, scroll to and flash the
@@ -705,20 +776,49 @@ function AnswerView({
       {tab === "answer" && (
         <div className="panel-body" role="tabpanel" id="panel-answer" aria-labelledby="tab-answer">
           <div className="answer-head">
-            <span className="answer-kicker">Short answer</span>
+            <span className="answer-kicker">Answer</span>
             <button type="button" className="copy-btn" onClick={copyAnswer}>
               {copied ? <CheckIcon /> : <CopyIcon />}
               {copied ? "Copied" : "Copy"}
             </button>
           </div>
-          <p className="answer-text">
-            <AnswerText text={response.answer} onCite={focusSource} />
-          </p>
+
+          <div className="answer-text">
+            {answerParagraphs.map((para, i) => (
+              <p key={i} className="answer-para">
+                <AnswerText text={para} onCite={focusSource} />
+              </p>
+            ))}
+          </div>
+
           {count > 0 && (
             <p className="answer-foot">
               Numbers like <span className="cite-ref cite-ref--demo">1</span> link to the
-              evidence — open the <button type="button" className="inline-link" onClick={() => setTab("sources")}>Sources</button> tab.
+              evidence — open the{" "}
+              <button type="button" className="inline-link" onClick={() => setTab("sources")}>
+                Sources
+              </button>{" "}
+              tab.
             </p>
+          )}
+
+          {notes.length > 0 && (
+            <details className="answer-notes" open>
+              <summary>
+                <ShieldIcon />
+                Notes &amp; limitations
+              </summary>
+              <div className="answer-notes-body">
+                {notes.map((note, i) => (
+                  <div key={i} className="answer-note">
+                    <p className="answer-note-title">{note.heading}</p>
+                    <p className="answer-note-text">
+                      <AnswerText text={note.body} onCite={focusSource} />
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </details>
           )}
         </div>
       )}
@@ -808,7 +908,8 @@ function AnswerView({
   );
 }
 
-/* Renders answer text, turning [1] [2] markers into clickable refs */
+/* Renders answer text, turning [1] [2] markers into clickable refs and
+   `backtick` spans into inline code. */
 function AnswerText({
   text,
   onCite,
@@ -816,24 +917,33 @@ function AnswerText({
   text: string;
   onCite: (id: string) => void;
 }) {
-  const parts = text.split(/(\[\d+\])/g);
+  const parts = text.split(/(\[\d+\]|`[^`]+`)/g);
   return (
     <>
       {parts.map((part, i) => {
-        const match = part.match(/^\[(\d+)\]$/);
-        if (!match) return <span key={i}>{part}</span>;
-        const id = match[1];
-        return (
-          <button
-            key={i}
-            type="button"
-            className="cite-ref"
-            onClick={() => onCite(id)}
-            aria-label={`Jump to source ${id}`}
-          >
-            {id}
-          </button>
-        );
+        const cite = part.match(/^\[(\d+)\]$/);
+        if (cite) {
+          const id = cite[1];
+          return (
+            <button
+              key={i}
+              type="button"
+              className="cite-ref"
+              onClick={() => onCite(id)}
+              aria-label={`Jump to source ${id}`}
+            >
+              {id}
+            </button>
+          );
+        }
+        if (/^`[^`]+`$/.test(part)) {
+          return (
+            <code key={i} className="answer-code">
+              {part.slice(1, -1)}
+            </code>
+          );
+        }
+        return <span key={i}>{part}</span>;
       })}
     </>
   );
