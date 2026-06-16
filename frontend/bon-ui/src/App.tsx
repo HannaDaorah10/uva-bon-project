@@ -18,15 +18,28 @@ type Citation = {
   artifactType?: ArtifactType;
   locator?: string; // e.g. "p. 12", "rows 4-9", "tile EPSG:28992"
   excerpt?: string; // short supporting snippet
+  traceLabel?: string;
+  readinessLabel?: string;
 };
 
 type BackendCitation = Partial<Citation> & {
   manifest_id?: unknown;
+  chunk_id?: unknown;
+  document_id?: unknown;
   citation?: unknown;
+  citation_string?: unknown;
   path?: unknown;
+  source_path?: unknown;
   relative_path?: unknown;
   family?: unknown;
+  source_family?: unknown;
   type?: unknown;
+  trace_type?: unknown;
+  cosine_distance?: unknown;
+  relevance_label?: unknown;
+  namespace?: unknown;
+  retrieval_mode?: unknown;
+  readiness?: unknown;
 };
 
 type SynthesisResponse =
@@ -102,17 +115,28 @@ function toCitation(value: unknown, index: number): Citation {
   const raw = value && typeof value === "object" ? (value as BackendCitation) : {};
   const id = stringValue(raw.id) ?? String(index + 1);
   const manifestId = stringValue(raw.manifest_id);
+  const chunkId = stringValue(raw.chunk_id);
+  const documentId = stringValue(raw.document_id);
   const relativePath = stringValue(raw.relative_path);
+  const sourcePath = stringValue(raw.source_path) ?? stringValue(raw.path);
   const artifactType = toArtifactType(stringValue(raw.artifactType) ?? stringValue(raw.type));
 
   return {
     id,
-    title: stringValue(raw.title) ?? relativePath ?? manifestId ?? `Source ${index + 1}`,
-    source: stringValue(raw.source) ?? stringValue(raw.citation) ?? stringValue(raw.family) ?? "Frozen evidence manifest",
+    title: stringValue(raw.title) ?? relativePath ?? chunkId ?? manifestId ?? `Source ${index + 1}`,
+    source:
+      stringValue(raw.source) ??
+      stringValue(raw.citation_string) ??
+      stringValue(raw.citation) ??
+      stringValue(raw.source_family) ??
+      stringValue(raw.family) ??
+      "Frozen evidence manifest",
     url: stringValue(raw.url),
     artifactType,
-    locator: stringValue(raw.locator) ?? relativePath ?? manifestId,
+    locator: stringValue(raw.locator) ?? traceLocator(raw, chunkId, documentId, relativePath, manifestId, sourcePath),
     excerpt: stringValue(raw.excerpt),
+    traceLabel: traceLabel(raw),
+    readinessLabel: readinessLabel(raw),
   };
 }
 
@@ -133,6 +157,58 @@ function readBackendError(payload: unknown): string | null {
   const data = payload as { detail?: unknown; error?: unknown; message?: unknown };
   const value = data.detail ?? data.error ?? data.message;
   return typeof value === "string" ? value : null;
+}
+
+function traceLocator(
+  raw: BackendCitation,
+  chunkId?: string,
+  documentId?: string,
+  relativePath?: string,
+  manifestId?: string,
+  sourcePath?: string,
+): string | undefined {
+  const distance =
+    typeof raw.cosine_distance === "number"
+      ? raw.cosine_distance.toFixed(3)
+      : stringValue(raw.cosine_distance);
+  if (chunkId) {
+    return [chunkId, documentId ? `doc ${documentId}` : undefined, distance ? `distance ${distance}` : undefined]
+      .filter(Boolean)
+      .join(" | ");
+  }
+  return relativePath ?? manifestId ?? sourcePath;
+}
+
+function traceLabel(raw: BackendCitation): string | undefined {
+  const traceType = stringValue(raw.trace_type);
+  const relevance = stringValue(raw.relevance_label);
+  const namespace = stringValue(raw.namespace);
+  if (!traceType && !relevance && !namespace) return undefined;
+  return [traceType, relevance ? `relevance ${relevance}` : undefined, namespace].filter(Boolean).join(" | ");
+}
+
+function readinessLabel(raw: BackendCitation): string | undefined {
+  const readiness = raw.readiness;
+  if (!readiness || typeof readiness !== "object") return undefined;
+  const data = readiness as {
+    user_facing_ready?: unknown;
+    citation_ready?: unknown;
+    analyst_citation_ready?: unknown;
+    share_with_external_llm?: unknown;
+    train_allowed?: unknown;
+  };
+  const audience =
+    data.user_facing_ready === true
+      ? "user-facing ready"
+      : data.analyst_citation_ready === true
+        ? "analyst trace"
+        : "internal trace";
+  const citation = data.citation_ready === true ? "citation-ready" : "not citation-ready";
+  const external =
+    data.share_with_external_llm === false && data.train_allowed === false
+      ? "no external/training use"
+      : undefined;
+  return [audience, citation, external].filter(Boolean).join(" | ");
 }
 
 /* ------------------------------------------------------------------ */
@@ -418,6 +494,8 @@ function AnswerView({
                       <span className="pub">{c.source}</span>
                       {c.artifactType && <ArtifactBadge type={c.artifactType} />}
                       {c.locator && <span className="source-locator">{c.locator}</span>}
+                      {c.traceLabel && <span className="source-locator">{c.traceLabel}</span>}
+                      {c.readinessLabel && <span className="source-locator">{c.readinessLabel}</span>}
                     </div>
                     {c.excerpt && <p className="source-excerpt">{c.excerpt}</p>}
                     {c.url && (

@@ -157,6 +157,61 @@ A human should verify the selected chunks and citations before using the answer 
 """
 
 
+def synthesize_workflow_answer(question: str, items: list[dict[str, Any]]) -> str:
+    if not items:
+        return """## Refusal
+
+I cannot answer from the controlled retrieval workflow.
+
+Reason:
+No strong or moderate source traces were available.
+"""
+
+    answer_parts = []
+    evidence_rows = []
+    for index, item in enumerate(items, start=1):
+        chunk = item["chunk"]
+        assessment = item["assessment"]
+        title = truncate(chunk.get("title", "retrieved source"), 120)
+        chunk_id = truncate(chunk.get("chunk_id", f"chunk-{index}"), 90)
+        document_id = truncate(chunk.get("document_id", "unknown document"), 90)
+        citation = truncate(chunk.get("citation_string", "retrieval source trace"), 150)
+        source_path = truncate(chunk.get("source_path", "source path unavailable"), 120)
+        relevance = truncate(assessment.get("relevance_label", "usable"), 30)
+        distance = _format_optional_decimal(chunk.get("cosine_distance"), decimals=3)
+        excerpt = truncate(_chunk_text(chunk), 420)
+        answer_parts.append(f"{excerpt} [{index}]")
+        evidence_rows.append(
+            "| "
+            f"[{index}] {title} | "
+            f"chunk_id={chunk_id}; document_id={document_id}; relevance={relevance}; "
+            f"cosine_distance={distance}; citation={citation}; source_path={source_path} |"
+        )
+
+    return f"""## Answer
+
+The controlled Diver/Curator retrieval found {len(items)} usable source trace(s) for this question: {question}. {' '.join(answer_parts)}
+
+## Evidence used
+
+| Source | Evidence |
+|---|---|
+{chr(10).join(evidence_rows)}
+
+## Uncertainty and gaps
+
+This is an extractive internal-prototype answer from the retrieval package, not a full expert synthesis. It uses only chunks assessed as strong or moderate by the source-assessment step. It may miss relevant evidence if the question wording does not match the indexed chunks.
+
+## Assumptions
+
+I used the combined student baseline when the backend route selected `workflow_rag`. I did not use web browsing, model memory, raw filesystem search, exports, live GBIF, or BON runtime execution.
+
+## Human review needed
+
+A human should verify the selected source traces before using this outside the internal student prototype. {route_caveat_sentence()}
+"""
+
+
 def truncate(value: Any, limit: int = 120) -> str:
     text = " ".join(str(value).split())
     if len(text) <= limit:
@@ -189,3 +244,11 @@ def _format_decimal(value: Any, decimals: int) -> str:
     except (TypeError, ValueError):
         return _clean(value)
     return f"{number:,.{decimals}f}"
+
+
+def _format_optional_decimal(value: Any, decimals: int) -> str:
+    try:
+        number = float(str(value).replace(",", ""))
+    except (TypeError, ValueError):
+        return "unknown"
+    return f"{number:.{decimals}f}"

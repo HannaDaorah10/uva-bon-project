@@ -30,6 +30,7 @@ The model and endpoint are fixed in code to preserve the local-only architecture
 `POST /api/query` now calls the local Qwen router classifier first. It asks Qwen to choose one route:
 
 - `text_rag`
+- `workflow_rag`
 - `score_table`
 - `map_raster`
 - `refusal`
@@ -45,11 +46,37 @@ That means:
 - If the classifier chooses `refusal`, the API returns a domain refusal.
 - If a route has no approved readable evidence, the API refuses before a handler runs.
 - If approved evidence is readable but answer-facing readiness is closed, the API refuses with `readiness_gate_blocked`.
-- If future manifest rows open the required readiness gates, the score-table and map/raster demo handlers can return small cited previews or pointers.
-- `text_rag` still refuses factual synthesis until retrieval and synthesis are implemented.
+- `score_table` can answer from approved Kroonvolume CSV rows after manifest/citation gates pass.
+- `map_raster` can return approved map/raster pointers for human review only.
+- `workflow_rag` calls the controlled Diver/Curator workflow and answers only from `retrieval_package.v1` chunks assessed by `source_assessment.v1` as strong/moderate or usable/partial.
+- `text_rag` remains the older manifest-bound JSONL route and still refuses unless its row and chunk gates open.
 - Every response keeps the frontend fields `refused`, `answer`, `citations`, and `refusalReason`. Router details are exposed only in the optional `router` object.
 
 This is intentional. It lets the frontend and backend route meet without returning fake evidence or bypassing the frozen evidence gates.
+
+## Diver/Curator workflow route
+
+`workflow_rag` is the Platypus-style broad retrieval route. It defaults to:
+
+```text
+NATUREDESK_DIVER_CURATOR_WORKFLOW=/home/hans/.openclaw/workspace/tools/diver_curator_workflow.py
+NATUREDESK_RETRIEVAL_NAMESPACE=student_combined_baseline
+NATUREDESK_RETRIEVAL_TOP_K=5
+NATUREDESK_RETRIEVAL_TIMEOUT_SECONDS=75
+```
+
+The combined namespace includes IUCN Resolutions, BON in a Box student summaries, IUCN Red List CSV summaries, and Kroonvolume Den Haag curated summaries, as configured by the shared Diver/Curator workflow.
+
+The route fails closed when:
+
+- the workflow path is unreadable or unavailable;
+- Ollama or pgvector retrieval fails;
+- the workflow does not return both required schemas;
+- Curator/source assessment says evidence is insufficient;
+- no strong/moderate or usable/partial source trace is available;
+- a chunk is missing trace fields or opens external-LLM/training use.
+
+Important runtime caveat: if this backend is run as Linux user `uva-bon`, the workflow file is now traversable/readable, but the local PostgreSQL `biodiversity` database may still need a read-only role or authentication rule for that user. If the DB role is missing, the route should refuse through the retrieval contract instead of falling back to raw files.
 
 ## Test
 
@@ -72,6 +99,6 @@ The gate is intentionally fail-closed:
 - update/install/restart/rerun/service/database/vector/evidence-gate mutation requests refuse with `action_gate_required`.
 - official, municipal, validated, public-ready, client-ready, legal, ecological decision, or management-action claims refuse with `unsupported_claim`.
 
-Current Spark runtime caveat: the approved evidence paths are under `/home/hans/.openclaw/...`; if the `uva-bon` backend process cannot read those files, `/api/query` returns `no_approved_evidence` instead of proceeding.
+Current Spark runtime caveat: several approved evidence paths are under `/home/hans/.openclaw/...`; if the backend process cannot read those files, `/api/query` returns `no_approved_evidence` or `retrieval_contract_unavailable` instead of proceeding.
 
-With the current manifest, answer-facing readiness gates are closed, so live route questions should refuse rather than expose factual evidence previews. To return demo answers, update the governed manifest/readiness package first, then keep citation validation and handler tests aligned with those gates.
+Do not mass-open manifest rows to broaden answers. To make more local files answer-facing, update the governed manifest/readiness package first, then keep citation validation and handler tests aligned with those gates.

@@ -11,6 +11,7 @@ from handlers import HandlerResponse
 from handlers.map_raster import handle_map_raster
 from handlers.score_table import handle_score_table
 from handlers.text_rag import handle_text_rag
+from handlers.workflow_rag import handle_workflow_rag
 from router_classifier import (
     BACKEND_PIPELINE_NOT_CONNECTED,
     RouterDecision,
@@ -24,6 +25,7 @@ app = FastAPI(title="NatureDesk Backend API")
 HANDLERS = {
     "score_table": handle_score_table,
     "text_rag": handle_text_rag,
+    "workflow_rag": handle_workflow_rag,
     "map_raster": handle_map_raster,
 }
 

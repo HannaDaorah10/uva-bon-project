@@ -68,6 +68,12 @@ ROUTE_REQUIREMENTS = {
         "families": {"south_holland_student_retrieval"},
         "types": {"text_chunk_export"},
     },
+    # This route is gated by the external Diver/Curator retrieval contract
+    # rather than by a single frozen manifest row.
+    "workflow_rag": {
+        "families": set(),
+        "types": set(),
+    },
     "score_table": {
         "families": {"kroonvolume_internal_proxy"},
         "types": {"score_table"},
@@ -181,6 +187,12 @@ class FrozenEvidenceIndex:
                 refused=True,
                 refusal_reason="unsupported_claim",
                 answer="This query type is not supported by the frozen evidence router.",
+            )
+
+        if route == "workflow_rag":
+            return EvidenceGateResult(
+                refused=False,
+                evidence_family="student_combined_baseline",
             )
 
         candidates = [

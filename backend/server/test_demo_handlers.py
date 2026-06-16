@@ -11,6 +11,7 @@ from handlers import HandlerResponse
 from handlers.map_raster import handle_map_raster
 from handlers.score_table import handle_score_table
 from handlers.text_rag import handle_text_rag
+from handlers.workflow_rag import handle_workflow_rag
 from router_classifier import RouterDecision
 
 try:
@@ -105,6 +106,65 @@ def gate(row_id, family="kroonvolume_internal_proxy"):
     )
 
 
+def workflow_gate():
+    return EvidenceGateResult(
+        refused=False,
+        evidence_family="student_combined_baseline",
+    )
+
+
+def workflow_payload(relevance_label="strong", sufficient=True):
+    chunk = {
+        "chunk_id": "chunk-1",
+        "document_id": "doc-1",
+        "title": "Kroonvolume Den Haag summary",
+        "year": 2026,
+        "section_heading": "validation",
+        "page_start": None,
+        "page_end": None,
+        "cosine_distance": 0.32,
+        "chunk_text": "Den Haag Kroonvolume evidence has denominator and validation caveats.",
+        "source_path": "approved_release:validation_readiness_matrix_v1.csv",
+        "citation_string": "Kroonvolume Den Haag internal research prototype summary.",
+        "source_family": "Kroonvolume Den Haag internal research prototype",
+        "allowed_uses": ["internal_student_prototype_retrieval_assessment", "analyst_review"],
+        "citation_ready": False,
+        "analyst_citation_ready": False,
+        "user_facing_ready": False,
+        "share_with_external_llm": False,
+        "train_allowed": False,
+        "namespace": "kroonvolume_den_haag_student_baseline",
+        "retrieval_mode": "read_only_pgvector",
+        "run_id": "test-run",
+    }
+    return {
+        "retrieval_package": {
+            "schema_version": "retrieval_package.v1",
+            "status": "success",
+            "run_id": "test-run",
+            "namespace": "student_combined_baseline",
+            "chunks": [chunk],
+            "failure": None,
+        },
+        "source_assessment": {
+            "schema_version": "source_assessment.v1",
+            "status": "success",
+            "sufficient_evidence": sufficient,
+            "source_assessments": [
+                {
+                    "chunk_id": "chunk-1",
+                    "document_id": "doc-1",
+                    "citation_string": "Kroonvolume Den Haag internal research prototype summary.",
+                    "relevance_label": relevance_label,
+                    "relevance_score": 0.68,
+                    "evidence_use": "candidate_source_only",
+                    "insufficient_reason": None,
+                }
+            ],
+        },
+    }
+
+
 class DemoHandlerSmokeTests(unittest.TestCase):
     def test_score_table_answer_uses_readable_approved_csv_and_citations(self):
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -180,6 +240,34 @@ class DemoHandlerSmokeTests(unittest.TestCase):
         self.assertIn("Approved map/raster pointer", result.answer)
         self.assertEqual(result.citations[0]["manifest_id"], "map-row")
 
+    def test_workflow_rag_returns_trace_only_answer(self):
+        with mock.patch(
+            "handlers.workflow_rag.run_diver_curator_workflow",
+            return_value=(workflow_payload(), None),
+        ):
+            result = handle_workflow_rag(
+                "Find Kroonvolume Den Haag evidence about denominator caveats.",
+                workflow_gate(),
+            )
+
+        self.assertFalse(result.refused)
+        self.assertIn("Diver/Curator retrieval", result.answer)
+        self.assertEqual(result.citations[0]["trace_type"], "retrieval_package.v1")
+        self.assertEqual(result.citations[0]["readiness"]["user_facing_ready"], False)
+
+    def test_workflow_rag_refuses_weak_evidence(self):
+        with mock.patch(
+            "handlers.workflow_rag.run_diver_curator_workflow",
+            return_value=(workflow_payload(relevance_label="weak", sufficient=True), None),
+        ):
+            result = handle_workflow_rag(
+                "Find Kroonvolume Den Haag evidence about denominator caveats.",
+                workflow_gate(),
+            )
+
+        self.assertTrue(result.refused)
+        self.assertEqual(result.refusal_reason, "insufficient_evidence")
+
 
 class DemoApiRefusalSmokeTests(unittest.TestCase):
     def test_export_archive_refusal_precedes_classifier(self):
@@ -242,6 +330,30 @@ class DemoApiRefusalSmokeTests(unittest.TestCase):
         self.assertTrue(response.refused)
         self.assertEqual(response.refusalReason, "citation_validation_failed")
         self.assertEqual(response.citations, [])
+
+    def test_workflow_rag_answer_passes_trace_citation_validation(self):
+        decision = RouterDecision(
+            route="workflow_rag",
+            refusal_reason=None,
+            confidence=0.9,
+            explanation="combined baseline",
+        )
+        evidence_gate = EvidenceGateResult(
+            refused=False,
+            evidence_family="student_combined_baseline",
+        )
+
+        with mock.patch("main.classify_question", return_value=decision):
+            with mock.patch("main.gate_query_evidence", return_value=evidence_gate):
+                with mock.patch(
+                    "handlers.workflow_rag.run_diver_curator_workflow",
+                    return_value=(workflow_payload(), None),
+                ):
+                    response = query(QueryRequest(question="Find Kroonvolume Den Haag evidence about validation."))
+
+        self.assertFalse(response.refused)
+        self.assertEqual(response.router["route"], "workflow_rag")
+        self.assertEqual(response.citations[0]["trace_type"], "retrieval_package.v1")
 
 
 if __name__ == "__main__":

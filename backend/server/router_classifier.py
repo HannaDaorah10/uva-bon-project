@@ -17,7 +17,7 @@ OLLAMA_URL = "http://127.0.0.1:11434/api/generate"
 OLLAMA_MODEL = "qwen2.5:7b"
 BACKEND_PIPELINE_NOT_CONNECTED = "backend_pipeline_not_connected"
 
-ROUTES = {"text_rag", "score_table", "map_raster", "refusal"}
+ROUTES = {"text_rag", "workflow_rag", "score_table", "map_raster", "refusal"}
 
 CROWN_SURFACE_RE = re.compile(
     r"(crown\s+surface|crown\s+area|tree\s+crown\s+area|kroonoppervlakte|kroon\s+oppervlakte)",
@@ -25,6 +25,16 @@ CROWN_SURFACE_RE = re.compile(
 )
 THE_HAGUE_RE = re.compile(r"(the\s+hague|den\s+haag|'s-gravenhage|gemeente\s+den\s+haag|gm0518)", re.IGNORECASE)
 YEAR_2021_RE = re.compile(r"(2021|end\s+of\s+2021|eind\s+van\s+2021)", re.IGNORECASE)
+WORKFLOW_BASELINE_RE = re.compile(
+    r"("
+    r"\biucn\b|red\s+list|bon\s+in\s+a\s+box|"
+    r"kroonvolume|groenmonitor|tree\s+canopy|urban\s+biodiversity|"
+    r"den\s+haag|the\s+hague|zuid[-\s]?holland|south\s+holland|"
+    r"ndvi|verspreidingsatlas|pdok|ngr|protected\s+areas?|"
+    r"biodiversity\s+finance|invasive\s+alien|indigenous\s+peoples?"
+    r")",
+    re.IGNORECASE,
+)
 
 REFUSAL_REASONS = {
     "no_evidence",
@@ -39,6 +49,9 @@ REFUSAL_REASONS = {
     "readiness_gate_blocked",
     "export_gate_required",
     "action_gate_required",
+    "insufficient_evidence",
+    "retrieval_contract_unavailable",
+    "retrieval_contract_failed",
 }
 
 ROUTER_SYSTEM_PROMPT = """
@@ -46,6 +59,7 @@ You are the NatureDesk router classifier.
 
 Classify one ecologist question into exactly one route:
 - text_rag: BON documentation, EBV definitions, project context, or other frozen text evidence.
+- workflow_rag: controlled Diver/Curator retrieval over the combined student baseline: IUCN Resolutions, BON in a Box, IUCN Red List CSV summaries, and Kroonvolume Den Haag curated summaries.
 - score_table: small prepared score/indicator tables such as NDVI, SHI, SHS, trends, rows, cells, or exact values.
 - map_raster: maps, rasters, GeoTIFF, GPKG, PNG map outputs, spatial layers, or requests needing visual/geospatial inspection.
 - refusal: out of scope, no frozen evidence, legal/policy/high-stakes advice, live/current data, web/GBIF/API requests, unsupported causal or predictive claims.
@@ -59,7 +73,7 @@ Rules:
 
 Return ONLY JSON with this exact schema:
 {
-  "route": "text_rag|score_table|map_raster|refusal",
+  "route": "text_rag|workflow_rag|score_table|map_raster|refusal",
   "refusalReason": "no_evidence|out_of_scope|policy_restricted|live_data_not_allowed|unsupported_causal_claim|null",
   "confidence": 0.0,
   "explanation": "short reason"
@@ -128,6 +142,18 @@ def refusal_answer(refusal_reason: str | None) -> str:
             "The matching frozen evidence is missing required readiness metadata "
             "or has a closed readiness gate."
         ),
+        "insufficient_evidence": (
+            "The controlled retrieval workflow did not find enough strong or "
+            "moderate evidence to answer."
+        ),
+        "retrieval_contract_unavailable": (
+            "The controlled retrieval workflow is not available to this backend "
+            "runtime."
+        ),
+        "retrieval_contract_failed": (
+            "The controlled retrieval workflow did not return a usable retrieval "
+            "and source-assessment contract."
+        ),
         "export_gate_required": (
             "I cannot export, archive, attach, or bundle evidence from this route "
             "without a separate approved export gate."
@@ -177,6 +203,13 @@ def heuristic_decision(question: str) -> RouterDecision | None:
             refusal_reason=None,
             confidence=0.98,
             explanation="Heuristic route for The Hague crown surface area question.",
+        )
+    if WORKFLOW_BASELINE_RE.search(question):
+        return RouterDecision(
+            route="workflow_rag",
+            refusal_reason=None,
+            confidence=0.86,
+            explanation="Heuristic route for combined student-baseline retrieval.",
         )
     return None
 

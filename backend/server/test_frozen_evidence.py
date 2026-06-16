@@ -114,6 +114,14 @@ class FrozenEvidenceTests(unittest.TestCase):
         self.assertTrue(result.refused)
         self.assertEqual(result.refusal_reason, "no_approved_evidence")
 
+    def test_workflow_rag_route_is_gated_by_retrieval_contract(self):
+        manifest = FrozenEvidenceIndex([])
+
+        result = manifest.gate_route("workflow_rag")
+
+        self.assertFalse(result.refused)
+        self.assertEqual(result.evidence_family, "student_combined_baseline")
+
     def test_valid_route_returns_manifest_id(self):
         manifest = FrozenEvidenceIndex([row(path="/allowed/root/table.csv")])
 

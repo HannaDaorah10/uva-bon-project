@@ -35,6 +35,20 @@ class RouterClassifierTests(unittest.TestCase):
         self.assertIsNone(decision.refusal_reason)
         self.assertEqual(decision.confidence, 0.84)
 
+    def test_parse_workflow_rag_route(self):
+        decision = parse_router_decision(
+            {
+                "route": "workflow_rag",
+                "refusalReason": None,
+                "confidence": 0.72,
+                "explanation": "The question asks for controlled baseline evidence.",
+            }
+        )
+
+        self.assertEqual(decision.route, "workflow_rag")
+        self.assertFalse(decision.refused)
+        self.assertIsNone(decision.refusal_reason)
+
     def test_parse_refusal_defaults_unknown_reason(self):
         decision = parse_router_decision(
             {
@@ -88,6 +102,15 @@ class RouterClassifierTests(unittest.TestCase):
 
         self.assertFalse(model.called)
         self.assertEqual(decision.route, "score_table")
+
+    def test_iucn_baseline_question_routes_to_workflow_without_model(self):
+        with mock.patch("router_classifier._call_ollama") as model:
+            decision = classify_question(
+                "Which IUCN resolutions address indigenous peoples and protected areas?"
+            )
+
+        self.assertFalse(model.called)
+        self.assertEqual(decision.route, "workflow_rag")
 
     def test_classifier_uses_mocked_model_payload(self):
         with mock.patch(
