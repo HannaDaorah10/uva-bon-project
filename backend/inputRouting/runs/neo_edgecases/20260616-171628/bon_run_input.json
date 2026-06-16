@@ -1,0 +1,12 @@
+{
+  "data>queryNeoSignalEyes.yml@0|mode": "tiny_aoi",
+  "data>queryNeoSignalEyes.yml@0|entities": [
+    "crown",
+    "centerpoint"
+  ],
+  "data>queryNeoSignalEyes.yml@0|output_root": "/sources/commercial_internal/neo_signaleyes/den_haag_2026-06-15",
+  "data>queryNeoSignalEyes.yml@0|max_pages": 1,
+  "data>queryNeoSignalEyes.yml@0|admin_unit_level": "buurt",
+  "data>queryNeoSignalEyes.yml@0|admin_unit_preset": "BU05180271",
+  "data>queryNeoSignalEyes.yml@0|metric_theme": "all_metric_themes"
+}

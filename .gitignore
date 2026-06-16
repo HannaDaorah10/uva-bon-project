@@ -64,8 +64,6 @@ tmp/
 temp/
 .cache/
 
-# Project-generated workflow runs
-/backend/inputRouting/runs/
 
 # Jupyter / notebooks
 .ipynb_checkpoints/

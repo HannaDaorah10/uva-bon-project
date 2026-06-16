@@ -1,0 +1,23 @@
+{
+  "mode": "tiny_aoi",
+  "entities": [
+    {
+      "entity": "crown",
+      "mode": "tiny_aoi",
+      "geo_type": "polygon",
+      "total_pages_reported": 1,
+      "pages_retrieved": 1,
+      "feature_count": 6,
+      "schema_path": "/sources/commercial_internal/neo_signaleyes/den_haag_2026-06-15/schemas/crown_tiny_aoi_schema.json"
+    },
+    {
+      "entity": "centerpoint",
+      "mode": "tiny_aoi",
+      "geo_type": "centroid",
+      "total_pages_reported": 1,
+      "pages_retrieved": 1,
+      "feature_count": 6,
+      "schema_path": "/sources/commercial_internal/neo_signaleyes/den_haag_2026-06-15/schemas/centerpoint_tiny_aoi_schema.json"
+    }
+  ]
+}

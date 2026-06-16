@@ -1,0 +1,122 @@
+{
+  "schema": "naturedesk.neo_signaleyes_boombasis.pipeline41.provenance.v1",
+  "created_at_utc": "2026-06-16T15:16:26Z",
+  "pipeline_id": 41,
+  "source": "NEO SignalEyes / Boombasis",
+  "canonical_role": "NEO SignalEyes / Boombasis is a high-quality licensed comparator, operational benchmark, and reference dataset for tree-object, crown, centerpoint, crown-area, diameter, height, method/date/quality/source, and related tree-attribute comparison.",
+  "wording_lock": "/home/hans/.openclaw/workspace/team_comms/NEO_REFERENCE_BENCHMARK_WORDING_LOCK_2026-06-15.md",
+  "scope": "non_commercial_use_allowed_student_public_client_policy_production_external_ready; student_ready_non_commercial_no_fee_data; no fee may be charged for the NEO data",
+  "labels": [
+    "non_commercial_use_allowed_student_public_client_policy_production_external_ready",
+    "student_ready_non_commercial_no_fee_data"
+  ],
+  "selector_context": {
+    "admin_unit_level": "wijk",
+    "admin_unit_preset": "WK051807",
+    "metric_theme": "all_metric_themes",
+    "note": "Selector context is recorded for downstream comparison/explanation only; it does not alter the protected NEO retrieval AOI or source-rights boundary."
+  },
+  "credential_handling": "OpenClaw vault naturedesk.neoSignalEyes.env; credentials not written to artifacts",
+  "results": {
+    "mode": "tiny_aoi",
+    "entities": [
+      {
+        "mode": "tiny_aoi",
+        "entity": "crown",
+        "endpoint": "/source/tree/crown",
+        "geo_type": "polygon",
+        "request_params_without_credentials": {
+          "sample": 1,
+          "simplify": 0,
+          "geo_type": "polygon"
+        },
+        "aoi": {
+          "wkt_sha256": "91bcb04d9a8b94dbea34dca92469120a2774f45c4cb2e3e2bc2d7cc7ac4aa18e",
+          "epsg": 4326,
+          "source": "inline tiny AOI fixture",
+          "target_crs": "EPSG:4326"
+        },
+        "total_pages_reported": 1,
+        "pages_retrieved": 1,
+        "feature_count": 6,
+        "schema_path": "/sources/commercial_internal/neo_signaleyes/den_haag_2026-06-15/schemas/crown_tiny_aoi_schema.json",
+        "schema_sha256": "80a1ea34810a2cfdba57aad0b1ed075329b6c11d20fc1710a839fa45edcd2d9d",
+        "pages": [
+          {
+            "page": 1,
+            "status_code": 200,
+            "content_type": "application/json",
+            "headers": {
+              "x-total-pages": "1",
+              "x-page-number": "1"
+            },
+            "request_params": {
+              "sample": 1,
+              "simplify": 0,
+              "geo_type": "polygon",
+              "page": 1
+            },
+            "feature_count": 6,
+            "output_path": "/sources/commercial_internal/neo_signaleyes/den_haag_2026-06-15/raw/tiny_aoi/crown/crown_tiny_aoi_page_00001.geojson",
+            "bytes": 13811,
+            "sha256": "a8b7e36b4034bf17caeb4267054c07537c6946934baf8f0094a1794c7d9a259d"
+          }
+        ]
+      },
+      {
+        "mode": "tiny_aoi",
+        "entity": "centerpoint",
+        "endpoint": "/source/tree/centerpoint",
+        "geo_type": "centroid",
+        "request_params_without_credentials": {
+          "sample": 1,
+          "simplify": 0,
+          "geo_type": "centroid"
+        },
+        "aoi": {
+          "wkt_sha256": "91bcb04d9a8b94dbea34dca92469120a2774f45c4cb2e3e2bc2d7cc7ac4aa18e",
+          "epsg": 4326,
+          "source": "inline tiny AOI fixture",
+          "target_crs": "EPSG:4326"
+        },
+        "total_pages_reported": 1,
+        "pages_retrieved": 1,
+        "feature_count": 6,
+        "schema_path": "/sources/commercial_internal/neo_signaleyes/den_haag_2026-06-15/schemas/centerpoint_tiny_aoi_schema.json",
+        "schema_sha256": "19dd502c8eae8cd92a5c75c99e50ee4580cc7cfddb8f7e58bba635f6fabd6f60",
+        "pages": [
+          {
+            "page": 1,
+            "status_code": 200,
+            "content_type": "application/json",
+            "headers": {
+              "x-total-pages": "1",
+              "x-page-number": "1"
+            },
+            "request_params": {
+              "sample": 1,
+              "simplify": 0,
+              "geo_type": "centroid",
+              "page": 1
+            },
+            "feature_count": 6,
+            "output_path": "/sources/commercial_internal/neo_signaleyes/den_haag_2026-06-15/raw/tiny_aoi/centerpoint/centerpoint_tiny_aoi_page_00001.geojson",
+            "bytes": 2885,
+            "sha256": "6902fc7361c6725313b0e9dd1c2c30652b2109bf099567a98083f39b0e908716"
+          }
+        ]
+      }
+    ]
+  },
+  "non_actions": {
+    "credentials_printed": false,
+    "credential_exposure": false,
+    "charged_for_neo_data": false,
+    "commercial_service_product_exploitation_or_integration": false,
+    "external_llm_or_model_training": false,
+    "validation_or_official_claim": false,
+    "unqualified_ground_truth_claim": false,
+    "proof_claim": false,
+    "official_alignment_or_municipal_groenmonitor_equivalence_claim": false
+  }
+}

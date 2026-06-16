@@ -1,0 +1,12 @@
+{
+  "pipeline": "neo",
+  "mode": "full_city",
+  "entities": [
+    "crown",
+    "centerpoint"
+  ],
+  "max_pages": null,
+  "admin_unit_level": "gm0518",
+  "admin_unit_preset": "GM0518",
+  "metric_theme": "all_metric_themes"
+}
