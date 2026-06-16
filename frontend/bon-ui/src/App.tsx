@@ -1,5 +1,5 @@
-import { useRef, useState } from "react";
-import type { FormEvent } from "react";
+import { useEffect, useRef, useState } from "react";
+import type { ChangeEvent, FormEvent } from "react";
 import "./App.css";
 
 /* ------------------------------------------------------------------ */
@@ -212,12 +212,54 @@ function readinessLabel(raw: BackendCitation): string | undefined {
 }
 
 /* ------------------------------------------------------------------ */
+/* Frontend-only controls (NOT wired to the backend yet)               */
+/* These two pieces of state stay in the browser. Switching the model  */
+/* or attaching a file does not change what the desk actually queries. */
+/* ------------------------------------------------------------------ */
+
+type ModelOption = {
+  id: string; // ollama-style tag shown verbatim
+  name: string;
+  params: string;
+  note: string;
+};
+
+const MODEL_OPTIONS: ModelOption[] = [
+  { id: "qwen3.5:7b", name: "Qwen 3.5", params: "7B", note: "Default · balanced speed & quality" },
+  { id: "qwen3.5:14b", name: "Qwen 3.5", params: "14B", note: "Sharper reasoning, slower" },
+  { id: "llama3.1:8b", name: "Llama 3.1", params: "8B", note: "General purpose" },
+  { id: "mistral:7b", name: "Mistral", params: "7B", note: "Fast & compact" },
+  { id: "gemma2:9b", name: "Gemma 2", params: "9B", note: "Strong summarisation" },
+  { id: "phi3:mini", name: "Phi-3 Mini", params: "3.8B", note: "Lightweight, low memory" },
+];
+
+const DEFAULT_MODEL = "qwen3.5:7b";
+
+const UPLOAD_ACCEPT = ".csv,.json,.geojson,.xlsx,.xls,.txt,.pdf,.tif,.tiff,.zip";
+
+function formatBytes(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`;
+  const units = ["KB", "MB", "GB"];
+  let value = bytes / 1024;
+  let unit = 0;
+  while (value >= 1024 && unit < units.length - 1) {
+    value /= 1024;
+    unit += 1;
+  }
+  return `${value.toFixed(value >= 10 ? 0 : 1)} ${units[unit]}`;
+}
+
+/* ------------------------------------------------------------------ */
 
 function App() {
   const [question, setQuestion] = useState("");
   const [status, setStatus] = useState<Status>("idle");
   const [response, setResponse] = useState<SynthesisResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  // frontend-only: not sent to the backend yet
+  const [model, setModel] = useState(DEFAULT_MODEL);
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
 
   async function runQuery(q: string) {
     const trimmed = q.trim();
@@ -245,14 +287,9 @@ function App() {
 
   return (
     <main className="app-shell">
-      {/* decorative, non-interactive background layers */}
-      <div className="aurora" aria-hidden="true">
-        <span className="aurora-blob blob-1" />
-        <span className="aurora-blob blob-2" />
-        <span className="aurora-blob blob-3" />
-      </div>
+      {/* crisp, static field-survey backdrop — topographic contour lines */}
+      <div className="topo" aria-hidden="true" />
       <div className="grain" aria-hidden="true" />
-      <FloatingLeaves />
 
       <nav className="topbar">
         <span className="wordmark">
@@ -261,7 +298,10 @@ function App() {
           </span>
           <span className="name">NatureDesk</span>
         </span>
-        <span className="scope-pill">biodiversity evidence</span>
+        <div className="toolbar">
+          <ModelMenu model={model} onChange={setModel} />
+          <UploadControl file={uploadedFile} onChange={setUploadedFile} />
+        </div>
       </nav>
 
       <div className="workspace">
@@ -307,22 +347,166 @@ function App() {
           </p>
         </form>
 
+        {uploadedFile && (
+          <div className="data-notice" role="status">
+            <span className="data-notice-icon" aria-hidden="true">
+              <UploadIcon />
+            </span>
+            <div className="data-notice-body">
+              <p className="data-notice-title">
+                Your data attached &middot; <strong>{uploadedFile.name}</strong>
+              </p>
+              <p className="data-notice-sub">
+                {formatBytes(uploadedFile.size)} &middot; not connected to the backend
+                yet, so the desk still answers from its approved corpus.
+              </p>
+            </div>
+            <button
+              type="button"
+              className="data-notice-clear"
+              onClick={() => setUploadedFile(null)}
+              aria-label="Remove uploaded data"
+            >
+              <CloseIcon />
+            </button>
+          </div>
+        )}
+
         <OutputPanel status={status} response={response} error={error} />
       </div>
     </main>
   );
 }
 
-/* Soft, slow-drifting leaves in the background. Purely decorative. */
-function FloatingLeaves() {
+/* ------------------------------------------------------------------ */
+/* Local-model menu (frontend-only)                                    */
+/* ------------------------------------------------------------------ */
+
+function ModelMenu({
+  model,
+  onChange,
+}: {
+  model: string;
+  onChange: (id: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const current = MODEL_OPTIONS.find((m) => m.id === model) ?? MODEL_OPTIONS[0];
+
+  useEffect(() => {
+    if (!open) return;
+    function onPointer(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    }
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") setOpen(false);
+    }
+    document.addEventListener("mousedown", onPointer);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onPointer);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
+
   return (
-    <div className="leaves" aria-hidden="true">
-      {[0, 1, 2, 3, 4].map((i) => (
-        <span key={i} className={`drift-leaf leaf-${i}`}>
-          <LeafIcon />
+    <div className="model-menu" ref={ref}>
+      <button
+        type="button"
+        className={`model-trigger${open ? " is-open" : ""}`}
+        onClick={() => setOpen((v) => !v)}
+        aria-haspopup="menu"
+        aria-expanded={open}
+      >
+        <ChipIcon />
+        <span className="model-trigger-text">
+          <span className="model-trigger-label">Model</span>
+          <span className="model-trigger-id">{current.id}</span>
         </span>
-      ))}
+        <ChevronIcon />
+      </button>
+
+      {open && (
+        <div className="model-pop" role="menu">
+          <p className="model-pop-head">Local model &middot; runs on Spark</p>
+          <ul className="model-list">
+            {MODEL_OPTIONS.map((m) => (
+              <li key={m.id}>
+                <button
+                  type="button"
+                  role="menuitemradio"
+                  aria-checked={m.id === model}
+                  className={`model-option${m.id === model ? " is-active" : ""}`}
+                  onClick={() => {
+                    onChange(m.id);
+                    setOpen(false);
+                  }}
+                >
+                  <span className="model-option-main">
+                    <span className="model-option-name">
+                      {m.name}
+                      <span className="model-option-params">{m.params}</span>
+                      {m.id === DEFAULT_MODEL && (
+                        <span className="model-option-default">standard</span>
+                      )}
+                    </span>
+                    <span className="model-option-id">{m.id}</span>
+                    <span className="model-option-note">{m.note}</span>
+                  </span>
+                  {m.id === model && (
+                    <span className="model-option-check" aria-hidden="true">
+                      <CheckIcon />
+                    </span>
+                  )}
+                </button>
+              </li>
+            ))}
+          </ul>
+          <p className="model-pop-foot">Selection is local only — not wired to the backend yet.</p>
+        </div>
+      )}
     </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* Upload-your-own-data control (frontend-only)                        */
+/* ------------------------------------------------------------------ */
+
+function UploadControl({
+  file,
+  onChange,
+}: {
+  file: File | null;
+  onChange: (file: File | null) => void;
+}) {
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  function handleFile(e: ChangeEvent<HTMLInputElement>) {
+    const picked = e.target.files?.[0] ?? null;
+    onChange(picked);
+    // reset so picking the same file again still fires onChange
+    e.target.value = "";
+  }
+
+  return (
+    <>
+      <input
+        ref={inputRef}
+        type="file"
+        accept={UPLOAD_ACCEPT}
+        onChange={handleFile}
+        hidden
+      />
+      <button
+        type="button"
+        className={`upload-btn${file ? " has-file" : ""}`}
+        onClick={() => inputRef.current?.click()}
+      >
+        <UploadIcon />
+        <span>{file ? "Replace data" : "Upload data"}</span>
+      </button>
+    </>
   );
 }
 
@@ -441,42 +625,109 @@ function OutputPanel({
 
 /* ------------------------------------------------------------------ */
 
+type AnswerTab = "answer" | "sources" | "trace";
+
 function AnswerView({
   response,
 }: {
   response: Extract<SynthesisResponse, { refused: false }>;
 }) {
+  const [tab, setTab] = useState<AnswerTab>("answer");
+  const [copied, setCopied] = useState(false);
   const cardRefs = useRef<Record<string, HTMLLIElement | null>>({});
+  const pendingFocus = useRef<string | null>(null);
 
-  function focusSource(id: string) {
+  const count = response.citations.length;
+  const hasTrace = response.citations.some(
+    (c) => c.locator || c.traceLabel || c.readinessLabel,
+  );
+
+  // A citation chip lives only on the Answer tab, so clicking one always
+  // switches to Sources. Once that tab renders, scroll to and flash the
+  // matching card. (Target id is held in a ref to avoid a re-render here.)
+  useEffect(() => {
+    if (tab !== "sources") return;
+    const id = pendingFocus.current;
+    pendingFocus.current = null;
+    if (!id) return;
     const el = cardRefs.current[id];
     if (!el) return;
     el.scrollIntoView({ behavior: "smooth", block: "center" });
     el.classList.remove("is-flash");
     void el.offsetWidth; // restart the flash animation
     el.classList.add("is-flash");
+  }, [tab]);
+
+  function focusSource(id: string) {
+    pendingFocus.current = id;
+    setTab("sources");
   }
+
+  function copyAnswer() {
+    void navigator.clipboard?.writeText(response.answer).then(() => {
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1600);
+    });
+  }
+
+  const tabs: { id: AnswerTab; label: string; badge?: number }[] = [
+    { id: "answer", label: "Answer" },
+    { id: "sources", label: "Sources", badge: count },
+    { id: "trace", label: "Trace" },
+  ];
 
   return (
     <section className="output-panel" aria-live="polite" aria-atomic>
-      <div className="panel-head">
+      <div className="panel-head panel-head--tabs">
+        <div className="tabbar" role="tablist" aria-label="Answer views">
+          {tabs.map((t) => (
+            <button
+              key={t.id}
+              type="button"
+              role="tab"
+              id={`tab-${t.id}`}
+              aria-selected={tab === t.id}
+              aria-controls={`panel-${t.id}`}
+              className={`tab${tab === t.id ? " is-active" : ""}`}
+              onClick={() => setTab(t.id)}
+            >
+              {t.label}
+              {typeof t.badge === "number" && <span className="tab-badge">{t.badge}</span>}
+            </button>
+          ))}
+        </div>
         <span className="grounded">
           <CheckIcon />
-          Grounded in {response.citations.length}{" "}
-          {response.citations.length === 1 ? "source" : "sources"}
+          {count} {count === 1 ? "source" : "sources"}
         </span>
       </div>
-      <div className="panel-body">
-        <p className="answer-text">
-          <AnswerText text={response.answer} onCite={focusSource} />
-        </p>
 
-        {response.citations.length > 0 && (
-          <div className="sources">
-            <div className="sources-head">
-              <h3>Sources</h3>
-              <span className="count">traceable evidence</span>
-            </div>
+      {tab === "answer" && (
+        <div className="panel-body" role="tabpanel" id="panel-answer" aria-labelledby="tab-answer">
+          <div className="answer-head">
+            <span className="answer-kicker">Short answer</span>
+            <button type="button" className="copy-btn" onClick={copyAnswer}>
+              {copied ? <CheckIcon /> : <CopyIcon />}
+              {copied ? "Copied" : "Copy"}
+            </button>
+          </div>
+          <p className="answer-text">
+            <AnswerText text={response.answer} onCite={focusSource} />
+          </p>
+          {count > 0 && (
+            <p className="answer-foot">
+              Numbers like <span className="cite-ref cite-ref--demo">1</span> link to the
+              evidence — open the <button type="button" className="inline-link" onClick={() => setTab("sources")}>Sources</button> tab.
+            </p>
+          )}
+        </div>
+      )}
+
+      {tab === "sources" && (
+        <div className="panel-body" role="tabpanel" id="panel-sources" aria-labelledby="tab-sources">
+          {count === 0 ? (
+            <p className="empty-note">No sources were attached to this answer.</p>
+          ) : (
             <ol className="source-list">
               {response.citations.map((c) => (
                 <li
@@ -493,9 +744,6 @@ function AnswerView({
                     <div className="source-meta">
                       <span className="pub">{c.source}</span>
                       {c.artifactType && <ArtifactBadge type={c.artifactType} />}
-                      {c.locator && <span className="source-locator">{c.locator}</span>}
-                      {c.traceLabel && <span className="source-locator">{c.traceLabel}</span>}
-                      {c.readinessLabel && <span className="source-locator">{c.readinessLabel}</span>}
                     </div>
                     {c.excerpt && <p className="source-excerpt">{c.excerpt}</p>}
                     {c.url && (
@@ -512,9 +760,50 @@ function AnswerView({
                 </li>
               ))}
             </ol>
-          </div>
-        )}
-      </div>
+          )}
+        </div>
+      )}
+
+      {tab === "trace" && (
+        <div className="panel-body" role="tabpanel" id="panel-trace" aria-labelledby="tab-trace">
+          <p className="trace-intro">
+            Retrieval detail behind each source — locators, relevance and readiness
+            as returned by the desk.
+          </p>
+          {!hasTrace ? (
+            <p className="empty-note">No retrieval trace was returned for this answer.</p>
+          ) : (
+            <ul className="trace-list">
+              {response.citations.map((c) => (
+                <li key={c.id} className="trace-row">
+                  <span className="source-num">{c.id}</span>
+                  <div className="trace-fields">
+                    <p className="trace-title">{c.title}</p>
+                    {c.locator && (
+                      <div className="trace-field">
+                        <span className="trace-key">Locator</span>
+                        <span className="trace-val">{c.locator}</span>
+                      </div>
+                    )}
+                    {c.traceLabel && (
+                      <div className="trace-field">
+                        <span className="trace-key">Trace</span>
+                        <span className="trace-val">{c.traceLabel}</span>
+                      </div>
+                    )}
+                    {c.readinessLabel && (
+                      <div className="trace-field">
+                        <span className="trace-key">Readiness</span>
+                        <span className="trace-val">{c.readinessLabel}</span>
+                      </div>
+                    )}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
     </section>
   );
 }
@@ -652,6 +941,54 @@ function MapIcon() {
     <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
       <path d="M9 4 4 6v14l5-2 6 2 5-2V4l-5 2-6-2Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
       <path d="M9 4v14M15 6v14" stroke="currentColor" strokeWidth="1.5" />
+    </svg>
+  );
+}
+
+function ChipIcon() {
+  return (
+    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" aria-hidden="true">
+      <rect x="7" y="7" width="10" height="10" rx="2" stroke="currentColor" strokeWidth="1.6" />
+      <path
+        d="M10 7V4M14 7V4M10 20v-3M14 20v-3M7 10H4M7 14H4M20 10h-3M20 14h-3"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+function ChevronIcon() {
+  return (
+    <svg className="chevron" viewBox="0 0 24 24" width="14" height="14" fill="none" aria-hidden="true">
+      <path d="m6 9 6 6 6-6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function UploadIcon() {
+  return (
+    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" aria-hidden="true">
+      <path d="M12 16V4m0 0L7 9m5-5 5 5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M5 16v2a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-2" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function CloseIcon() {
+  return (
+    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" aria-hidden="true">
+      <path d="m6 6 12 12M18 6 6 18" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function CopyIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <rect x="9" y="9" width="11" height="11" rx="2" stroke="currentColor" strokeWidth="1.6" />
+      <path d="M5 15V5a2 2 0 0 1 2-2h8" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
     </svg>
   );
 }
