@@ -735,6 +735,8 @@ input {
 
 .panel-body {
   padding: 22px;
+  /* inherited safety net: long ids/paths/code wrap instead of overflowing */
+  overflow-wrap: anywhere;
 }
 
 /* answer tab */
@@ -781,13 +783,17 @@ input {
 .answer-text {
   display: grid;
   gap: 14px;
+  min-width: 0;
 }
 
 .answer-para {
   margin: 0;
+  min-width: 0;
   font-size: 1.06rem;
   line-height: 1.7;
   color: var(--ink);
+  /* break long identifiers/paths so they wrap instead of overflowing */
+  overflow-wrap: anywhere;
 }
 
 /* the lead paragraph (intro + first source) reads as the headline claim */
@@ -804,6 +810,8 @@ input {
   font-family: ui-monospace, "SF Mono", Menlo, monospace;
   font-size: 0.86em;
   color: var(--evergreen-deep);
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .answer-foot {
@@ -888,6 +896,7 @@ input {
   font-size: 0.88rem;
   line-height: 1.6;
   color: var(--ink-soft);
+  overflow-wrap: anywhere;
 }
 
 .inline-link {
@@ -980,11 +989,16 @@ input {
   font-weight: 700;
 }
 
+.source-main {
+  min-width: 0;
+}
+
 .source-main .source-title {
   margin: 0;
   font-size: 0.97rem;
   font-weight: 600;
   line-height: 1.35;
+  overflow-wrap: anywhere;
 }
 
 .source-meta {
@@ -995,6 +1009,11 @@ input {
   margin-top: 7px;
   font-size: 0.82rem;
   color: var(--ink-soft);
+}
+
+.source-meta .pub {
+  overflow-wrap: anywhere;
+  min-width: 0;
 }
 
 .source-excerpt {
@@ -1101,6 +1120,7 @@ input {
   margin: 0 0 2px;
   font-size: 0.92rem;
   font-weight: 600;
+  overflow-wrap: anywhere;
 }
 
 .trace-field {
