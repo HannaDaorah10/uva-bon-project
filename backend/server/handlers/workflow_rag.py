@@ -14,6 +14,7 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
+from urllib import error, request
 
 from frozen_evidence import EvidenceGateResult
 from handlers import HandlerResponse, safe_refusal
@@ -24,6 +25,10 @@ DEFAULT_WORKFLOW_PATH = "/home/hans/.openclaw/workspace/tools/diver_curator_work
 DEFAULT_NAMESPACE = "student_combined_baseline"
 DEFAULT_TOP_K = 5
 DEFAULT_TIMEOUT_SECONDS = 75
+QUERY_UNDERSTANDING_OLLAMA_URL = "http://127.0.0.1:11434/api/generate"
+QUERY_UNDERSTANDING_OLLAMA_MODEL = "qwen2.5:7b"
+QUERY_UNDERSTANDING_TIMEOUT_SECONDS = 8
+QUERY_UNDERSTANDING_MIN_CONFIDENCE = 0.65
 NEO_NAMESPACE = "neo_den_haag_student_baseline"
 NEO_TOP_K = 8
 NEO_QUERY_TERMS = ("neo", "signaleyes", "signal eyes", "boombasis")
@@ -60,6 +65,8 @@ INVENTORY_TERMS = {
     "information",
     "know",
     "material",
+    "file",
+    "files",
     "overview",
     "records",
     "source",
@@ -101,6 +108,24 @@ NARROW_REQUEST_TERMS = {
     "restart",
     "validated",
 }
+LLM_UNDERSTANDING_BLOCK_TERMS = {
+    "current",
+    "live",
+    "mayor",
+    "policy",
+    "safe",
+    "safety",
+    "today",
+    "weather",
+}
+LLM_AMBIGUOUS_INVENTORY_TERMS = {
+    "hebben",
+    "heeft",
+    "lokaal",
+    "over",
+    "re",
+    "wat",
+}
 USABLE_RELEVANCE_LABELS = {"strong", "moderate", "usable", "partial"}
 INTERNAL_ALLOWED_USES = {
     "internal_student_prototype_retrieval_assessment",
@@ -115,6 +140,38 @@ class QueryUnderstanding:
     intent: str
     place_key: str | None
     canonical_query: str | None = None
+
+
+class QueryUnderstandingError(RuntimeError):
+    """Raised when local query-understanding output is unavailable or invalid."""
+
+
+QUERY_UNDERSTANDING_SYSTEM_PROMPT = """
+You are a local NatureDesk query-understanding component.
+
+Task: classify whether a user is asking what approved local evidence holdings
+exist for a known place. Do not answer the question. Do not retrieve evidence.
+Do not write citations. Do not create a custom search query.
+
+Known place keys:
+- the_hague: The Hague, Den Haag, 's-Gravenhage, gemeente Den Haag, GM0518
+
+Return ONLY JSON with this exact schema:
+{
+  "intent": "place_inventory|literal_retrieval",
+  "placeKey": "the_hague|null",
+  "confidence": 0.0,
+  "reason": "short reason"
+}
+
+Rules:
+- Use place_inventory only for broad questions asking what information, data,
+  evidence, files, records, sources, holdings, or material NatureDesk has about
+  the known place.
+- Use literal_retrieval for weather, mayor, safety, legal, policy, live/current,
+  exact metric, proof, official-validation, export, restart, or action requests.
+- The JSON is only an intent hint. It is not evidence.
+""".strip()
 
 
 def handle_workflow_rag(question: str, gate: EvidenceGateResult) -> HandlerResponse:
@@ -244,6 +301,14 @@ def retrieval_questions_for_user_question(question: str) -> list[str]:
 
 
 def understand_user_question(question: str) -> QueryUnderstanding:
+    deterministic = understand_user_question_deterministic(question)
+    if deterministic.canonical_query:
+        return deterministic
+    llm_understanding = understand_user_question_with_local_llm(question, deterministic)
+    return llm_understanding or deterministic
+
+
+def understand_user_question_deterministic(question: str) -> QueryUnderstanding:
     place_key = detect_place_key(question)
     if place_key and looks_like_place_inventory_request(question, place_key):
         return QueryUnderstanding(
@@ -252,6 +317,107 @@ def understand_user_question(question: str) -> QueryUnderstanding:
             canonical_query=PLACE_CANONICAL_QUERIES[place_key],
         )
     return QueryUnderstanding(intent="literal_retrieval", place_key=place_key)
+
+
+def understand_user_question_with_local_llm(
+    question: str,
+    deterministic: QueryUnderstanding,
+) -> QueryUnderstanding | None:
+    if os.environ.get("NATUREDESK_QUERY_UNDERSTANDING_LLM", "1").strip().lower() in {"0", "false", "no"}:
+        return None
+    if not should_try_local_llm_understanding(question, deterministic):
+        return None
+    try:
+        payload = call_query_understanding_llm(question)
+        return parse_query_understanding_payload(payload)
+    except Exception:
+        return None
+
+
+def should_try_local_llm_understanding(question: str, deterministic: QueryUnderstanding) -> bool:
+    if deterministic.place_key is None:
+        return False
+    terms = normalized_terms(question)
+    if terms & (NARROW_REQUEST_TERMS | LLM_UNDERSTANDING_BLOCK_TERMS):
+        return False
+    remaining = terms - place_terms(deterministic.place_key) - QUESTION_FILLER_TERMS - INVENTORY_TERMS
+    if remaining and not remaining <= LLM_AMBIGUOUS_INVENTORY_TERMS:
+        return False
+    return len(terms) >= 4
+
+
+def call_query_understanding_llm(question: str) -> dict[str, Any]:
+    url = os.environ.get("NATUREDESK_QUERY_UNDERSTANDING_OLLAMA_URL", QUERY_UNDERSTANDING_OLLAMA_URL)
+    model = os.environ.get("NATUREDESK_QUERY_UNDERSTANDING_MODEL", QUERY_UNDERSTANDING_OLLAMA_MODEL)
+    timeout_seconds = _int_from_env(
+        "NATUREDESK_QUERY_UNDERSTANDING_TIMEOUT_SECONDS",
+        QUERY_UNDERSTANDING_TIMEOUT_SECONDS,
+    )
+    prompt = f"{QUERY_UNDERSTANDING_SYSTEM_PROMPT}\n\nQuestion: {question}"
+    body = {
+        "model": model,
+        "prompt": prompt,
+        "stream": False,
+        "format": "json",
+        "options": {"temperature": 0},
+    }
+    req = request.Request(
+        url,
+        data=json.dumps(body).encode("utf-8"),
+        headers={"Content-Type": "application/json"},
+        method="POST",
+    )
+    try:
+        with request.urlopen(req, timeout=timeout_seconds) as response:
+            raw = json.loads(response.read().decode("utf-8"))
+    except (OSError, error.URLError, json.JSONDecodeError) as exc:
+        raise QueryUnderstandingError(str(exc)) from exc
+
+    model_text = raw.get("response")
+    if not isinstance(model_text, str):
+        raise QueryUnderstandingError("Ollama response did not include text")
+    return extract_json_object(model_text)
+
+
+def parse_query_understanding_payload(payload: dict[str, Any]) -> QueryUnderstanding | None:
+    intent = str(payload.get("intent", "")).strip().lower()
+    place_key = payload.get("placeKey", payload.get("place_key"))
+    place_key = None if place_key in {None, "null", ""} else str(place_key).strip().lower()
+    confidence = parse_confidence(payload.get("confidence"))
+
+    if intent != "place_inventory":
+        return None
+    if place_key not in PLACE_CANONICAL_QUERIES:
+        return None
+    if confidence < QUERY_UNDERSTANDING_MIN_CONFIDENCE:
+        return None
+    return QueryUnderstanding(
+        intent="place_inventory",
+        place_key=place_key,
+        canonical_query=PLACE_CANONICAL_QUERIES[place_key],
+    )
+
+
+def parse_confidence(value: Any) -> float:
+    try:
+        confidence = float(value)
+    except (TypeError, ValueError):
+        return 0.0
+    return max(0.0, min(1.0, confidence))
+
+
+def extract_json_object(text: str) -> dict[str, Any]:
+    try:
+        value = json.loads(text)
+    except json.JSONDecodeError:
+        start = text.find("{")
+        end = text.rfind("}")
+        if start == -1 or end == -1 or end < start:
+            raise QueryUnderstandingError("No JSON object found in query-understanding output")
+        value = json.loads(text[start : end + 1])
+    if not isinstance(value, dict):
+        raise QueryUnderstandingError("Query-understanding output was not a JSON object")
+    return value
 
 
 def detect_place_key(question: str) -> str | None:
@@ -266,9 +432,11 @@ def looks_like_place_inventory_request(question: str, place_key: str) -> bool:
     terms = normalized_terms(question)
     if terms & NARROW_REQUEST_TERMS:
         return False
-    if terms & INVENTORY_TERMS:
-        return True
     remaining = terms - place_terms(place_key) - QUESTION_FILLER_TERMS
+    if remaining and remaining <= INVENTORY_TERMS:
+        return True
+    if terms & INVENTORY_TERMS and not remaining:
+        return True
     return not remaining
 
 

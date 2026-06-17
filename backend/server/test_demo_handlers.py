@@ -14,6 +14,7 @@ from handlers.text_rag import handle_text_rag
 from handlers.workflow_rag import (
     THE_HAGUE_OVERVIEW_QUERY,
     handle_workflow_rag,
+    parse_query_understanding_payload,
     retrieval_question_for_user_question,
     retrieval_questions_for_user_question,
 )
@@ -310,6 +311,7 @@ class DemoHandlerSmokeTests(unittest.TestCase):
     def test_workflow_rag_understands_messy_the_hague_inventory_phrasings(self):
         questions = [
             "What info do you have of The Hague?",
+            "What information do you have of The Hague?",
             "Do we have anything on Den Haag?",
             "What have we got for GM0518?",
             "Tell me about available material for 's-Gravenhage",
@@ -321,6 +323,17 @@ class DemoHandlerSmokeTests(unittest.TestCase):
                     retrieval_question_for_user_question(question),
                     THE_HAGUE_OVERVIEW_QUERY,
                 )
+
+    def test_workflow_rag_treats_info_and_information_the_same(self):
+        info_plan = retrieval_questions_for_user_question("What info do you have of The Hague?")
+        information_plan = retrieval_questions_for_user_question(
+            "What information do you have of The Hague?"
+        )
+
+        self.assertEqual(info_plan[0], THE_HAGUE_OVERVIEW_QUERY)
+        self.assertEqual(information_plan[0], THE_HAGUE_OVERVIEW_QUERY)
+        self.assertEqual(len(info_plan), 2)
+        self.assertEqual(len(information_plan), 2)
 
     def test_workflow_rag_retrieval_plan_keeps_literal_fallback(self):
         questions = retrieval_questions_for_user_question("What info do you have of The Hague?")
@@ -338,6 +351,63 @@ class DemoHandlerSmokeTests(unittest.TestCase):
         for question in questions:
             with self.subTest(question=question):
                 self.assertEqual(retrieval_questions_for_user_question(question), [question])
+
+    def test_workflow_rag_keeps_narrow_den_haag_evidence_questions_literal(self):
+        question = "Find Kroonvolume Den Haag evidence about denominator caveats."
+
+        self.assertEqual(retrieval_questions_for_user_question(question), [question])
+
+    def test_workflow_rag_uses_local_llm_only_as_bounded_intent_fallback(self):
+        with mock.patch(
+            "handlers.workflow_rag.call_query_understanding_llm",
+            return_value={
+                "intent": "place_inventory",
+                "placeKey": "the_hague",
+                "confidence": 0.91,
+                "answer": "Ignored model answer.",
+                "canonicalQuery": "Ignored model query.",
+            },
+        ):
+            questions = retrieval_questions_for_user_question("Wat hebben we lokaal over Den Haag?")
+
+        self.assertEqual(questions[0], THE_HAGUE_OVERVIEW_QUERY)
+        self.assertEqual(questions[1], "Wat hebben we lokaal over Den Haag?")
+
+    def test_workflow_rag_ignores_local_llm_for_blocked_place_questions(self):
+        with mock.patch("handlers.workflow_rag.call_query_understanding_llm") as llm:
+            questions = retrieval_questions_for_user_question("Who is the mayor of The Hague today?")
+
+        self.assertFalse(llm.called)
+        self.assertEqual(questions, ["Who is the mayor of The Hague today?"])
+
+    def test_workflow_rag_falls_back_to_literal_when_local_llm_unavailable(self):
+        with mock.patch(
+            "handlers.workflow_rag.call_query_understanding_llm",
+            side_effect=RuntimeError("offline"),
+        ):
+            questions = retrieval_questions_for_user_question("Wat hebben we lokaal over Den Haag?")
+
+        self.assertEqual(questions, ["Wat hebben we lokaal over Den Haag?"])
+
+    def test_workflow_rag_rejects_unapproved_model_place_or_low_confidence(self):
+        self.assertIsNone(
+            parse_query_understanding_payload(
+                {
+                    "intent": "place_inventory",
+                    "placeKey": "rotterdam",
+                    "confidence": 0.99,
+                }
+            )
+        )
+        self.assertIsNone(
+            parse_query_understanding_payload(
+                {
+                    "intent": "place_inventory",
+                    "placeKey": "the_hague",
+                    "confidence": 0.2,
+                }
+            )
+        )
 
     def test_workflow_rag_falls_back_to_literal_question_after_weak_canonical_query(self):
         with mock.patch(
