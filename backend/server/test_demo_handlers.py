@@ -11,7 +11,12 @@ from handlers import HandlerResponse
 from handlers.map_raster import handle_map_raster
 from handlers.score_table_dynamic import handle_score_table
 from handlers.text_rag import handle_text_rag
-from handlers.workflow_rag import THE_HAGUE_OVERVIEW_QUERY, handle_workflow_rag
+from handlers.workflow_rag import (
+    THE_HAGUE_OVERVIEW_QUERY,
+    handle_workflow_rag,
+    retrieval_question_for_user_question,
+    retrieval_questions_for_user_question,
+)
 from router_classifier import RouterDecision
 
 try:
@@ -300,6 +305,69 @@ class DemoHandlerSmokeTests(unittest.TestCase):
             )
 
         self.assertFalse(result.refused)
+        workflow.assert_called_once_with(THE_HAGUE_OVERVIEW_QUERY)
+
+    def test_workflow_rag_understands_messy_the_hague_inventory_phrasings(self):
+        questions = [
+            "What info do you have of The Hague?",
+            "Do we have anything on Den Haag?",
+            "What have we got for GM0518?",
+            "Tell me about available material for 's-Gravenhage",
+        ]
+
+        for question in questions:
+            with self.subTest(question=question):
+                self.assertEqual(
+                    retrieval_question_for_user_question(question),
+                    THE_HAGUE_OVERVIEW_QUERY,
+                )
+
+    def test_workflow_rag_retrieval_plan_keeps_literal_fallback(self):
+        questions = retrieval_questions_for_user_question("What info do you have of The Hague?")
+
+        self.assertEqual(questions[0], THE_HAGUE_OVERVIEW_QUERY)
+        self.assertEqual(questions[1], "What info do you have of The Hague?")
+
+    def test_workflow_rag_keeps_unrelated_short_the_hague_questions_literal(self):
+        questions = [
+            "The Hague weather?",
+            "The Hague mayor?",
+            "Is The Hague safe?",
+        ]
+
+        for question in questions:
+            with self.subTest(question=question):
+                self.assertEqual(retrieval_questions_for_user_question(question), [question])
+
+    def test_workflow_rag_falls_back_to_literal_question_after_weak_canonical_query(self):
+        with mock.patch(
+            "handlers.workflow_rag.run_diver_curator_workflow",
+            side_effect=[
+                (workflow_payload(relevance_label="weak", sufficient=False), None),
+                (workflow_payload(), None),
+            ],
+        ) as workflow:
+            result = handle_workflow_rag(
+                "What info do you have of The Hague?",
+                workflow_gate(),
+            )
+
+        self.assertFalse(result.refused)
+        self.assertEqual(workflow.call_args_list[0].args[0], THE_HAGUE_OVERVIEW_QUERY)
+        self.assertEqual(workflow.call_args_list[1].args[0], "What info do you have of The Hague?")
+
+    def test_workflow_rag_does_not_fallback_after_contract_failure(self):
+        with mock.patch(
+            "handlers.workflow_rag.run_diver_curator_workflow",
+            return_value=(None, "workflow unavailable"),
+        ) as workflow:
+            result = handle_workflow_rag(
+                "What info do you have of The Hague?",
+                workflow_gate(),
+            )
+
+        self.assertTrue(result.refused)
+        self.assertEqual(result.refusal_reason, "retrieval_contract_unavailable")
         workflow.assert_called_once_with(THE_HAGUE_OVERVIEW_QUERY)
 
     def test_workflow_rag_refuses_weak_evidence(self):

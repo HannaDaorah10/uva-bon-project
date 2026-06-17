@@ -9,9 +9,9 @@ from __future__ import annotations
 
 import json
 import os
-import re
 import subprocess
 import sys
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
@@ -27,20 +27,80 @@ DEFAULT_TIMEOUT_SECONDS = 75
 NEO_NAMESPACE = "neo_den_haag_student_baseline"
 NEO_TOP_K = 8
 NEO_QUERY_TERMS = ("neo", "signaleyes", "signal eyes", "boombasis")
-THE_HAGUE_RE = re.compile(r"\b(the\s+hague|den\s+haag|'s-gravenhage|gm0518)\b", re.IGNORECASE)
-OVERVIEW_RE = re.compile(
-    r"\b("
-    r"what\s+(information|data|evidence)\s+.*\b(have|contain|available)|"
-    r"what\s+do\s+you\s+(know|have)|"
-    r"what\s+.*\b(information|data|evidence)\b|"
-    r"overview|summary|summarize|available"
-    r")\b",
-    re.IGNORECASE,
-)
 THE_HAGUE_OVERVIEW_QUERY = (
     "Den Haag The Hague Kroonvolume Groenmonitor NEO Boombasis urban biodiversity "
     "tree canopy evidence overview source holdings caveats"
 )
+PLACE_ALIASES = {
+    "the_hague": (
+        "the hague",
+        "den haag",
+        "'s-gravenhage",
+        "s-gravenhage",
+        "gemeente den haag",
+        "gm0518",
+    )
+}
+PLACE_CANONICAL_QUERIES = {
+    "the_hague": THE_HAGUE_OVERVIEW_QUERY,
+}
+INVENTORY_TERMS = {
+    "anything",
+    "available",
+    "contain",
+    "contains",
+    "data",
+    "docs",
+    "documents",
+    "evidence",
+    "have",
+    "hold",
+    "holdings",
+    "info",
+    "information",
+    "know",
+    "material",
+    "overview",
+    "records",
+    "source",
+    "sources",
+    "summarize",
+    "summary",
+    "tell",
+}
+QUESTION_FILLER_TERMS = {
+    "about",
+    "any",
+    "can",
+    "could",
+    "do",
+    "does",
+    "for",
+    "give",
+    "got",
+    "have",
+    "me",
+    "of",
+    "on",
+    "please",
+    "show",
+    "tell",
+    "the",
+    "there",
+    "to",
+    "we",
+    "what",
+    "which",
+    "you",
+}
+NARROW_REQUEST_TERMS = {
+    "area",
+    "export",
+    "official",
+    "proof",
+    "restart",
+    "validated",
+}
 USABLE_RELEVANCE_LABELS = {"strong", "moderate", "usable", "partial"}
 INTERNAL_ALLOWED_USES = {
     "internal_student_prototype_retrieval_assessment",
@@ -50,6 +110,13 @@ INTERNAL_ALLOWED_USES = {
 }
 
 
+@dataclass(frozen=True)
+class QueryUnderstanding:
+    intent: str
+    place_key: str | None
+    canonical_query: str | None = None
+
+
 def handle_workflow_rag(question: str, gate: EvidenceGateResult) -> HandlerResponse:
     if gate.refused:
         return safe_refusal(
@@ -57,7 +124,22 @@ def handle_workflow_rag(question: str, gate: EvidenceGateResult) -> HandlerRespo
             gate.answer or "The retrieval contract gate refused this request.",
         )
 
-    retrieval_question = retrieval_question_for_user_question(question)
+    fallback_refusal: HandlerResponse | None = None
+    for retrieval_question in retrieval_questions_for_user_question(question):
+        result = handle_single_retrieval_question(question, retrieval_question)
+        if not result.refused:
+            return result
+        fallback_refusal = result
+        if result.refusal_reason != "insufficient_evidence":
+            return result
+
+    return fallback_refusal or safe_refusal(
+        "insufficient_evidence",
+        "The controlled retrieval workflow did not find enough strong or moderate evidence.",
+    )
+
+
+def handle_single_retrieval_question(question: str, retrieval_question: str) -> HandlerResponse:
     payload, failure = run_diver_curator_workflow(retrieval_question)
     if failure is not None:
         return safe_refusal("retrieval_contract_unavailable", failure)
@@ -147,10 +229,80 @@ def run_diver_curator_workflow(question: str) -> tuple[dict[str, Any] | None, st
 
 
 def retrieval_question_for_user_question(question: str) -> str:
-    """Expand broad place-inventory questions into the approved evidence vocabulary."""
-    if THE_HAGUE_RE.search(question) and OVERVIEW_RE.search(question):
-        return THE_HAGUE_OVERVIEW_QUERY
-    return question
+    """Return the first canonical retrieval query for backward-compatible callers."""
+    return retrieval_questions_for_user_question(question)[0]
+
+
+def retrieval_questions_for_user_question(question: str) -> list[str]:
+    """Build a retrieval plan from understood intent instead of raw wording only."""
+    understanding = understand_user_question(question)
+    candidates: list[str] = []
+    if understanding.canonical_query:
+        candidates.append(understanding.canonical_query)
+    candidates.append(question)
+    return dedupe_preserving_order(candidates)
+
+
+def understand_user_question(question: str) -> QueryUnderstanding:
+    place_key = detect_place_key(question)
+    if place_key and looks_like_place_inventory_request(question, place_key):
+        return QueryUnderstanding(
+            intent="place_inventory",
+            place_key=place_key,
+            canonical_query=PLACE_CANONICAL_QUERIES[place_key],
+        )
+    return QueryUnderstanding(intent="literal_retrieval", place_key=place_key)
+
+
+def detect_place_key(question: str) -> str | None:
+    normalized = normalize_for_matching(question)
+    for place_key, aliases in PLACE_ALIASES.items():
+        if any(normalize_for_matching(alias) in normalized for alias in aliases):
+            return place_key
+    return None
+
+
+def looks_like_place_inventory_request(question: str, place_key: str) -> bool:
+    terms = normalized_terms(question)
+    if terms & NARROW_REQUEST_TERMS:
+        return False
+    if terms & INVENTORY_TERMS:
+        return True
+    remaining = terms - place_terms(place_key) - QUESTION_FILLER_TERMS
+    return not remaining
+
+
+def place_terms(place_key: str) -> set[str]:
+    terms: set[str] = set()
+    for alias in PLACE_ALIASES[place_key]:
+        terms.update(normalized_terms(alias))
+    return terms
+
+
+def normalized_terms(text: str) -> set[str]:
+    return {
+        part
+        for part in normalize_for_matching(text).split()
+        if len(part) > 1
+    }
+
+
+def normalize_for_matching(text: str) -> str:
+    cleaned = []
+    for char in text.lower():
+        cleaned.append(char if char.isalnum() else " ")
+    return " ".join("".join(cleaned).split())
+
+
+def dedupe_preserving_order(values: list[str]) -> list[str]:
+    seen: set[str] = set()
+    result: list[str] = []
+    for value in values:
+        normalized = value.strip()
+        if normalized and normalized not in seen:
+            seen.add(normalized)
+            result.append(normalized)
+    return result
 
 
 def namespace_for_question(question: str) -> str:

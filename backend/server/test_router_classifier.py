@@ -137,6 +137,13 @@ class RouterClassifierTests(unittest.TestCase):
         self.assertFalse(model.called)
         self.assertEqual(decision.route, "workflow_rag")
 
+    def test_messy_the_hague_inventory_question_routes_to_workflow_without_model(self):
+        with mock.patch("router_classifier._call_ollama") as model:
+            decision = classify_question("What info do you have of The Hague?")
+
+        self.assertFalse(model.called)
+        self.assertEqual(decision.route, "workflow_rag")
+
     def test_kroonvolume_map_question_routes_to_map_raster_without_model(self):
         with mock.patch("router_classifier._call_ollama") as model:
             decision = classify_question("Show the Kroonvolume Den Haag map raster pointer.")
