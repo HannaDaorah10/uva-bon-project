@@ -14,7 +14,19 @@ from urllib import error, request
 
 
 OLLAMA_URL = "http://127.0.0.1:11434/api/generate"
-OLLAMA_MODEL = "qwen2.5:7b"
+DEFAULT_LOCAL_LLM_MODEL = "qwen2.5:7b"
+ALLOWED_LOCAL_LLM_MODELS = frozenset(
+    {
+        DEFAULT_LOCAL_LLM_MODEL,
+        "qwen3.5:7b",
+        "qwen3.5:14b",
+        "llama3.1:8b",
+        "mistral:7b",
+        "gemma2:9b",
+        "phi3:mini",
+    }
+)
+OLLAMA_MODEL = DEFAULT_LOCAL_LLM_MODEL
 BACKEND_PIPELINE_NOT_CONNECTED = "backend_pipeline_not_connected"
 
 ROUTES = {"text_rag", "workflow_rag", "score_table", "map_raster", "refusal"}
@@ -56,6 +68,7 @@ REFUSAL_REASONS = {
     "insufficient_evidence",
     "retrieval_contract_unavailable",
     "retrieval_contract_failed",
+    "invalid_model",
 }
 
 ROUTER_SYSTEM_PROMPT = """
@@ -106,6 +119,19 @@ class RouterDecision:
 
 class RouterClassificationError(RuntimeError):
     """Raised when the local router model cannot provide a valid decision."""
+
+
+class InvalidLocalModelError(ValueError):
+    """Raised when a requested local model is outside the backend allowlist."""
+
+
+def validate_local_llm_model(model: str | None) -> str:
+    requested = (model or DEFAULT_LOCAL_LLM_MODEL).strip()
+    if not requested:
+        return DEFAULT_LOCAL_LLM_MODEL
+    if requested not in ALLOWED_LOCAL_LLM_MODELS:
+        raise InvalidLocalModelError(f"Local model is not allowed: {requested}")
+    return requested
 
 
 def refusal_answer(refusal_reason: str | None) -> str:
@@ -166,11 +192,15 @@ def refusal_answer(refusal_reason: str | None) -> str:
             "I cannot update, install, restart, mutate, or rerun services, "
             "databases, vectors, gates, or pipelines from this route."
         ),
+        "invalid_model": (
+            "The requested local model is not available through this backend's "
+            "safe allowlist."
+        ),
     }
     return answers.get(refusal_reason or "no_evidence", answers["no_evidence"])
 
 
-def classify_question(question: str) -> RouterDecision:
+def classify_question(question: str, model: str | None = None) -> RouterDecision:
     clean_question = question.strip()
     if not clean_question:
         return RouterDecision(
@@ -179,13 +209,22 @@ def classify_question(question: str) -> RouterDecision:
             confidence=1.0,
             explanation="The question is empty.",
         )
+    try:
+        selected_model = validate_local_llm_model(model)
+    except InvalidLocalModelError:
+        return RouterDecision(
+            route="refusal",
+            refusal_reason="invalid_model",
+            confidence=1.0,
+            explanation="Requested local model is outside the backend allowlist.",
+        )
 
     heuristic = heuristic_decision(clean_question)
     if heuristic is not None:
         return heuristic
 
     try:
-        payload = _call_ollama(clean_question)
+        payload = _call_ollama(clean_question, model=selected_model)
         return parse_router_decision(payload)
     except Exception as exc:
         return RouterDecision(
@@ -224,10 +263,11 @@ def heuristic_decision(question: str) -> RouterDecision | None:
     return None
 
 
-def _call_ollama(question: str) -> dict[str, Any]:
+def _call_ollama(question: str, model: str | None = None) -> dict[str, Any]:
+    selected_model = validate_local_llm_model(model)
     prompt = f"{ROUTER_SYSTEM_PROMPT}\n\nQuestion: {question}"
     body = {
-        "model": OLLAMA_MODEL,
+        "model": selected_model,
         "prompt": prompt,
         "stream": False,
         "format": "json",

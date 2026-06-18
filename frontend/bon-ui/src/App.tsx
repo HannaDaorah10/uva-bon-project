@@ -59,11 +59,11 @@ type Status = "idle" | "loading" | "answer" | "refusal" | "error";
 
 const ROUTER_ENDPOINT = "/api/query";
 
-async function fetchSynthesis(question: string): Promise<SynthesisResponse> {
+async function fetchSynthesis(question: string, model: string): Promise<SynthesisResponse> {
   const res = await fetch(ROUTER_ENDPOINT, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ question }),
+    body: JSON.stringify({ question, model }),
   });
 
   const payload: unknown = await res.json().catch(() => null);
@@ -212,9 +212,9 @@ function readinessLabel(raw: BackendCitation): string | undefined {
 }
 
 /* ------------------------------------------------------------------ */
-/* Frontend-only controls (NOT wired to the backend yet)               */
-/* These two pieces of state stay in the browser. Switching the model  */
-/* or attaching a file does not change what the desk actually queries. */
+/* Local controls                                                      */
+/* The selected local model is sent with /api/query. Attached files     */
+/* still stay in the browser and do not change the approved corpus.     */
 /* ------------------------------------------------------------------ */
 
 type ModelOption = {
@@ -225,7 +225,8 @@ type ModelOption = {
 };
 
 const MODEL_OPTIONS: ModelOption[] = [
-  { id: "qwen3.5:7b", name: "Qwen 3.5", params: "7B", note: "Default · balanced speed & quality" },
+  { id: "qwen2.5:7b", name: "Qwen 2.5", params: "7B", note: "Default · backend fallback" },
+  { id: "qwen3.5:7b", name: "Qwen 3.5", params: "7B", note: "Balanced speed & quality" },
   { id: "qwen3.5:14b", name: "Qwen 3.5", params: "14B", note: "Sharper reasoning, slower" },
   { id: "llama3.1:8b", name: "Llama 3.1", params: "8B", note: "General purpose" },
   { id: "mistral:7b", name: "Mistral", params: "7B", note: "Fast & compact" },
@@ -233,7 +234,7 @@ const MODEL_OPTIONS: ModelOption[] = [
   { id: "phi3:mini", name: "Phi-3 Mini", params: "3.8B", note: "Lightweight, low memory" },
 ];
 
-const DEFAULT_MODEL = "qwen3.5:7b";
+const DEFAULT_MODEL = "qwen2.5:7b";
 
 const UPLOAD_ACCEPT = ".csv,.json,.geojson,.xlsx,.xls,.txt,.pdf,.tif,.tiff,.zip";
 
@@ -257,7 +258,6 @@ function App() {
   const [response, setResponse] = useState<SynthesisResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  // frontend-only: not sent to the backend yet
   const [model, setModel] = useState(DEFAULT_MODEL);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
 
@@ -269,7 +269,7 @@ function App() {
     setError(null);
 
     try {
-      const result = await fetchSynthesis(trimmed);
+      const result = await fetchSynthesis(trimmed, model);
       setResponse(result);
       setStatus(result.refused ? "refusal" : "answer");
     } catch {
@@ -462,7 +462,7 @@ function ModelMenu({
               </li>
             ))}
           </ul>
-          <p className="model-pop-foot">Selection is local only — not wired to the backend yet.</p>
+          <p className="model-pop-foot">Selection is sent only to the local backend.</p>
         </div>
       )}
     </div>

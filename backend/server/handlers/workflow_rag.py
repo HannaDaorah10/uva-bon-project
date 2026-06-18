@@ -18,6 +18,7 @@ from urllib import error, request
 
 from frozen_evidence import EvidenceGateResult
 from handlers import HandlerResponse, safe_refusal
+from router_classifier import DEFAULT_LOCAL_LLM_MODEL, validate_local_llm_model
 from synthesis import synthesize_workflow_answer
 
 
@@ -26,7 +27,7 @@ DEFAULT_NAMESPACE = "student_combined_baseline"
 DEFAULT_TOP_K = 5
 DEFAULT_TIMEOUT_SECONDS = 75
 QUERY_UNDERSTANDING_OLLAMA_URL = "http://127.0.0.1:11434/api/generate"
-QUERY_UNDERSTANDING_OLLAMA_MODEL = "qwen2.5:7b"
+QUERY_UNDERSTANDING_OLLAMA_MODEL = DEFAULT_LOCAL_LLM_MODEL
 QUERY_UNDERSTANDING_TIMEOUT_SECONDS = 8
 QUERY_UNDERSTANDING_MIN_CONFIDENCE = 0.65
 NEO_NAMESPACE = "neo_den_haag_student_baseline"
@@ -174,7 +175,11 @@ Rules:
 """.strip()
 
 
-def handle_workflow_rag(question: str, gate: EvidenceGateResult) -> HandlerResponse:
+def handle_workflow_rag(
+    question: str,
+    gate: EvidenceGateResult,
+    model: str | None = None,
+) -> HandlerResponse:
     if gate.refused:
         return safe_refusal(
             gate.refusal_reason or "readiness_gate_blocked",
@@ -182,7 +187,8 @@ def handle_workflow_rag(question: str, gate: EvidenceGateResult) -> HandlerRespo
         )
 
     fallback_refusal: HandlerResponse | None = None
-    for retrieval_question in retrieval_questions_for_user_question(question):
+    selected_model = validate_local_llm_model(model)
+    for retrieval_question in retrieval_questions_for_user_question(question, model=selected_model):
         result = handle_single_retrieval_question(question, retrieval_question)
         if not result.refused:
             return result
@@ -285,14 +291,14 @@ def run_diver_curator_workflow(question: str) -> tuple[dict[str, Any] | None, st
     return payload, None
 
 
-def retrieval_question_for_user_question(question: str) -> str:
+def retrieval_question_for_user_question(question: str, model: str | None = None) -> str:
     """Return the first canonical retrieval query for backward-compatible callers."""
-    return retrieval_questions_for_user_question(question)[0]
+    return retrieval_questions_for_user_question(question, model=model)[0]
 
 
-def retrieval_questions_for_user_question(question: str) -> list[str]:
+def retrieval_questions_for_user_question(question: str, model: str | None = None) -> list[str]:
     """Build a retrieval plan from understood intent instead of raw wording only."""
-    understanding = understand_user_question(question)
+    understanding = understand_user_question(question, model=model)
     candidates: list[str] = []
     if understanding.canonical_query:
         candidates.append(understanding.canonical_query)
@@ -300,11 +306,15 @@ def retrieval_questions_for_user_question(question: str) -> list[str]:
     return dedupe_preserving_order(candidates)
 
 
-def understand_user_question(question: str) -> QueryUnderstanding:
+def understand_user_question(question: str, model: str | None = None) -> QueryUnderstanding:
     deterministic = understand_user_question_deterministic(question)
     if deterministic.canonical_query:
         return deterministic
-    llm_understanding = understand_user_question_with_local_llm(question, deterministic)
+    llm_understanding = understand_user_question_with_local_llm(
+        question,
+        deterministic,
+        model=model,
+    )
     return llm_understanding or deterministic
 
 
@@ -322,13 +332,14 @@ def understand_user_question_deterministic(question: str) -> QueryUnderstanding:
 def understand_user_question_with_local_llm(
     question: str,
     deterministic: QueryUnderstanding,
+    model: str | None = None,
 ) -> QueryUnderstanding | None:
     if os.environ.get("NATUREDESK_QUERY_UNDERSTANDING_LLM", "1").strip().lower() in {"0", "false", "no"}:
         return None
     if not should_try_local_llm_understanding(question, deterministic):
         return None
     try:
-        payload = call_query_understanding_llm(question)
+        payload = call_query_understanding_llm(question, model=model)
         return parse_query_understanding_payload(payload)
     except Exception:
         return None
@@ -346,16 +357,17 @@ def should_try_local_llm_understanding(question: str, deterministic: QueryUnders
     return len(terms) >= 4
 
 
-def call_query_understanding_llm(question: str) -> dict[str, Any]:
+def call_query_understanding_llm(question: str, model: str | None = None) -> dict[str, Any]:
     url = os.environ.get("NATUREDESK_QUERY_UNDERSTANDING_OLLAMA_URL", QUERY_UNDERSTANDING_OLLAMA_URL)
-    model = os.environ.get("NATUREDESK_QUERY_UNDERSTANDING_MODEL", QUERY_UNDERSTANDING_OLLAMA_MODEL)
+    env_model = os.environ.get("NATUREDESK_QUERY_UNDERSTANDING_MODEL")
+    selected_model = validate_local_llm_model(model or env_model or QUERY_UNDERSTANDING_OLLAMA_MODEL)
     timeout_seconds = _int_from_env(
         "NATUREDESK_QUERY_UNDERSTANDING_TIMEOUT_SECONDS",
         QUERY_UNDERSTANDING_TIMEOUT_SECONDS,
     )
     prompt = f"{QUERY_UNDERSTANDING_SYSTEM_PROMPT}\n\nQuestion: {question}"
     body = {
-        "model": model,
+        "model": selected_model,
         "prompt": prompt,
         "stream": False,
         "format": "json",

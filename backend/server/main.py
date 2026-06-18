@@ -14,9 +14,12 @@ from handlers.text_rag import handle_text_rag
 from handlers.workflow_rag import handle_workflow_rag
 from router_classifier import (
     BACKEND_PIPELINE_NOT_CONNECTED,
+    DEFAULT_LOCAL_LLM_MODEL,
+    InvalidLocalModelError,
     RouterDecision,
     classify_question,
     refusal_answer,
+    validate_local_llm_model,
 )
 
 
@@ -32,6 +35,7 @@ HANDLERS = {
 
 class QueryRequest(BaseModel):
     question: str = Field(..., min_length=1)
+    model: Optional[str] = Field(default=DEFAULT_LOCAL_LLM_MODEL)
 
 
 class QueryResponse(BaseModel):
@@ -64,7 +68,21 @@ def query(request: QueryRequest) -> QueryResponse:
             evidence_gate=preflight_refusal,
         )
 
-    decision = classify_question(request.question)
+    try:
+        selected_model = validate_local_llm_model(getattr(request, "model", DEFAULT_LOCAL_LLM_MODEL))
+    except InvalidLocalModelError:
+        return refusal_response(
+            RouterDecision(
+                route="refusal",
+                refusal_reason="invalid_model",
+                confidence=1.0,
+                explanation="Requested local model is outside the backend allowlist.",
+            ),
+            answer=refusal_answer("invalid_model"),
+            refusal_reason="invalid_model",
+        )
+
+    decision = classify_question(request.question, model=selected_model)
     if decision.refused:
         return refusal_response(
             decision,
@@ -89,7 +107,10 @@ def query(request: QueryRequest) -> QueryResponse:
             evidence_gate=evidence_gate,
         )
 
-    result = handler(request.question, evidence_gate)
+    if decision.route == "workflow_rag":
+        result = handler(request.question, evidence_gate, model=selected_model)
+    else:
+        result = handler(request.question, evidence_gate)
     if result.refused:
         return handler_refusal_response(decision, result, evidence_gate)
 

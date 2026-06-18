@@ -160,11 +160,18 @@ class RouterClassifierTests(unittest.TestCase):
                 "confidence": 0.93,
                 "explanation": "The question asks for a map.",
             },
-        ):
-            decision = classify_question("Show a map of wetland habitat.")
+        ) as ollama:
+            decision = classify_question(
+                "How should we inspect wetland habitat condition?",
+                model="mistral:7b",
+            )
 
         self.assertFalse(decision.refused)
         self.assertEqual(decision.route, "map_raster")
+        ollama.assert_called_once_with(
+            "How should we inspect wetland habitat condition?",
+            model="mistral:7b",
+        )
 
     def test_refusal_answer_is_human_readable(self):
         answer = refusal_answer("live_data_not_allowed")
@@ -182,7 +189,7 @@ class QueryApiTests(unittest.TestCase):
             explanation="Legal or policy advice is out of scope.",
         )
 
-        with mock.patch("main.classify_question", return_value=decision):
+        with mock.patch("main.classify_question", return_value=decision) as classifier:
             response = query(QueryRequest(question="Is this legal?"))
 
         payload = response.model_dump(exclude_none=True)
@@ -192,6 +199,30 @@ class QueryApiTests(unittest.TestCase):
         self.assertEqual(payload["router"]["route"], "refusal")
         self.assertNotIn("explanation", payload["router"])
         self.assertNotIn("evidence", payload)
+        classifier.assert_called_once_with("Is this legal?", model="qwen2.5:7b")
+
+    def test_query_passes_requested_model_to_classifier(self):
+        decision = RouterDecision(
+            route="refusal",
+            refusal_reason="no_evidence",
+            confidence=0.6,
+            explanation="No matching evidence.",
+        )
+
+        with mock.patch("main.classify_question", return_value=decision) as classifier:
+            response = query(QueryRequest(question="What does this table show?", model="mistral:7b"))
+
+        self.assertTrue(response.refused)
+        classifier.assert_called_once_with("What does this table show?", model="mistral:7b")
+
+    def test_query_refuses_invalid_model_before_classifier(self):
+        with mock.patch("main.classify_question") as classifier:
+            response = query(QueryRequest(question="What does this table show?", model="../../not-a-model"))
+
+        self.assertFalse(classifier.called)
+        self.assertTrue(response.refused)
+        self.assertEqual(response.refusalReason, "invalid_model")
+        self.assertEqual(response.router["route"], "refusal")
 
     def test_query_non_refusal_route_fails_closed_after_manifest_gate(self):
         decision = RouterDecision(

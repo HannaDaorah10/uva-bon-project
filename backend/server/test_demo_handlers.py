@@ -367,11 +367,15 @@ class DemoHandlerSmokeTests(unittest.TestCase):
                 "answer": "Ignored model answer.",
                 "canonicalQuery": "Ignored model query.",
             },
-        ):
-            questions = retrieval_questions_for_user_question("Wat hebben we lokaal over Den Haag?")
+        ) as llm:
+            questions = retrieval_questions_for_user_question(
+                "Wat hebben we lokaal over Den Haag?",
+                model="gemma2:9b",
+            )
 
         self.assertEqual(questions[0], THE_HAGUE_OVERVIEW_QUERY)
         self.assertEqual(questions[1], "Wat hebben we lokaal over Den Haag?")
+        llm.assert_called_once_with("Wat hebben we lokaal over Den Haag?", model="gemma2:9b")
 
     def test_workflow_rag_ignores_local_llm_for_blocked_place_questions(self):
         with mock.patch("handlers.workflow_rag.call_query_understanding_llm") as llm:
@@ -539,6 +543,43 @@ class DemoApiRefusalSmokeTests(unittest.TestCase):
         self.assertFalse(response.refused)
         self.assertEqual(response.router["route"], "workflow_rag")
         self.assertEqual(response.citations[0]["trace_type"], "retrieval_package.v1")
+
+    def test_query_model_reaches_workflow_query_understanding(self):
+        decision = RouterDecision(
+            route="workflow_rag",
+            refusal_reason=None,
+            confidence=0.9,
+            explanation="combined baseline",
+        )
+        evidence_gate = EvidenceGateResult(
+            refused=False,
+            evidence_family="student_combined_baseline",
+        )
+
+        with mock.patch("main.classify_question", return_value=decision):
+            with mock.patch("main.gate_query_evidence", return_value=evidence_gate):
+                with mock.patch(
+                    "handlers.workflow_rag.call_query_understanding_llm",
+                    return_value={
+                        "intent": "place_inventory",
+                        "placeKey": "the_hague",
+                        "confidence": 0.91,
+                    },
+                ) as llm:
+                    with mock.patch(
+                        "handlers.workflow_rag.run_diver_curator_workflow",
+                        return_value=(workflow_payload(), None),
+                    ) as workflow:
+                        response = query(
+                            QueryRequest(
+                                question="Wat hebben we lokaal over Den Haag?",
+                                model="gemma2:9b",
+                            )
+                        )
+
+        self.assertFalse(response.refused)
+        llm.assert_called_once_with("Wat hebben we lokaal over Den Haag?", model="gemma2:9b")
+        workflow.assert_called_once_with(THE_HAGUE_OVERVIEW_QUERY)
 
 
 if __name__ == "__main__":

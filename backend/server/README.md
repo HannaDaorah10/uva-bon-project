@@ -12,18 +12,19 @@ pip install -r requirements.txt
 uvicorn main:app --host 0.0.0.0 --port 8000
 ```
 
-The router classifier uses the local Spark Ollama model:
+The router classifier and workflow query-understanding fallback use a local Spark Ollama model selected from the backend allowlist:
 
 ```text
-qwen2.5:7b at http://127.0.0.1:11434/api/generate
+default: qwen2.5:7b at http://127.0.0.1:11434/api/generate
+allowed: qwen2.5:7b, qwen3.5:7b, qwen3.5:14b, llama3.1:8b, mistral:7b, gemma2:9b, phi3:mini
 ```
 
-The model and endpoint are fixed in code to preserve the local-only architecture boundary.
+The endpoint is fixed to the local Ollama boundary. The request model tag is validated against the allowlist before it can reach Ollama.
 
 ## Routes
 
 - `GET /health` returns a basic service status.
-- `POST /api/query` accepts JSON with `question: string` and returns the frontend response shape.
+- `POST /api/query` accepts JSON with `question: string` and optional `model: string`, then returns the frontend response shape.
 
 ## Router classification
 
