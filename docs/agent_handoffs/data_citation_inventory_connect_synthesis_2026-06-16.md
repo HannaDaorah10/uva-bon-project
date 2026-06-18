@@ -1,8 +1,10 @@
-# Data And Citation Inventory: connect-synthesis
+# Data And Citation Inventory: Neo_Bon_Workflow
 
-Date: 2026-06-16
+Original date: 2026-06-16
+Refreshed: 2026-06-18
 
-Branch checked: `connect-synthesis`.
+Branch checked: `Neo_Bon_Workflow`.
+Current branch head: `e7de688 Add safe local query understanding for workflow RAG`.
 
 Scope: internal/student prototype only. This file records availability and gates; it does not promote any source to public, client, official, export, external-LLM, or training use.
 
@@ -55,6 +57,14 @@ NEO-specific questions are routed to `neo_den_haag_student_baseline` by the back
 
 The route uses `retrieval_package.v1` plus `source_assessment.v1`. It answers only from chunks assessed as strong/moderate or usable/partial, with source traces. It refuses on workflow failure, insufficient evidence, weak-only evidence, missing trace fields, unsafe NEO validation/equivalence framing, or external/training gate problems.
 
+Current retrieval-query behavior:
+
+- Literal user wording is not always the first and only retrieval string.
+- Broad The Hague / Den Haag / 's-Gravenhage / GM0518 inventory questions are canonicalized to a fixed Den Haag evidence-overview query covering Kroonvolume, Groenmonitor, NEO, Boombasis, urban biodiversity, tree canopy evidence, source holdings, and caveats.
+- The literal user question remains as a fallback only after canonical retrieval returns `insufficient_evidence`.
+- The fallback is not used after workflow unavailability, subprocess failure, invalid JSON, missing schemas, or other contract failures.
+- A bounded local Ollama helper can classify `place_inventory` versus `literal_retrieval` for known-place questions. It cannot answer the user, retrieve evidence, or create custom search text, and it is skipped for blocked/narrow wording such as live/current, mayor, weather, policy, proof, official, validated, export, restart, or action requests.
+
 ## Visible But Blocked Data
 
 These files or rows are visible but should not be treated as answer-ready just because they exist:
@@ -87,9 +97,9 @@ The remaining Spark wiring weak point is PostgreSQL authentication: the local `b
 
 From the current runtime:
 
-- Backend unit tests: `python3 -m unittest test_router_classifier test_frozen_evidence test_demo_handlers` passed, 41 tests with 4 optional skips.
+- Backend unit tests: `python3 -m unittest -v` passed, 58 tests.
 - Frontend type checks and lint passed.
-- Frontend build passed after repairing local generated-cache/output ACLs.
+- Frontend build passed with `npm run build`.
 - API smoke: IUCN indigenous/protected-area question routed to `workflow_rag`, returned `refused=false` with 5 source traces.
 - API smoke: NEO SignalEyes / Boombasis Den Haag question routed to `workflow_rag`, returned `refused=false` with a `neo_den_haag_student_baseline` source trace.
 - API smoke: NEO ground-truth/proof/Groenmonitor-equivalence question refused with `unsupported_claim` and `neo_validation_or_equivalence_claim`.

@@ -1,6 +1,8 @@
-# Simple Overview: connect-synthesis
+# Simple Overview: Neo_Bon_Workflow
 
-Date: 2026-06-16
+Original date: 2026-06-16
+Refreshed: 2026-06-18
+Current branch head: `e7de688 Add safe local query understanding for workflow RAG`
 
 Scope: internal/student prototype only. This is not public, client-ready, official, municipal-endorsed, or validated evidence.
 
@@ -28,7 +30,11 @@ That combined baseline is meant to cover:
 - Kroonvolume Den Haag curated summaries.
 - NEO SignalEyes / Boombasis Den Haag explainer chunks.
 
-NEO questions are handled as a special safe subset of `workflow_rag`: the backend routes NEO/SignalEyes/Boombasis wording to the dedicated `neo_den_haag_student_baseline` namespace, which contains the 8 approved explainer chunks. It does not expose raw NEO coordinates, credentials, raw GeoJSON, query exports, feature-level dumps, external LLM sharing, model training, or commercial/fee-for-data use.
+NEO questions are handled as a special safe subset of `workflow_rag`: the backend routes NEO/SignalEyes/Boombasis wording to the dedicated `neo_den_haag_student_baseline` namespace, which contains the approved explainer chunks. It does not expose raw NEO coordinates, credentials, raw GeoJSON, query exports, feature-level dumps, external LLM sharing, model training, or commercial/fee-for-data use.
+
+The latest branch also adds safe local query understanding inside `workflow_rag`. Broad inventory questions such as "What info do you have of The Hague?" are recognized as place-inventory requests and tried first as a fixed canonical Den Haag/The Hague evidence-overview query. The original wording is kept as a fallback if the canonical query finds insufficient evidence. The fallback is not used after workflow/contract failure.
+
+If deterministic recognition does not decide, the handler may ask local Ollama only for a bounded intent label: `place_inventory` or `literal_retrieval`. That local helper is not allowed to answer the user, retrieve evidence, or invent a search query. It is skipped for live/current, mayor, weather, safety, policy, proof, official, validated, export, restart, or action wording.
 
 The existing safer routes are still present:
 
@@ -62,9 +68,9 @@ frontend question
 Important safety order:
 
 1. The preflight gate refuses export, archive, download, service mutation, database/vector changes, official claims, public-ready claims, unsafe NEO ground-truth/proof/equivalence claims, and similar unsafe requests before routing.
-2. The router can now choose `workflow_rag`. There are also simple keyword heuristics for IUCN, BON, Red List, Kroonvolume, NEO, SignalEyes, Boombasis, Groenmonitor, The Hague, South Holland, NDVI, protected areas, indigenous peoples, and related baseline topics.
+2. The router can choose `workflow_rag`. There are also simple keyword heuristics for IUCN, BON, Red List, Kroonvolume, NEO, SignalEyes, Boombasis, Groenmonitor, The Hague, South Holland, NDVI, protected areas, indigenous peoples, and related baseline topics.
 3. `workflow_rag` does not open a frozen manifest row. Instead, it is gated by the retrieval contract.
-4. The new handler runs the Diver/Curator script as a subprocess and expects JSON containing both `retrieval_package.v1` and `source_assessment.v1`.
+4. The handler may canonicalize broad The Hague inventory wording, then runs the Diver/Curator script as a subprocess and expects JSON containing both `retrieval_package.v1` and `source_assessment.v1`.
 5. The handler refuses if the workflow is missing, times out, fails, returns invalid JSON, lacks the required schemas, says evidence is insufficient, or returns only weak/unusable traces.
 6. The handler only uses chunks that have required trace fields, internal allowed-use labels, `share_with_external_llm=false`, and `train_allowed=false`.
 7. The backend still validates citations before returning any non-refusal answer.
@@ -84,6 +90,7 @@ The answer text for `workflow_rag` is extractive and cautious. It lists the retr
 - Updated the frozen evidence gate so `workflow_rag` uses the retrieval contract instead of pretending to be a normal frozen-manifest row.
 - Added NEO to the combined retrieval namespace and routed NEO-specific questions to the dedicated NEO explainer namespace.
 - Added a NEO preflight refusal for ground-truth, proof, official-alignment, municipal-equivalence, and Groenmonitor-equivalence framing.
+- Added bounded local query understanding for broad The Hague / Den Haag inventory questions, including literal fallback after insufficient canonical retrieval.
 - Updated frontend citation parsing and display for retrieval traces.
 - Updated backend README with the new route, environment variables, and runtime caveat.
 - Added tests for router parsing, workflow routing, evidence gating, workflow handler success/refusal, and final citation validation.
@@ -98,8 +105,9 @@ The answer text for `workflow_rag` is extractive and cautious. It lists the retr
 - The route should refuse if that DB access is missing. It should not fall back to raw files or filesystem search.
 - The `workflow_rag` answer is not a full expert synthesis. It is mostly a careful extractive answer from selected chunks.
 - The router keyword heuristic is useful for demos, but it can route broad keyword questions to `workflow_rag` before the model is asked.
+- The query-understanding helper is intentionally narrow. It improves vague local-inventory questions, but it is not a general semantic search planner.
 - The frontend shows citation traces, but it still does not show the full backend `router` and `evidence` objects.
-- The handoffs record a progression in verification: an earlier code scan saw 33 backend tests and a frontend build blocked by cache permissions; the later data/citation inventory records 39 backend tests and frontend build passing after local ACL/cache repair.
+- The handoffs now reflect the 2026-06-18 verification pass: 58 backend tests, frontend lint, and frontend build all pass in this checked environment.
 
 ## How Hans or the students should continue
 
@@ -127,13 +135,18 @@ What I checked directly for this overview:
 
 I did not rerun backend tests or frontend build in this final overview pass because the instruction allowed writing only this overview file, and test/build tools can create caches or output files.
 
-Verification reported by the latest handoff:
+Earlier smoke verification reported by the previous handoff:
 
-- Backend unit tests: `python3 -m unittest test_router_classifier test_frozen_evidence test_demo_handlers` passed, 41 tests with 4 optional skips.
-- Frontend type checks and lint passed.
-- Frontend build passed after repairing local generated-cache/output ACLs.
+- Backend unit tests passed for the then-current selected test modules.
+- Frontend type checks, lint, and build passed after local generated-cache/output ACLs were repaired.
 - API smoke for an IUCN indigenous/protected-area question routed to `workflow_rag` and returned 5 source traces.
 - API smoke for a NEO SignalEyes / Boombasis Den Haag question routed to `workflow_rag` and returned a `neo_den_haag_student_baseline` source trace.
 - API smoke for a NEO ground-truth/proof/Groenmonitor-equivalence question refused with `unsupported_claim`.
 - API smoke for The Hague crown-surface 2021 routed to `score_table` and returned 1 frozen-manifest citation.
 - API smoke for official/validated/public-ready claims refused with `unsupported_claim`.
+
+Verification from the 2026-06-18 refresh:
+
+- Backend unit tests: `python3 -m unittest -v` in `backend/server` passed, 58 tests.
+- Frontend build: `npm run build` in `frontend/bon-ui` passed.
+- Git status was clean before this docs refresh.

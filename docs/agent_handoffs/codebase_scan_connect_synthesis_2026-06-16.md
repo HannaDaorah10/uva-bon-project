@@ -1,23 +1,17 @@
-# Codebase Scan Handoff: connect-synthesis
+# Codebase Scan Handoff: Neo_Bon_Workflow
 
-Date: 2026-06-16
-Branch confirmed with:
+Original date: 2026-06-16
+Refreshed: 2026-06-18
 
-```bash
-git -c safe.directory=/home/uva-bon/naturedesk/uva-bon-project -C /home/uva-bon/naturedesk/uva-bon-project status --short --branch
-```
+Repo inspected: `/home/uva-bon/naturedesk/uva-bon-project`
+Branch checked: `Neo_Bon_Workflow`
+Branch head: `e7de688 Add safe local query understanding for workflow RAG`
 
-Observed output:
-
-```text
-## connect-synthesis...origin/connect-synthesis
-```
-
-Scope: internal/prototype only. No secrets were inspected or recorded. I did not call live Ollama, BON, web, GBIF, or external APIs. Application code was not edited.
+Scope: internal/student prototype only. This is not public, client-ready, official, municipal-endorsed, or validated evidence. No secrets were inspected or recorded. This refresh updates documentation only.
 
 ## High-Level Flow
 
-Current live assistant flow is:
+Current live assistant flow:
 
 ```text
 frontend/bon-ui/src/App.tsx
@@ -31,35 +25,60 @@ backend/server/main.py
   QueryResponse
 ```
 
-Important distinction: `backend/server/synthesis.py` is the deterministic synthesis helper currently imported by the FastAPI handlers. `backend/synthesis/` is a separate prompt/prototype scaffold and is not the production server entry point.
+Important distinction: `backend/server/synthesis.py` is the deterministic synthesis helper used by the active FastAPI handlers. `backend/synthesis/` is a separate older prompt/prototype scaffold and is not the current server entry point.
 
 ## Important Files
 
-- `backend/server/main.py`: FastAPI app, `/health`, `/api/query`, request/response models, handler dispatch, final citation validation.
-- `backend/server/router_classifier.py`: local Qwen router contract, heuristic for The Hague crown-surface 2021 question, fail-closed classifier behavior.
-- `backend/server/frozen_evidence.py`: frozen manifest gate, route requirements, readiness checks, denylist, allowed roots, checksum/readability checks, preflight export/action/official-claim refusals.
-- `backend/server/frozen_evidence_manifest.json`: governed local evidence rows and readiness flags.
-- `backend/server/citation_validator.py`: required citation fields and readiness requirements for any non-refusal answer.
+- `backend/server/main.py`: FastAPI app, `/health`, `/api/query`, request/response models, route dispatch, final citation validation.
+- `backend/server/router_classifier.py`: route classifier, deterministic heuristics, local Qwen fallback, fail-closed parser.
+- `backend/server/frozen_evidence.py`: frozen manifest gate, route requirements, readiness checks, allowed roots, denylist, checksum/readability checks, and preflight export/action/official/NEO claim refusals.
+- `backend/server/frozen_evidence_manifest.json`: governed local evidence rows and readiness metadata.
+- `backend/server/citation_validator.py`: final citation validation for frozen-manifest citations and retrieval-contract traces.
 - `backend/server/handlers/__init__.py`: `HandlerResponse`, approved-row lookup, citation construction.
-- `backend/server/handlers/score_table.py`: approved CSV score-table handler; includes special crown-surface answer path.
-- `backend/server/handlers/text_rag.py`: lexical JSONL chunk retrieval, max 3 chunks, chunk-level gates.
+- `backend/server/handlers/score_table_dynamic.py`: active score-table handler imported by `main.py`.
+- `backend/server/handlers/score_table.py`: older score-table handler retained in the repo.
+- `backend/server/handlers/text_rag.py`: older lexical JSONL text route.
+- `backend/server/handlers/workflow_rag.py`: controlled Diver/Curator retrieval-contract handler plus safe local query understanding for broad place-inventory questions.
 - `backend/server/handlers/map_raster.py`: STAC/catalog pointer handler only; no rendering or export.
-- `backend/server/synthesis.py`: deterministic Markdown answer/refusal text helpers used by handlers.
-- `frontend/bon-ui/src/App.tsx`: UI fetches `/api/query`, normalizes backend citations, renders answer/refusal states.
-- `frontend/bon-ui/vite.config.ts`: dev proxy sends `/api` to `http://127.0.0.1:8000`.
-- `backend/inputRouting/*`: standalone BON NDVI prompt-to-run prototype that calls local Ollama and BON. Keep separate from `/api/query` unless new gates are explicitly designed.
-- `backend/synthesis/*`: standalone LLM/prompt synthesis scaffold. Useful for spec ideas, not wired into FastAPI.
+- `frontend/bon-ui/src/App.tsx`: UI fetches `/api/query`, normalizes backend citations, renders answer/refusal/source/trace states.
+- `frontend/bon-ui/vite.config.ts`: dev proxy sends `/api` to `NATUREDESK_BACKEND_URL`, defaulting to `http://127.0.0.1:8001`, and uses a writable `/tmp` Vite cache.
+- `backend/inputRouting/neo_workflow.py`: standalone NEO SignalEyes / Boombasis BON workflow wrapper. It is not wired into `/api/query`.
+- `backend/inputRouting/run_workflow.py` and `build_bon_json.py`: older standalone BON/NDVI workflow helpers. Keep them out of the chat route unless a separate action/export gate is designed.
 
 ## Route Contracts
 
 Routes from `router_classifier.ROUTES`:
 
-- `text_rag`: frozen text evidence. Manifest requirement is family `south_holland_student_retrieval`, type `text_chunk_export`. Handler reads JSONL, filters chunks where retrieve/quote are true and export/share/train are false, ranks by lexical token overlap, returns up to 3 chunks to deterministic text synthesis. Current manifest text row is not answer-facing ready, so this route should refuse until readiness changes.
-- `score_table`: prepared score/indicator CSVs. Manifest requirement is family `kroonvolume_internal_proxy`, type `score_table`. Handler can return a preview for readable approved CSV rows. It also has a special deterministic answer for crown surface/kroonoppervlakte in The Hague/GM0518 at end of 2021, using `gm0518_kroonvolume_proxy_v1.csv`, AHN4, acquisition period `2020-2022`.
-- `map_raster`: map/raster human-review pointer only. Manifest requirement is family `kroonvolume_internal_proxy`, type `map_raster_pointer`. Handler reads a JSON catalog/STAC-like artifact and returns a pointer, title/id, and link count. It does not render maps, export files, or infer ecology.
-- `refusal`: safe refusal path from classifier or preflight.
+- `workflow_rag`: controlled Diver/Curator retrieval over the combined student baseline. It covers IUCN Resolutions, BON in a Box student summaries, IUCN Red List CSV summaries, Kroonvolume Den Haag curated summaries, and governed NEO SignalEyes / Boombasis explainer chunks.
+- `score_table`: prepared score/indicator CSVs from `kroonvolume_internal_proxy` rows. The active dynamic handler can answer The Hague/GM0518 crown-surface questions using the closest approved acquisition-period proxy and can otherwise return safe table previews.
+- `map_raster`: map/raster human-review pointer only. It reads approved local catalog/STAC-like metadata and returns pointer fields, not rendered maps or exports.
+- `text_rag`: older frozen JSONL text route. It remains mostly closed because current text rows are not answer-facing ready.
+- `refusal`: safe refusal path from preflight, classifier, evidence gate, handler, or citation validator.
 
-Notable currently open answer-facing manifest rows include municipal/validation score tables and the v2 AHN5 STAC pointer. Many district/neighborhood/tile rows remain quote/citation/user-facing closed. Text retrieval remains closed.
+## Workflow RAG Query Plan
+
+`workflow_rag` is no longer a pure literal-query pass-through. Its current plan is:
+
+1. Detect known-place inventory questions for The Hague aliases: The Hague, Den Haag, 's-Gravenhage, gemeente Den Haag, and GM0518.
+2. For broad inventory wording such as "What info do you have of The Hague?", try a fixed canonical retrieval query: `Den Haag The Hague Kroonvolume Groenmonitor NEO Boombasis urban biodiversity tree canopy evidence overview source holdings caveats`.
+3. If deterministic recognition does not decide, optionally call local Ollama as a bounded query-understanding helper. The helper can only return `place_inventory` or `literal_retrieval` for a known place. It cannot answer, retrieve evidence, or invent a custom query.
+4. Skip that helper for narrow or blocked topics such as current/live, mayor, weather, safety, policy, proof, official, validated, export, restart, or service/action requests.
+5. Keep the literal user question as a fallback after the canonical query. The fallback is only tried if the canonical retrieval returns `insufficient_evidence`.
+6. Do not retry after workflow unavailability, subprocess failure, invalid JSON, missing schemas, or other retrieval-contract failures.
+7. NEO terms select `neo_den_haag_student_baseline` and default top-k 8. Other workflow questions use `student_combined_baseline` and default top-k 5.
+
+Environment variables used by the route include:
+
+```text
+NATUREDESK_DIVER_CURATOR_WORKFLOW
+NATUREDESK_RETRIEVAL_NAMESPACE
+NATUREDESK_RETRIEVAL_TOP_K
+NATUREDESK_RETRIEVAL_TIMEOUT_SECONDS
+NATUREDESK_QUERY_UNDERSTANDING_LLM
+NATUREDESK_QUERY_UNDERSTANDING_OLLAMA_URL
+NATUREDESK_QUERY_UNDERSTANDING_MODEL
+NATUREDESK_QUERY_UNDERSTANDING_TIMEOUT_SECONDS
+```
 
 ## API Shapes
 
@@ -80,69 +99,37 @@ router?: { route, refusalReason, confidence, evidence_family? }
 evidence?: { manifest_ids, missing_metadata, blocked_gates }
 ```
 
-`RouterDecision` keeps `explanation` internally, but `as_api_dict()` intentionally exposes only `route`, `refusalReason`, and `confidence`.
+The frontend currently consumes `refused`, `answer`, `citations`, and `refusalReason`. It normalizes frozen-manifest citations and retrieval-contract traces into source cards and trace labels. It still does not expose the full backend `router` and `evidence` objects in a debug panel.
 
-`EvidenceGateResult.as_api_dict()` exposes only `manifest_ids`, `missing_metadata`, and `blocked_gates`; `evidence_family` is copied onto `router` when present.
+## Refusal And Readiness Behavior
 
-`HandlerResponse` is the handler boundary:
+The safest path is enforced in this order:
 
-```text
-refused: bool
-answer: string
-citations: list[dict]
-refusal_reason?: string
-```
-
-For non-refusal answers, `citation_validator.py` requires each citation to include non-empty `manifest_id`, `citation`, `path`, `family`, and `type`, plus readiness where `retrieve_allowed`, `quote_allowed`, `citation_ready`, and `user_facing_ready` are true, and `export_allowed`, `share_external_llm_allowed`, and `train_allowed` are false.
-
-Frontend `SynthesisResponse` only consumes `refused`, `answer`, `citations`, and `refusalReason`. It currently ignores backend `router` and `evidence` metadata. Frontend citation normalization maps backend fields like `manifest_id`, `citation`, `relative_path`, `family`, and `type` into display fields `id`, `title`, `source`, `artifactType`, and `locator`.
-
-## Refusal and Readiness Behavior
-
-The safest path is already enforced in this order:
-
-1. `preflight_question_gate()` refuses before classification for export/archive/attach/download/bundle/source-index requests (`export_gate_required`), service/database/vector/evidence/pipeline mutation requests (`action_gate_required`), and official/municipal/validated/public-ready/client-ready/ecological-decision/management-action claims (`unsupported_claim`).
-2. `classify_question()` refuses empty questions, model unavailability (`classifier_unavailable`), live/current data (`live_data_not_allowed`), legal/policy/high-stakes, unsupported causal/predictive claims, and out-of-scope/no-evidence requests.
-3. `gate_query_evidence()` refuses unsupported routes, missing/bad manifests, no candidate rows, unreadable paths, denylisted paths, disallowed roots, checksum mismatch, missing metadata, or closed readiness.
-4. Handlers refuse if approved rows are unavailable, unreadable, or no matching text chunks are retrieved.
+1. `preflight_question_gate()` refuses unsafe NEO framing, export/archive/download/bundle/source-index requests, service/database/vector/evidence/pipeline mutation requests, and official/municipal/validated/public-ready/client-ready/ecological-decision/management-action claims.
+2. `classify_question()` refuses empty questions, classifier unavailability, live/current requests, legal/policy/high-stakes requests, unsupported causal/predictive claims, and out-of-scope/no-evidence requests.
+3. `gate_query_evidence()` refuses unsupported routes, bad/missing manifests, no candidate rows, closed readiness gates, unreadable paths, denylisted paths, disallowed roots, checksum mismatch, or missing metadata. For `workflow_rag`, this stage allows the route through under the retrieval-contract boundary rather than a single manifest row.
+4. Handlers refuse if approved rows or retrieval traces are unavailable, unreadable, weak-only, unsafe for internal answer use, or missing required fields.
 5. `citations_are_valid()` is the last guardrail. Any non-refusal answer without valid citations becomes `citation_validation_failed`.
 
-Do not loosen these gates to make demos appear to work. If evidence should become answer-facing, update the governed manifest/readiness package and tests together.
+Do not loosen these gates for demo convenience. If evidence should become answer-facing, update the governed manifest/readiness package and tests together.
 
 ## Existing Tests
 
 Backend tests live in `backend/server` and use `unittest`:
 
-- `test_router_classifier.py`: route parsing, JSON extraction, fail-closed classifier behavior, heuristic crown-surface routing, API response shapes.
-- `test_frozen_evidence.py`: preflight refusals, readiness/denylist/family separation, manifest loading, checksum behavior.
-- `test_demo_handlers.py`: handler smoke tests, preflight order, live-data refusal, citation-validation failure.
+- `test_router_classifier.py`: route parsing, JSON extraction, fail-closed classifier behavior, heuristic routing, API response shapes.
+- `test_frozen_evidence.py`: preflight refusals, NEO forbidden framing, readiness/denylist/family separation, manifest loading, checksum behavior, workflow contract gate.
+- `test_demo_handlers.py`: handler smoke tests, workflow query planning, canonical The Hague inventory queries, local query-understanding fallback, literal fallback after insufficient evidence, preflight order, live-data refusal, and citation-validation failure.
 
-Synthesis prototype checks live in `backend/synthesis`:
-
-- `validate_response.py` and `validate_refusal.py` are hard-coded to sample Markdown files.
-- `test_synthesis.py` is a manual/live OpenAI smoke test and should not be used in automated local verification without credentials and model/API review.
-
-Frontend has Vite/TypeScript/ESLint scripts in `frontend/bon-ui/package.json`.
-
-## Safe Extension Points
-
-Recommended implementation path:
-
-- Keep `/api/query` as the only UI-to-backend assistant endpoint unless a new contract is explicitly requested.
-- Add server-side behavior inside `backend/server` modules first. Prefer extending `handlers/*`, `backend/server/synthesis.py`, and tests before touching frontend.
-- Reuse `approved_rows_for_route()`, `citation_for_row()`, `HandlerResponse`, and `citations_are_valid()` for any new answer path.
-- If adding a route, update all of: `ROUTES`, `ROUTER_SYSTEM_PROMPT`, `REFUSAL_REASONS` if needed, `ROUTE_REQUIREMENTS`, `HANDLERS`, citation mapping/tests, and frontend `toArtifactType()` if the UI needs a new badge.
-- If exposing router/evidence details in the UI, extend `SynthesisResponse` in `App.tsx`; today those fields are silently ignored.
-- Keep answer Markdown sections consistent with the current deterministic helpers: `## Answer`, `## Evidence used`, `## Uncertainty and gaps`, `## Assumptions`, `## Human review needed`, or `## Refusal`.
+Frontend has Vite/TypeScript build scripts in `frontend/bon-ui/package.json`.
 
 ## What Not To Wire Yet
 
-- Do not connect `backend/inputRouting/run_workflow.py` or `build_bon_json.py` into `/api/query`. They can call Ollama and BON, start runs, download outputs, and write run folders; that crosses action/export boundaries.
-- Do not call live BON, GBIF, web, or external LLMs from the query path for this internal prototype unless new gates and tests are added.
-- Do not use `backend/synthesis/test_synthesis.py` as production code. It is credential/model dependent and its inline prompt drifts from `synthesis_prompt.md`.
-- Do not bypass manifest allowed roots, denylist, checksum, readiness, or citation validation.
-- Do not return raw file exports, rendered maps, official/validated/public-ready/client-ready claims, municipal endorsements, ecological management actions, or unsupported causal explanations.
-- Do not send evidence to an external LLM when `share_external_llm_allowed` is false.
+- Do not connect `backend/inputRouting/neo_workflow.py`, `run_workflow.py`, or `build_bon_json.py` into `/api/query`. They can call Ollama and BON, start runs, download outputs, and write run folders.
+- Do not call live BON, GBIF, web, or external LLMs from the query path unless new gates and tests are explicitly designed.
+- Do not bypass manifest allowed roots, denylist, checksum, readiness, retrieval-contract trace checks, or citation validation.
+- Do not return raw file exports, rendered maps, NEO raw feature dumps, credentials, official/validated/public-ready/client-ready claims, municipal endorsements, ecological management actions, or unsupported causal explanations.
+- Do not send evidence to an external LLM when the relevant readiness/trace metadata blocks external sharing.
 
 ## Verification Performed
 
@@ -152,7 +139,7 @@ From `backend/server`:
 python3 -m unittest -v
 ```
 
-Result: 33 tests passed.
+Result: 58 tests passed.
 
 From `frontend/bon-ui`:
 
@@ -160,25 +147,13 @@ From `frontend/bon-ui`:
 npm run build
 ```
 
-Result: failed before build output because TypeScript could not write cache files under `node_modules/.tmp`:
-
-```text
-TS5033: Could not write file .../node_modules/.tmp/tsconfig.app.tsbuildinfo: EACCES
-TS5033: Could not write file .../node_modules/.tmp/tsconfig.node.tsbuildinfo: EACCES
-```
-
-No-emit checks that avoid the cache write passed:
-
-```bash
-./node_modules/.bin/tsc -p tsconfig.app.json --noEmit --incremental false
-./node_modules/.bin/tsc -p tsconfig.node.json --noEmit --incremental false
-npm run lint
-```
+Result: passed. Vite produced `dist/index.html`, `dist/assets/index-DyegyRLN.css`, and `dist/assets/index-Dj37FtY9.js`.
 
 ## Suggested Next-Agent Plan
 
-1. Start by deciding whether the goal is richer deterministic answers or route/metadata visibility in the UI. If backend answer behavior is the target, edit `backend/server/handlers/*`, `backend/server/synthesis.py`, and corresponding `backend/server/test_*.py` first.
-2. Preserve the API response contract in `main.py`: `refused`, `answer`, `citations`, `refusalReason`, optional `router`, optional `evidence`.
-3. Keep refusal-first behavior. Add tests for every new path that proves export/action/official/live/uncited cases still refuse.
-4. If a readiness change is needed, treat it as a governed evidence-manifest decision, not a code workaround.
-5. Re-run backend unit tests and frontend no-emit/lint. Use `npm run build` only after fixing `node_modules/.tmp` permissions or changing TS build-info output to a writable location.
+1. Preserve `/api/query` as the governed assistant endpoint unless a new contract is explicitly requested.
+2. If backend behavior changes, edit `backend/server` modules and tests first.
+3. Keep refusal-first behavior and add tests for every new answer path.
+4. If a readiness change is needed, treat it as an evidence-governance decision, not a code shortcut.
+5. Add an internal UI debug drawer if students need route, confidence, evidence family, manifest IDs, blocked gates, and retrieval namespace visibility.
+6. Add or document read-only PostgreSQL access for the runtime identity that runs the backend.

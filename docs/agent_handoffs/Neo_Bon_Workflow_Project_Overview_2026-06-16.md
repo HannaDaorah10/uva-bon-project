@@ -1,9 +1,10 @@
 # Team Platypus NatureDesk / BON Challenge Overview
 
-Generated on: 2026-06-16  
-Repo inspected: `/home/uva-bon/naturedesk/uva-bon-project`  
-Branch inspected: `Neo_Bon_Workflow`  
-Current branch head: `d52cb18 fixed minor output format error`
+Generated on: 2026-06-16
+Refreshed on: 2026-06-18
+Repo inspected: `/home/uva-bon/naturedesk/uva-bon-project`
+Branch inspected: `Neo_Bon_Workflow`
+Current branch head: `e7de688 Add safe local query understanding for workflow RAG`
 
 ## 1. Short Summary
 
@@ -53,6 +54,7 @@ The branch contains these main pieces of progress:
 - A frozen evidence manifest that controls which local files may be used for answer-facing routes.
 - Several backend handlers: `workflow_rag`, `score_table`, `text_rag`, and `map_raster`.
 - A broad retrieval route called `workflow_rag`, which calls the controlled Diver/Curator workflow and expects `retrieval_package.v1` plus `source_assessment.v1`.
+- A safe local query-understanding step inside `workflow_rag` for broad The Hague / Den Haag inventory questions. It can canonicalize vague questions such as "What info do you have of The Hague?" into a richer approved retrieval query, then fall back to the literal user question if the canonical retrieval is insufficient.
 - NEO-specific routing to the `neo_den_haag_student_baseline` namespace for NEO / SignalEyes / Boombasis questions.
 - NEO refusal rules for unsafe wording such as ground truth, proof, official alignment, municipal equivalence, or Groenmonitor equivalence.
 - A standalone NEO BON workflow wrapper in `backend/inputRouting/neo_workflow.py`.
@@ -61,7 +63,7 @@ The branch contains these main pieces of progress:
 
 Verification from this inspection:
 
-- Backend tests passed: `python3 -m unittest -v` in `backend/server` ran 46 tests and returned `OK`.
+- Backend tests passed: `python3 -m unittest -v` in `backend/server` ran 58 tests and returned `OK`.
 - Frontend build passed: `npm run build` in `frontend/bon-ui` completed successfully.
 - Git status for the repo was clean before and after verification.
 
@@ -274,36 +276,42 @@ This is the full zoomed-in route for the active assistant path.
 29. For `score_table`, `handlers/score_table_dynamic.py` reopens only approved rows. For crown-surface questions it selects a municipality GM0518 row and the requested/closest acquisition-period proxy. For other table questions it returns a safe table preview.
 30. For `map_raster`, the handler reads an approved local catalog/pointer and returns pointer metadata only. It does not render or export map files.
 31. For `text_rag`, the handler reads an approved JSONL file and does lexical chunk matching. This route is mostly closed because current text rows are not answer-ready.
-32. For `workflow_rag`, the handler may rewrite broad The Hague inventory questions into a better retrieval query.
-33. `workflow_rag` chooses a namespace. NEO terms route to `neo_den_haag_student_baseline`; otherwise it uses `student_combined_baseline`.
-34. `workflow_rag` runs `diver_curator_workflow.py` as a subprocess with `--namespace`, `--question`, and `--top-k`.
-35. The subprocess must return valid JSON.
-36. The handler requires both `retrieval_package` and `source_assessment`.
-37. The retrieval package must have status `success`.
-38. The source assessment must have status `success` and `sufficient_evidence=true`.
-39. The handler keeps only chunks assessed as strong, moderate, usable, or partial.
-40. Each kept chunk must have required trace fields, allowed internal use, `share_with_external_llm=false`, and `train_allowed=false`.
-41. The handler creates citation objects from the source traces.
-42. The handler calls deterministic synthesis helpers in `backend/server/synthesis.py`.
-43. The answer is extractive and cautious. It includes sections such as Answer, Evidence used, Uncertainty and gaps, Assumptions, and Human review needed.
-44. The result returns to `main.py` as a `HandlerResponse`.
-45. Before sending any non-refusal answer, `citations_are_valid(result.citations)` runs.
-46. If citations are missing or invalid, the backend refuses with `citation_validation_failed`.
-47. If citations pass, the backend returns `QueryResponse` with `refused=false`, `answer`, `citations`, router metadata, and evidence metadata.
-48. The frontend receives the JSON.
-49. `toSynthesisResponse()` normalizes the backend response into frontend citation objects.
-50. `OutputPanel` displays either loading, error, refusal, or answer state.
-51. If it is an answer, `AnswerView` splits the Markdown sections.
-52. The Answer tab shows the main answer and clickable citation markers.
-53. The Sources tab shows source cards.
-54. The Trace tab shows locators, relevance labels, namespaces, and readiness labels.
-55. The user receives either a cited answer or a clear refusal. The system should never silently guess.
+32. For `workflow_rag`, the handler builds a retrieval plan from the user question.
+33. The retrieval plan first uses deterministic place-inventory recognition. Known The Hague aliases include The Hague, Den Haag, 's-Gravenhage, gemeente Den Haag, and GM0518.
+34. Broad inventory questions about a known place are rewritten to a fixed canonical query: `Den Haag The Hague Kroonvolume Groenmonitor NEO Boombasis urban biodiversity tree canopy evidence overview source holdings caveats`.
+35. If the deterministic check cannot decide, a bounded local Ollama query-understanding call may classify only `place_inventory` versus `literal_retrieval`. It is not allowed to answer, retrieve evidence, or invent a custom query.
+36. The local query-understanding fallback is skipped for blocked/narrow topics such as current/live, mayor, weather, safety, policy, proof, official, validated, export, and restart/action wording.
+37. The literal user question is kept as a fallback after the canonical query. The handler only tries the literal fallback when the canonical retrieval returns `insufficient_evidence`; it does not retry after workflow unavailability or contract failure.
+38. `workflow_rag` chooses a namespace. NEO terms route to `neo_den_haag_student_baseline` with default top-k 8; otherwise it uses `student_combined_baseline` with default top-k 5.
+39. `workflow_rag` runs `diver_curator_workflow.py` as a subprocess with `--namespace`, `--question`, and `--top-k`.
+40. The subprocess must return valid JSON.
+41. The handler requires both `retrieval_package` and `source_assessment`.
+42. The retrieval package must have status `success`.
+43. The source assessment must have status `success` and `sufficient_evidence=true`.
+44. The handler keeps only chunks assessed as strong, moderate, usable, or partial.
+45. Each kept chunk must have required trace fields, allowed internal use, `share_with_external_llm=false`, and `train_allowed=false`.
+46. The handler creates citation objects from the source traces.
+47. The handler calls deterministic synthesis helpers in `backend/server/synthesis.py`.
+48. The answer is extractive and cautious. It includes sections such as Answer, Evidence used, Uncertainty and gaps, Assumptions, and Human review needed.
+49. The result returns to `main.py` as a `HandlerResponse`.
+50. Before sending any non-refusal answer, `citations_are_valid(result.citations)` runs.
+51. If citations are missing or invalid, the backend refuses with `citation_validation_failed`.
+52. If citations pass, the backend returns `QueryResponse` with `refused=false`, `answer`, `citations`, router metadata, and evidence metadata.
+53. The frontend receives the JSON.
+54. `toSynthesisResponse()` normalizes the backend response into frontend citation objects.
+55. `OutputPanel` displays either loading, error, refusal, or answer state.
+56. If it is an answer, `AnswerView` splits the Markdown sections.
+57. The Answer tab shows the main answer and clickable citation markers.
+58. The Sources tab shows source cards.
+59. The Trace tab shows locators, relevance labels, namespaces, and readiness labels.
+60. The user receives either a cited answer or a clear refusal. The system should never silently guess.
 
 ## 9. Main Weak Points
 
 - The whole project is still an internal/student prototype, not a production assistant.
 - Many evidence files live outside the repo under `/home/hans/.openclaw/...`, so the repo is not self-contained.
 - `workflow_rag` depends on local runtime services: the Diver/Curator script, Ollama, pgvector/PostgreSQL, and local file permissions.
+- The new query-understanding step depends on local Ollama only as a bounded intent helper. If it is disabled or unavailable, the handler falls back to deterministic/literal retrieval rather than broadening evidence access.
 - If the backend runs as Linux user `uva-bon`, PostgreSQL may need a read-only role/auth rule for the local `biodiversity` database.
 - The frontend shows source/trace data, but it still does not expose all router/evidence debugging metadata in an internal panel.
 - The model menu and upload button are UI-only and can mislead users if this is not explained.
@@ -340,16 +348,16 @@ Useful improvements:
 4. Add a UI debug drawer for router route, confidence, evidence family, manifest IDs, and blocked gates.
 5. Add backend health checks for Ollama, Diver/Curator workflow availability, PostgreSQL access, and BON availability.
 6. Confirm or create a read-only PostgreSQL role/auth path for the `uva-bon` runtime user.
-7. Add live smoke tests for `workflow_rag` using a small safe fixture or mocked Diver/Curator payload.
+7. Add live smoke tests for `workflow_rag` using a small safe fixture or mocked Diver/Curator payload, including broad The Hague inventory wording and literal-fallback behavior.
 8. Add a clear "frontend-only" label or disablement for model selection and upload until they are actually wired.
 9. Replace NEO context-only admin selectors with real AOI boundary selection if the team needs stadsdeel/wijk/buurt outputs.
 10. Add a safe derived NEO metrics file, such as `neo_metrics.json`, for each run folder instead of relying on raw GeoJSON previews.
 11. Add a short `neo_conclusion.md` generator that writes safe wording: technical success, counts, provenance, and explicit non-claims.
 12. Keep raw NEO data and credentials out of the repo; commit only small governed summaries or fixtures.
 13. Consolidate old and current synthesis code so future readers know exactly which module is active.
-14. Add tests that prove unsafe NEO wording still refuses.
-15. Add tests that prove export/action/official/public-ready requests still refuse.
-16. Add tests that prove every non-refusal answer has at least one valid citation.
+14. Keep tests that prove unsafe NEO wording still refuses.
+15. Keep tests that prove export/action/official/public-ready requests still refuse.
+16. Keep tests that prove every non-refusal answer has at least one valid citation.
 17. Decide which extra manifest rows should become answer-facing, and update readiness gates through the governed evidence process rather than code shortcuts.
 18. Write a short grader demo script with three successful questions and three expected refusals.
 19. Add one architecture diagram to the docs so the full query-to-output path is visible at a glance.
