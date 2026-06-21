@@ -2,7 +2,8 @@
 
 from typing import Any, List, Optional
 
-from fastapi import FastAPI
+from fastapi import FastAPI, UploadFile, File
+from scratch_upload import UploadError, answer_from_upload, store_upload
 from pydantic import BaseModel, Field
 
 from citation_validator import citations_are_valid
@@ -36,6 +37,7 @@ HANDLERS = {
 class QueryRequest(BaseModel):
     question: str = Field(..., min_length=1)
     model: Optional[str] = Field(default=DEFAULT_LOCAL_LLM_MODEL)
+    upload_id: Optional[str] = None
 
 
 class QueryResponse(BaseModel):
@@ -51,9 +53,20 @@ class QueryResponse(BaseModel):
 def health() -> dict[str, str]:
     return {"status": "ok"}
 
+@app.post("/api/upload")
+async def upload(file: UploadFile = File(...)) -> dict[str, str]:
+    raw = await file.read()
+    try:
+        upload_id = store_upload(file.filename or "upload", raw)
+    except UploadError as exc:
+        return {"error": str(exc)}
+    return {"upload_id": upload_id, "filename": file.filename or "upload"}
 
 @app.post("/api/query", response_model=QueryResponse, response_model_exclude_none=True)
 def query(request: QueryRequest) -> QueryResponse:
+    if request.upload_id:
+        return scratch_query_response(request)
+
     preflight_refusal = preflight_question_gate(request.question)
     if preflight_refusal is not None:
         return refusal_response(
@@ -178,3 +191,19 @@ def answer_response(
         router=router,
         evidence=evidence_gate.as_api_dict(),
     )
+
+def scratch_query_response(request: QueryRequest) -> QueryResponse:
+    try:
+        selected_model = validate_local_llm_model(request.model)
+    except InvalidLocalModelError:
+        selected_model = DEFAULT_LOCAL_LLM_MODEL
+
+    result = answer_from_upload(request.question, request.upload_id, selected_model)
+    if result is None:
+        return QueryResponse(
+            refused=True,
+            answer="That uploaded file isn't available anymore (uploads expire after 30 minutes). Please re-upload it.",
+            citations=[],
+            refusalReason="upload_expired_or_missing",
+        )
+    return QueryResponse(refused=False, answer=result["answer"], citations=result["citations"])

@@ -59,11 +59,11 @@ type Status = "idle" | "loading" | "answer" | "refusal" | "error";
 
 const ROUTER_ENDPOINT = "/api/query";
 
-async function fetchSynthesis(question: string, model: string): Promise<SynthesisResponse> {
+async function fetchSynthesis(question: string, model: string, uploadId: string | null): Promise<SynthesisResponse> {
   const res = await fetch(ROUTER_ENDPOINT, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ question, model }),
+    body: JSON.stringify({ question, model,upload_id: uploadId ?? undefined }),
   });
 
   const payload: unknown = await res.json().catch(() => null);
@@ -236,7 +236,7 @@ const MODEL_OPTIONS: ModelOption[] = [
 
 const DEFAULT_MODEL = "qwen2.5:7b";
 
-const UPLOAD_ACCEPT = ".csv,.json,.geojson,.xlsx,.xls,.txt,.pdf,.tif,.tiff,.zip";
+const UPLOAD_ACCEPT = ".yaml,.yml,.json,.jsonl,.md,.txt,.csv,.html,.pdf,.docx";
 
 function formatBytes(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;
@@ -260,6 +260,29 @@ function App() {
 
   const [model, setModel] = useState(DEFAULT_MODEL);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [uploadId, setUploadId] = useState<string | null>(null);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+
+  async function handleFileSelected(file: File | null) {
+    setUploadedFile(file);
+    setUploadId(null);
+    setUploadError(null);
+    if (!file) return;
+
+    const form = new FormData();
+    form.append("file", file);
+    try {
+      const res = await fetch("/api/upload", { method: "POST", body: form });
+      const data = await res.json();
+      if (!res.ok || data.error) {
+        setUploadError(data.error ?? `Upload failed: ${res.status}`);
+        return;
+      }
+      setUploadId(data.upload_id);
+    } catch {
+      setUploadError("Could not reach the backend to upload this file.");
+    }
+  }
 
   async function runQuery(q: string) {
     const trimmed = q.trim();
@@ -269,7 +292,7 @@ function App() {
     setError(null);
 
     try {
-      const result = await fetchSynthesis(trimmed, model);
+      const result = await fetchSynthesis(trimmed, model, uploadId);
       setResponse(result);
       setStatus(result.refused ? "refusal" : "answer");
     } catch {
@@ -300,8 +323,7 @@ function App() {
         </span>
         <div className="toolbar">
           <ModelMenu model={model} onChange={setModel} />
-          <UploadControl file={uploadedFile} onChange={setUploadedFile} />
-        </div>
+          <UploadControl file={uploadedFile} onChange={handleFileSelected} />        </div>
       </nav>
 
       <div className="workspace">
@@ -357,8 +379,11 @@ function App() {
                 Your data attached &middot; <strong>{uploadedFile.name}</strong>
               </p>
               <p className="data-notice-sub">
-                {formatBytes(uploadedFile.size)} &middot; not connected to the backend
-                yet, so the desk still answers from its approved corpus.
+                {uploadError
+                  ? `Upload failed: ${uploadError}`
+                  : uploadId
+                    ? `${formatBytes(uploadedFile.size)} · uploaded for this session only — answers from it are marked unverified.`
+                    : `${formatBytes(uploadedFile.size)} · uploading…`}
               </p>
             </div>
             <button
