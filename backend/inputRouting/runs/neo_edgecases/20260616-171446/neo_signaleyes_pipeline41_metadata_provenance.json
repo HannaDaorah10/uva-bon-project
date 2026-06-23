@@ -1,0 +1,52 @@
+{
+  "schema": "naturedesk.neo_signaleyes_boombasis.pipeline41.provenance.v1",
+  "created_at_utc": "2026-06-16T11:44:13Z",
+  "pipeline_id": 41,
+  "source": "NEO SignalEyes / Boombasis",
+  "canonical_role": "NEO SignalEyes / Boombasis is a high-quality licensed comparator, operational benchmark, and reference dataset for tree-object, crown, centerpoint, crown-area, diameter, height, method/date/quality/source, and related tree-attribute comparison.",
+  "wording_lock": "/home/hans/.openclaw/workspace/team_comms/NEO_REFERENCE_BENCHMARK_WORDING_LOCK_2026-06-15.md",
+  "scope": "non_commercial_use_allowed_student_public_client_policy_production_external_ready; student_ready_non_commercial_no_fee_data; no fee may be charged for the NEO data",
+  "labels": [
+    "non_commercial_use_allowed_student_public_client_policy_production_external_ready",
+    "student_ready_non_commercial_no_fee_data"
+  ],
+  "selector_context": {
+    "admin_unit_level": "wijk",
+    "admin_unit_preset": "all_wijken",
+    "metric_theme": "all_metric_themes",
+    "note": "Selector context is recorded for downstream comparison/explanation only; it does not alter the protected NEO retrieval AOI or source-rights boundary."
+  },
+  "credential_handling": "OpenClaw vault naturedesk.neoSignalEyes.env; credentials not written to artifacts",
+  "results": {
+    "mode": "metadata",
+    "entities": [
+      {
+        "entity": "crown",
+        "endpoint": "/source/tree/crown/metadata",
+        "status_code": 200,
+        "content_type": "application/json",
+        "output_path": "/sources/commercial_internal/neo_signaleyes/den_haag_2026-06-15/metadata/crown_metadata.json",
+        "sha256": "9cafdaf8b08d24af8d45c764ce1b6a46fdb15bb27800ff8d44de1b8188312529"
+      },
+      {
+        "entity": "centerpoint",
+        "endpoint": "/source/tree/centerpoint/metadata",
+        "status_code": 200,
+        "content_type": "application/json",
+        "output_path": "/sources/commercial_internal/neo_signaleyes/den_haag_2026-06-15/metadata/centerpoint_metadata.json",
+        "sha256": "fc4f0aa19f684a277acf9a9f23d7f16da1384b129b5c816546125fe7da9f08fc"
+      }
+    ]
+  },
+  "non_actions": {
+    "credentials_printed": false,
+    "credential_exposure": false,
+    "charged_for_neo_data": false,
+    "commercial_service_product_exploitation_or_integration": false,
+    "external_llm_or_model_training": false,
+    "validation_or_official_claim": false,
+    "unqualified_ground_truth_claim": false,
+    "proof_claim": false,
+    "official_alignment_or_municipal_groenmonitor_equivalence_claim": false
+  }
+}

@@ -2,9 +2,8 @@ import os
 from openai import OpenAI
 from dummy_chunks import DUMMY_CHUNKS, DUMMY_REFUSAL_CHUNKS
 
-client = OpenAI(
-    api_key=os.environ["OPENAI_API_KEY"]
-)
+OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
+client = OpenAI(api_key=OPENAI_API_KEY) if OPENAI_API_KEY else None
 
 SYSTEM_PROMPT = """
 You are NatureDesk, a biodiversity assistant for ecologists.
@@ -65,6 +64,9 @@ def format_chunks(chunks):
 
 def synthesize(question, chunks):
 
+    if client is None:
+        raise RuntimeError("OPENAI_API_KEY is required for the live synthesis smoke test")
+
     response = client.responses.create(
         model="gpt-5.5",
         reasoning={"effort": "low"},
@@ -113,20 +115,33 @@ def run(question, chunks, label):
     if "## Human review" in answer:
         print("✓ Human review section present")
 
-run(
-    question="What does the SHI score show for The Hague Groenmonitor between 2019 and 2024?",
-    chunks=DUMMY_CHUNKS,
-    label="ANSWERABLE"
-)
+def main():
+    if not OPENAI_API_KEY:
+        print("OPENAI_API_KEY not set; skipping live synthesis smoke test.")
+        return
 
-run(
-    question="What was the butterfly population in The Hague in 1970?",
-    chunks=DUMMY_REFUSAL_CHUNKS,
-    label="REFUSAL - no evidence"
-)
+    run(
+        question="What does the SHI score show for The Hague Groenmonitor between 2019 and 2024?",
+        chunks=DUMMY_CHUNKS,
+        label="ANSWERABLE"
+    )
 
-run(
-    question="Is it legal for the municipality to build housing on this green corridor?",
-    chunks=DUMMY_CHUNKS,
-    label="REFUSAL - legal question"
-)
+    run(
+        question="What was the butterfly population in The Hague in 1970?",
+        chunks=DUMMY_REFUSAL_CHUNKS,
+        label="REFUSAL - no evidence"
+    )
+
+    run(
+        question="Is it legal for the municipality to build housing on this green corridor?",
+        chunks=DUMMY_CHUNKS,
+        label="REFUSAL - legal question"
+    )
+
+
+def test_live_synthesis_smoke_is_manual():
+    assert OPENAI_API_KEY is None or client is not None
+
+
+if __name__ == "__main__":
+    main()

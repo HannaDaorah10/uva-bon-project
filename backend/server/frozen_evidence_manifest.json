@@ -1,0 +1,2620 @@
+{
+  "schema": "naturedesk.frozen_evidence_manifest.v1",
+  "generated_from_handoff": "/home/hans/.openclaw/workspace/team_comms/BOT_BOSS_TO_FORGE_FROZEN_EVIDENCE_INDEX_CONTEXT_2026-06-11.md",
+  "rows": [
+    {
+      "id": "kroonvolume_v1_datapackage_json",
+      "family": "kroonvolume_internal_proxy",
+      "type": "datapackage",
+      "path": "/home/hans/.openclaw/workspace/kroonvolume-den-haag-openclaw/data/release/internal_research_prototype_gm0518_v1_temporal_labels_patch/datapackage.json",
+      "relative_path": "datapackage.json",
+      "namespace": null,
+      "approved": true,
+      "approved_for": [
+        "internal_student_challenge",
+        "internal_research_prototype"
+      ],
+      "not_approved_for": [
+        "public",
+        "client",
+        "official",
+        "municipal_endorsement",
+        "training",
+        "external_release"
+      ],
+      "citation": "Den Haag Kroonvolume internal research prototype package; not official, not validated, not public/client ready.",
+      "readiness": {
+        "retrieve_allowed": true,
+        "quote_allowed": false,
+        "export_allowed": false,
+        "share_external_llm_allowed": false,
+        "train_allowed": false,
+        "citation_ready": false,
+        "user_facing_ready": false
+      },
+      "checksum_sha256": "50877eafe7ee18d706ee9d5542ab40b790b64fe1af502504cbd39dc3e52faef3",
+      "caveat_flags": [
+        "B008_denominator_caveat",
+        "B014_no_annual_trend",
+        "not_official_not_validated",
+        "no_2024_2025_2026_data",
+        "ahn234_acquisition_period_proxy"
+      ],
+      "requires_human_review": true,
+      "sensitive_exclusion_reason": null
+    },
+    {
+      "id": "kroonvolume_v1_artifact_catalog_csv",
+      "family": "kroonvolume_internal_proxy",
+      "type": "artifact_catalog",
+      "path": "/home/hans/.openclaw/workspace/kroonvolume-den-haag-openclaw/data/release/internal_research_prototype_gm0518_v1_temporal_labels_patch/artifact_catalog.csv",
+      "relative_path": "artifact_catalog.csv",
+      "namespace": null,
+      "approved": true,
+      "approved_for": [
+        "internal_student_challenge",
+        "internal_research_prototype"
+      ],
+      "not_approved_for": [
+        "public",
+        "client",
+        "official",
+        "municipal_endorsement",
+        "training",
+        "external_release"
+      ],
+      "citation": "Den Haag Kroonvolume internal research prototype package; not official, not validated, not public/client ready.",
+      "readiness": {
+        "retrieve_allowed": true,
+        "quote_allowed": false,
+        "export_allowed": false,
+        "share_external_llm_allowed": false,
+        "train_allowed": false,
+        "citation_ready": false,
+        "user_facing_ready": false
+      },
+      "checksum_sha256": "6167aae3adf7203caff7312ce658bd3e2a3aae7f52a468e5aec3b94e4bceafa5",
+      "caveat_flags": [
+        "B008_denominator_caveat",
+        "B014_no_annual_trend",
+        "not_official_not_validated",
+        "no_2024_2025_2026_data",
+        "ahn234_acquisition_period_proxy"
+      ],
+      "requires_human_review": true,
+      "sensitive_exclusion_reason": null
+    },
+    {
+      "id": "kroonvolume_v1_artifact_catalog_sqlite",
+      "family": "kroonvolume_internal_proxy",
+      "type": "artifact_catalog",
+      "path": "/home/hans/.openclaw/workspace/kroonvolume-den-haag-openclaw/data/release/internal_research_prototype_gm0518_v1_temporal_labels_patch/artifact_catalog.sqlite",
+      "relative_path": "artifact_catalog.sqlite",
+      "namespace": null,
+      "approved": true,
+      "approved_for": [
+        "internal_student_challenge",
+        "internal_research_prototype"
+      ],
+      "not_approved_for": [
+        "public",
+        "client",
+        "official",
+        "municipal_endorsement",
+        "training",
+        "external_release"
+      ],
+      "citation": "Den Haag Kroonvolume internal research prototype package; not official, not validated, not public/client ready.",
+      "readiness": {
+        "retrieve_allowed": true,
+        "quote_allowed": false,
+        "export_allowed": false,
+        "share_external_llm_allowed": false,
+        "train_allowed": false,
+        "citation_ready": false,
+        "user_facing_ready": false
+      },
+      "checksum_sha256": "e22b371cc8ef1d1a75405aaf134ecec0c6b5d68d34d56676caafcc99aa2c529f",
+      "caveat_flags": [
+        "B008_denominator_caveat",
+        "B014_no_annual_trend",
+        "not_official_not_validated",
+        "no_2024_2025_2026_data",
+        "ahn234_acquisition_period_proxy"
+      ],
+      "requires_human_review": true,
+      "sensitive_exclusion_reason": null
+    },
+    {
+      "id": "kroonvolume_v1_data_dictionary_csv",
+      "family": "kroonvolume_internal_proxy",
+      "type": "datapackage",
+      "path": "/home/hans/.openclaw/workspace/kroonvolume-den-haag-openclaw/data/release/internal_research_prototype_gm0518_v1_temporal_labels_patch/data_dictionary.csv",
+      "relative_path": "data_dictionary.csv",
+      "namespace": null,
+      "approved": true,
+      "approved_for": [
+        "internal_student_challenge",
+        "internal_research_prototype"
+      ],
+      "not_approved_for": [
+        "public",
+        "client",
+        "official",
+        "municipal_endorsement",
+        "training",
+        "external_release"
+      ],
+      "citation": "Den Haag Kroonvolume internal research prototype package; not official, not validated, not public/client ready.",
+      "readiness": {
+        "retrieve_allowed": true,
+        "quote_allowed": false,
+        "export_allowed": false,
+        "share_external_llm_allowed": false,
+        "train_allowed": false,
+        "citation_ready": false,
+        "user_facing_ready": false
+      },
+      "checksum_sha256": "389f08bd4648061678a98d6c384f356d67d2ef9ac4d7a2a01014161ea94f04cb",
+      "caveat_flags": [
+        "B008_denominator_caveat",
+        "B014_no_annual_trend",
+        "not_official_not_validated",
+        "no_2024_2025_2026_data",
+        "ahn234_acquisition_period_proxy"
+      ],
+      "requires_human_review": true,
+      "sensitive_exclusion_reason": null
+    },
+    {
+      "id": "kroonvolume_v1_provenance_manifest_json",
+      "family": "kroonvolume_internal_proxy",
+      "type": "provenance",
+      "path": "/home/hans/.openclaw/workspace/kroonvolume-den-haag-openclaw/data/release/internal_research_prototype_gm0518_v1_temporal_labels_patch/provenance_manifest.json",
+      "relative_path": "provenance_manifest.json",
+      "namespace": null,
+      "approved": true,
+      "approved_for": [
+        "internal_student_challenge",
+        "internal_research_prototype"
+      ],
+      "not_approved_for": [
+        "public",
+        "client",
+        "official",
+        "municipal_endorsement",
+        "training",
+        "external_release"
+      ],
+      "citation": "Den Haag Kroonvolume internal research prototype package; not official, not validated, not public/client ready.",
+      "readiness": {
+        "retrieve_allowed": true,
+        "quote_allowed": false,
+        "export_allowed": false,
+        "share_external_llm_allowed": false,
+        "train_allowed": false,
+        "citation_ready": false,
+        "user_facing_ready": false
+      },
+      "checksum_sha256": "a3e760f34d46e5a08d11e6555745a0e2f0946668beb560dd822a91bc4d8ffaf5",
+      "caveat_flags": [
+        "B008_denominator_caveat",
+        "B014_no_annual_trend",
+        "not_official_not_validated",
+        "no_2024_2025_2026_data",
+        "ahn234_acquisition_period_proxy"
+      ],
+      "requires_human_review": true,
+      "sensitive_exclusion_reason": null
+    },
+    {
+      "id": "kroonvolume_v1_checksums_sha256",
+      "family": "kroonvolume_internal_proxy",
+      "type": "checksum",
+      "path": "/home/hans/.openclaw/workspace/kroonvolume-den-haag-openclaw/data/release/internal_research_prototype_gm0518_v1_temporal_labels_patch/checksums.sha256",
+      "relative_path": "checksums.sha256",
+      "namespace": null,
+      "approved": true,
+      "approved_for": [
+        "internal_student_challenge",
+        "internal_research_prototype"
+      ],
+      "not_approved_for": [
+        "public",
+        "client",
+        "official",
+        "municipal_endorsement",
+        "training",
+        "external_release"
+      ],
+      "citation": "Den Haag Kroonvolume internal research prototype package; not official, not validated, not public/client ready.",
+      "readiness": {
+        "retrieve_allowed": true,
+        "quote_allowed": false,
+        "export_allowed": false,
+        "share_external_llm_allowed": false,
+        "train_allowed": false,
+        "citation_ready": false,
+        "user_facing_ready": false
+      },
+      "checksum_sha256": "9a8d289c9e0e468eae7a34795dff8a240460c85e3193469bf7ad4ef96697184e",
+      "caveat_flags": [
+        "B008_denominator_caveat",
+        "B014_no_annual_trend",
+        "not_official_not_validated",
+        "no_2024_2025_2026_data",
+        "ahn234_acquisition_period_proxy"
+      ],
+      "requires_human_review": true,
+      "sensitive_exclusion_reason": null
+    },
+    {
+      "id": "kroonvolume_v1_README_md",
+      "family": "kroonvolume_internal_proxy",
+      "type": "readiness_note",
+      "path": "/home/hans/.openclaw/workspace/kroonvolume-den-haag-openclaw/data/release/internal_research_prototype_gm0518_v1_temporal_labels_patch/README.md",
+      "relative_path": "README.md",
+      "namespace": null,
+      "approved": true,
+      "approved_for": [
+        "internal_student_challenge",
+        "internal_research_prototype"
+      ],
+      "not_approved_for": [
+        "public",
+        "client",
+        "official",
+        "municipal_endorsement",
+        "training",
+        "external_release"
+      ],
+      "citation": "Den Haag Kroonvolume internal research prototype package; not official, not validated, not public/client ready.",
+      "readiness": {
+        "retrieve_allowed": true,
+        "quote_allowed": false,
+        "export_allowed": false,
+        "share_external_llm_allowed": false,
+        "train_allowed": false,
+        "citation_ready": false,
+        "user_facing_ready": false
+      },
+      "checksum_sha256": "e4ef041d5c6567b7034715ae78a93954c7111f1e9328d3944357a8b40395cbfe",
+      "caveat_flags": [
+        "B008_denominator_caveat",
+        "B014_no_annual_trend",
+        "not_official_not_validated",
+        "no_2024_2025_2026_data",
+        "ahn234_acquisition_period_proxy"
+      ],
+      "requires_human_review": true,
+      "sensitive_exclusion_reason": null
+    },
+    {
+      "id": "kroonvolume_v1_release_readiness_note_md",
+      "family": "kroonvolume_internal_proxy",
+      "type": "readiness_note",
+      "path": "/home/hans/.openclaw/workspace/kroonvolume-den-haag-openclaw/data/release/internal_research_prototype_gm0518_v1_temporal_labels_patch/release_readiness_note.md",
+      "relative_path": "release_readiness_note.md",
+      "namespace": null,
+      "approved": true,
+      "approved_for": [
+        "internal_student_challenge",
+        "internal_research_prototype"
+      ],
+      "not_approved_for": [
+        "public",
+        "client",
+        "official",
+        "municipal_endorsement",
+        "training",
+        "external_release"
+      ],
+      "citation": "Den Haag Kroonvolume internal research prototype package; not official, not validated, not public/client ready.",
+      "readiness": {
+        "retrieve_allowed": true,
+        "quote_allowed": false,
+        "export_allowed": false,
+        "share_external_llm_allowed": false,
+        "train_allowed": false,
+        "citation_ready": false,
+        "user_facing_ready": false
+      },
+      "checksum_sha256": "e1f2faacc65d54456f8bb9aa44dcc975b16ac3525ac9329719b4c58f45a2d40f",
+      "caveat_flags": [
+        "B008_denominator_caveat",
+        "B014_no_annual_trend",
+        "not_official_not_validated",
+        "no_2024_2025_2026_data",
+        "ahn234_acquisition_period_proxy"
+      ],
+      "requires_human_review": true,
+      "sensitive_exclusion_reason": null
+    },
+    {
+      "id": "kroonvolume_v1_source_rights_summary_md",
+      "family": "kroonvolume_internal_proxy",
+      "type": "readiness_note",
+      "path": "/home/hans/.openclaw/workspace/kroonvolume-den-haag-openclaw/data/release/internal_research_prototype_gm0518_v1_temporal_labels_patch/source_rights_summary.md",
+      "relative_path": "source_rights_summary.md",
+      "namespace": null,
+      "approved": true,
+      "approved_for": [
+        "internal_student_challenge",
+        "internal_research_prototype"
+      ],
+      "not_approved_for": [
+        "public",
+        "client",
+        "official",
+        "municipal_endorsement",
+        "training",
+        "external_release"
+      ],
+      "citation": "Den Haag Kroonvolume internal research prototype package; not official, not validated, not public/client ready.",
+      "readiness": {
+        "retrieve_allowed": true,
+        "quote_allowed": false,
+        "export_allowed": false,
+        "share_external_llm_allowed": false,
+        "train_allowed": false,
+        "citation_ready": false,
+        "user_facing_ready": false
+      },
+      "checksum_sha256": "a0235b93e57af1b2b3a8a60910b3466939d4144f5a15066702bbd86d4ac90e00",
+      "caveat_flags": [
+        "B008_denominator_caveat",
+        "B014_no_annual_trend",
+        "not_official_not_validated",
+        "no_2024_2025_2026_data",
+        "ahn234_acquisition_period_proxy"
+      ],
+      "requires_human_review": true,
+      "sensitive_exclusion_reason": null
+    },
+    {
+      "id": "kroonvolume_v1_can_and_cannot_support_md",
+      "family": "kroonvolume_internal_proxy",
+      "type": "readiness_note",
+      "path": "/home/hans/.openclaw/workspace/kroonvolume-den-haag-openclaw/data/release/internal_research_prototype_gm0518_v1_temporal_labels_patch/can_and_cannot_support.md",
+      "relative_path": "can_and_cannot_support.md",
+      "namespace": null,
+      "approved": true,
+      "approved_for": [
+        "internal_student_challenge",
+        "internal_research_prototype"
+      ],
+      "not_approved_for": [
+        "public",
+        "client",
+        "official",
+        "municipal_endorsement",
+        "training",
+        "external_release"
+      ],
+      "citation": "Den Haag Kroonvolume internal research prototype package; not official, not validated, not public/client ready.",
+      "readiness": {
+        "retrieve_allowed": true,
+        "quote_allowed": false,
+        "export_allowed": false,
+        "share_external_llm_allowed": false,
+        "train_allowed": false,
+        "citation_ready": false,
+        "user_facing_ready": false
+      },
+      "checksum_sha256": "8cfc7080995cee007685de66b2c7cfe1e3123b6b49cd3eb84222c28edc2df6d8",
+      "caveat_flags": [
+        "B008_denominator_caveat",
+        "B014_no_annual_trend",
+        "not_official_not_validated",
+        "no_2024_2025_2026_data",
+        "ahn234_acquisition_period_proxy"
+      ],
+      "requires_human_review": true,
+      "sensitive_exclusion_reason": null
+    },
+    {
+      "id": "kroonvolume_v1_not_official_not_validated_statement_md",
+      "family": "kroonvolume_internal_proxy",
+      "type": "readiness_note",
+      "path": "/home/hans/.openclaw/workspace/kroonvolume-den-haag-openclaw/data/release/internal_research_prototype_gm0518_v1_temporal_labels_patch/not_official_not_validated_statement.md",
+      "relative_path": "not_official_not_validated_statement.md",
+      "namespace": null,
+      "approved": true,
+      "approved_for": [
+        "internal_student_challenge",
+        "internal_research_prototype"
+      ],
+      "not_approved_for": [
+        "public",
+        "client",
+        "official",
+        "municipal_endorsement",
+        "training",
+        "external_release"
+      ],
+      "citation": "Den Haag Kroonvolume internal research prototype package; not official, not validated, not public/client ready.",
+      "readiness": {
+        "retrieve_allowed": true,
+        "quote_allowed": false,
+        "export_allowed": false,
+        "share_external_llm_allowed": false,
+        "train_allowed": false,
+        "citation_ready": false,
+        "user_facing_ready": false
+      },
+      "checksum_sha256": "413bee4a9d4b920f0afdb47d91b522b29d4d61daa50e85670e57bfeae8b463a0",
+      "caveat_flags": [
+        "B008_denominator_caveat",
+        "B014_no_annual_trend",
+        "not_official_not_validated",
+        "no_2024_2025_2026_data",
+        "ahn234_acquisition_period_proxy"
+      ],
+      "requires_human_review": true,
+      "sensitive_exclusion_reason": null
+    },
+    {
+      "id": "kroonvolume_v1_no_annual_trend_statement_md",
+      "family": "kroonvolume_internal_proxy",
+      "type": "readiness_note",
+      "path": "/home/hans/.openclaw/workspace/kroonvolume-den-haag-openclaw/data/release/internal_research_prototype_gm0518_v1_temporal_labels_patch/no_annual_trend_statement.md",
+      "relative_path": "no_annual_trend_statement.md",
+      "namespace": null,
+      "approved": true,
+      "approved_for": [
+        "internal_student_challenge",
+        "internal_research_prototype"
+      ],
+      "not_approved_for": [
+        "public",
+        "client",
+        "official",
+        "municipal_endorsement",
+        "training",
+        "external_release"
+      ],
+      "citation": "Den Haag Kroonvolume internal research prototype package; not official, not validated, not public/client ready.",
+      "readiness": {
+        "retrieve_allowed": true,
+        "quote_allowed": false,
+        "export_allowed": false,
+        "share_external_llm_allowed": false,
+        "train_allowed": false,
+        "citation_ready": false,
+        "user_facing_ready": false
+      },
+      "checksum_sha256": "8c984fba8113967abe99bbc3df2172253a166c3984f8a1cbbd9f961318bf7006",
+      "caveat_flags": [
+        "B008_denominator_caveat",
+        "B014_no_annual_trend",
+        "not_official_not_validated",
+        "no_2024_2025_2026_data",
+        "ahn234_acquisition_period_proxy"
+      ],
+      "requires_human_review": true,
+      "sensitive_exclusion_reason": null
+    },
+    {
+      "id": "kroonvolume_v1_no_2024_2025_2026_data_statement_md",
+      "family": "kroonvolume_internal_proxy",
+      "type": "readiness_note",
+      "path": "/home/hans/.openclaw/workspace/kroonvolume-den-haag-openclaw/data/release/internal_research_prototype_gm0518_v1_temporal_labels_patch/no_2024_2025_2026_data_statement.md",
+      "relative_path": "no_2024_2025_2026_data_statement.md",
+      "namespace": null,
+      "approved": true,
+      "approved_for": [
+        "internal_student_challenge",
+        "internal_research_prototype"
+      ],
+      "not_approved_for": [
+        "public",
+        "client",
+        "official",
+        "municipal_endorsement",
+        "training",
+        "external_release"
+      ],
+      "citation": "Den Haag Kroonvolume internal research prototype package; not official, not validated, not public/client ready.",
+      "readiness": {
+        "retrieve_allowed": true,
+        "quote_allowed": false,
+        "export_allowed": false,
+        "share_external_llm_allowed": false,
+        "train_allowed": false,
+        "citation_ready": false,
+        "user_facing_ready": false
+      },
+      "checksum_sha256": "c26d9026107c2bca6d7b1a57997e60fd2b6bbda123693d0343e252a9bb84619a",
+      "caveat_flags": [
+        "B008_denominator_caveat",
+        "B014_no_annual_trend",
+        "not_official_not_validated",
+        "no_2024_2025_2026_data",
+        "ahn234_acquisition_period_proxy"
+      ],
+      "requires_human_review": true,
+      "sensitive_exclusion_reason": null
+    },
+    {
+      "id": "kroonvolume_v1_validation_summary_md",
+      "family": "kroonvolume_internal_proxy",
+      "type": "readiness_note",
+      "path": "/home/hans/.openclaw/workspace/kroonvolume-den-haag-openclaw/data/release/internal_research_prototype_gm0518_v1_temporal_labels_patch/validation_summary.md",
+      "relative_path": "validation_summary.md",
+      "namespace": null,
+      "approved": true,
+      "approved_for": [
+        "internal_student_challenge",
+        "internal_research_prototype"
+      ],
+      "not_approved_for": [
+        "public",
+        "client",
+        "official",
+        "municipal_endorsement",
+        "training",
+        "external_release"
+      ],
+      "citation": "Den Haag Kroonvolume internal research prototype package; not official, not validated, not public/client ready.",
+      "readiness": {
+        "retrieve_allowed": true,
+        "quote_allowed": false,
+        "export_allowed": false,
+        "share_external_llm_allowed": false,
+        "train_allowed": false,
+        "citation_ready": false,
+        "user_facing_ready": false
+      },
+      "checksum_sha256": "6517fc794385ff10a44ca3127b7a9c304aaa8877f6c39263752d7b3a58bdbbb4",
+      "caveat_flags": [
+        "B008_denominator_caveat",
+        "B014_no_annual_trend",
+        "not_official_not_validated",
+        "no_2024_2025_2026_data",
+        "ahn234_acquisition_period_proxy"
+      ],
+      "requires_human_review": true,
+      "sensitive_exclusion_reason": null
+    },
+    {
+      "id": "kroonvolume_v1_human_review_handoff_md",
+      "family": "kroonvolume_internal_proxy",
+      "type": "readiness_note",
+      "path": "/home/hans/.openclaw/workspace/kroonvolume-den-haag-openclaw/data/release/internal_research_prototype_gm0518_v1_temporal_labels_patch/human_review_handoff.md",
+      "relative_path": "human_review_handoff.md",
+      "namespace": null,
+      "approved": true,
+      "approved_for": [
+        "internal_student_challenge",
+        "internal_research_prototype"
+      ],
+      "not_approved_for": [
+        "public",
+        "client",
+        "official",
+        "municipal_endorsement",
+        "training",
+        "external_release"
+      ],
+      "citation": "Den Haag Kroonvolume internal research prototype package; not official, not validated, not public/client ready.",
+      "readiness": {
+        "retrieve_allowed": true,
+        "quote_allowed": false,
+        "export_allowed": false,
+        "share_external_llm_allowed": false,
+        "train_allowed": false,
+        "citation_ready": false,
+        "user_facing_ready": false
+      },
+      "checksum_sha256": "9ea682669591c4494c683e134bdc0e5a0f2d2d0952b7bc524c679ccc5f849cf9",
+      "caveat_flags": [
+        "B008_denominator_caveat",
+        "B014_no_annual_trend",
+        "not_official_not_validated",
+        "no_2024_2025_2026_data",
+        "ahn234_acquisition_period_proxy"
+      ],
+      "requires_human_review": true,
+      "sensitive_exclusion_reason": null
+    },
+    {
+      "id": "kroonvolume_v1_gm0518_kroonvolume_proxy_v1_csv",
+      "family": "kroonvolume_internal_proxy",
+      "type": "score_table",
+      "path": "/home/hans/.openclaw/workspace/kroonvolume-den-haag-openclaw/data/release/internal_research_prototype_gm0518_v1_temporal_labels_patch/gm0518_kroonvolume_proxy_v1.csv",
+      "relative_path": "gm0518_kroonvolume_proxy_v1.csv",
+      "namespace": null,
+      "approved": true,
+      "approved_for": [
+        "internal_student_challenge",
+        "internal_research_prototype"
+      ],
+      "not_approved_for": [
+        "public",
+        "client",
+        "official",
+        "municipal_endorsement",
+        "training",
+        "external_release"
+      ],
+      "citation": "Den Haag Kroonvolume internal research prototype package; not official, not validated, not public/client ready.",
+      "readiness": {
+        "retrieve_allowed": true,
+        "quote_allowed": true,
+        "export_allowed": false,
+        "share_external_llm_allowed": false,
+        "train_allowed": false,
+        "citation_ready": true,
+        "user_facing_ready": true
+      },
+      "checksum_sha256": "05a34876f3a8f01225a58423648248212b2ffbabac0f7bdcf4ae23ac44fc83e4",
+      "caveat_flags": [
+        "B008_denominator_caveat",
+        "B014_no_annual_trend",
+        "not_official_not_validated",
+        "no_2024_2025_2026_data",
+        "ahn234_acquisition_period_proxy"
+      ],
+      "requires_human_review": true,
+      "sensitive_exclusion_reason": null
+    },
+    {
+      "id": "kroonvolume_v1_stadsdeel_kroonvolume_proxy_v1_csv",
+      "family": "kroonvolume_internal_proxy",
+      "type": "score_table",
+      "path": "/home/hans/.openclaw/workspace/kroonvolume-den-haag-openclaw/data/release/internal_research_prototype_gm0518_v1_temporal_labels_patch/stadsdeel_kroonvolume_proxy_v1.csv",
+      "relative_path": "stadsdeel_kroonvolume_proxy_v1.csv",
+      "namespace": null,
+      "approved": true,
+      "approved_for": [
+        "internal_student_challenge",
+        "internal_research_prototype"
+      ],
+      "not_approved_for": [
+        "public",
+        "client",
+        "official",
+        "municipal_endorsement",
+        "training",
+        "external_release"
+      ],
+      "citation": "Den Haag Kroonvolume internal research prototype package; not official, not validated, not public/client ready.",
+      "readiness": {
+        "retrieve_allowed": true,
+        "quote_allowed": false,
+        "export_allowed": false,
+        "share_external_llm_allowed": false,
+        "train_allowed": false,
+        "citation_ready": false,
+        "user_facing_ready": false
+      },
+      "checksum_sha256": "a2bfc8778fe473d5797f2618a73043224295dd2df949f9151a972b404d6e3f95",
+      "caveat_flags": [
+        "B008_denominator_caveat",
+        "B014_no_annual_trend",
+        "not_official_not_validated",
+        "no_2024_2025_2026_data",
+        "ahn234_acquisition_period_proxy"
+      ],
+      "requires_human_review": true,
+      "sensitive_exclusion_reason": null
+    },
+    {
+      "id": "kroonvolume_v1_wijk_kroonvolume_proxy_v1_csv",
+      "family": "kroonvolume_internal_proxy",
+      "type": "score_table",
+      "path": "/home/hans/.openclaw/workspace/kroonvolume-den-haag-openclaw/data/release/internal_research_prototype_gm0518_v1_temporal_labels_patch/wijk_kroonvolume_proxy_v1.csv",
+      "relative_path": "wijk_kroonvolume_proxy_v1.csv",
+      "namespace": null,
+      "approved": true,
+      "approved_for": [
+        "internal_student_challenge",
+        "internal_research_prototype"
+      ],
+      "not_approved_for": [
+        "public",
+        "client",
+        "official",
+        "municipal_endorsement",
+        "training",
+        "external_release"
+      ],
+      "citation": "Den Haag Kroonvolume internal research prototype package; not official, not validated, not public/client ready.",
+      "readiness": {
+        "retrieve_allowed": true,
+        "quote_allowed": false,
+        "export_allowed": false,
+        "share_external_llm_allowed": false,
+        "train_allowed": false,
+        "citation_ready": false,
+        "user_facing_ready": false
+      },
+      "checksum_sha256": "d38f3a2d2596d79b0f5ddff5192c80dce07d5cd6e5aa811bebc80b732ddb1b43",
+      "caveat_flags": [
+        "B008_denominator_caveat",
+        "B014_no_annual_trend",
+        "not_official_not_validated",
+        "no_2024_2025_2026_data",
+        "ahn234_acquisition_period_proxy"
+      ],
+      "requires_human_review": true,
+      "sensitive_exclusion_reason": null
+    },
+    {
+      "id": "kroonvolume_v1_buurt_kroonvolume_proxy_v1_csv",
+      "family": "kroonvolume_internal_proxy",
+      "type": "score_table",
+      "path": "/home/hans/.openclaw/workspace/kroonvolume-den-haag-openclaw/data/release/internal_research_prototype_gm0518_v1_temporal_labels_patch/buurt_kroonvolume_proxy_v1.csv",
+      "relative_path": "buurt_kroonvolume_proxy_v1.csv",
+      "namespace": null,
+      "approved": true,
+      "approved_for": [
+        "internal_student_challenge",
+        "internal_research_prototype"
+      ],
+      "not_approved_for": [
+        "public",
+        "client",
+        "official",
+        "municipal_endorsement",
+        "training",
+        "external_release"
+      ],
+      "citation": "Den Haag Kroonvolume internal research prototype package; not official, not validated, not public/client ready.",
+      "readiness": {
+        "retrieve_allowed": true,
+        "quote_allowed": false,
+        "export_allowed": false,
+        "share_external_llm_allowed": false,
+        "train_allowed": false,
+        "citation_ready": false,
+        "user_facing_ready": false
+      },
+      "checksum_sha256": "1810aeafb83b2335e3455e5f0ee0d6e44a9a99a8dc6d829d59a83be88a59808c",
+      "caveat_flags": [
+        "B008_denominator_caveat",
+        "B014_no_annual_trend",
+        "not_official_not_validated",
+        "no_2024_2025_2026_data",
+        "ahn234_acquisition_period_proxy"
+      ],
+      "requires_human_review": true,
+      "sensitive_exclusion_reason": null
+    },
+    {
+      "id": "kroonvolume_v1_tile_kroonvolume_proxy_v1_csv",
+      "family": "kroonvolume_internal_proxy",
+      "type": "score_table",
+      "path": "/home/hans/.openclaw/workspace/kroonvolume-den-haag-openclaw/data/release/internal_research_prototype_gm0518_v1_temporal_labels_patch/tile_kroonvolume_proxy_v1.csv",
+      "relative_path": "tile_kroonvolume_proxy_v1.csv",
+      "namespace": null,
+      "approved": true,
+      "approved_for": [
+        "internal_student_challenge",
+        "internal_research_prototype"
+      ],
+      "not_approved_for": [
+        "public",
+        "client",
+        "official",
+        "municipal_endorsement",
+        "training",
+        "external_release"
+      ],
+      "citation": "Den Haag Kroonvolume internal research prototype package; not official, not validated, not public/client ready.",
+      "readiness": {
+        "retrieve_allowed": true,
+        "quote_allowed": false,
+        "export_allowed": false,
+        "share_external_llm_allowed": false,
+        "train_allowed": false,
+        "citation_ready": false,
+        "user_facing_ready": false
+      },
+      "checksum_sha256": "94e607e837678f0debe30c39db863d7fd771fb5903992db36259041f2a61afe4",
+      "caveat_flags": [
+        "B008_denominator_caveat",
+        "B014_no_annual_trend",
+        "not_official_not_validated",
+        "no_2024_2025_2026_data",
+        "ahn234_acquisition_period_proxy"
+      ],
+      "requires_human_review": true,
+      "sensitive_exclusion_reason": null
+    },
+    {
+      "id": "kroonvolume_v1_multiyear_change_indices_with_caveats_v1_csv",
+      "family": "kroonvolume_internal_proxy",
+      "type": "score_table",
+      "path": "/home/hans/.openclaw/workspace/kroonvolume-den-haag-openclaw/data/release/internal_research_prototype_gm0518_v1_temporal_labels_patch/multiyear_change_indices_with_caveats_v1.csv",
+      "relative_path": "multiyear_change_indices_with_caveats_v1.csv",
+      "namespace": null,
+      "approved": true,
+      "approved_for": [
+        "internal_student_challenge",
+        "internal_research_prototype"
+      ],
+      "not_approved_for": [
+        "public",
+        "client",
+        "official",
+        "municipal_endorsement",
+        "training",
+        "external_release"
+      ],
+      "citation": "Den Haag Kroonvolume internal research prototype package; not official, not validated, not public/client ready.",
+      "readiness": {
+        "retrieve_allowed": true,
+        "quote_allowed": false,
+        "export_allowed": false,
+        "share_external_llm_allowed": false,
+        "train_allowed": false,
+        "citation_ready": false,
+        "user_facing_ready": false
+      },
+      "checksum_sha256": "b15db7253e7612e61727649a54fa591302485cf088b5c6c2bad5c8f2635cd746",
+      "caveat_flags": [
+        "B008_denominator_caveat",
+        "B014_no_annual_trend",
+        "not_official_not_validated",
+        "no_2024_2025_2026_data",
+        "ahn234_acquisition_period_proxy"
+      ],
+      "requires_human_review": true,
+      "sensitive_exclusion_reason": null
+    },
+    {
+      "id": "kroonvolume_v1_uncertainty_register_v1_csv",
+      "family": "kroonvolume_internal_proxy",
+      "type": "score_table",
+      "path": "/home/hans/.openclaw/workspace/kroonvolume-den-haag-openclaw/data/release/internal_research_prototype_gm0518_v1_temporal_labels_patch/uncertainty_register_v1.csv",
+      "relative_path": "uncertainty_register_v1.csv",
+      "namespace": null,
+      "approved": true,
+      "approved_for": [
+        "internal_student_challenge",
+        "internal_research_prototype"
+      ],
+      "not_approved_for": [
+        "public",
+        "client",
+        "official",
+        "municipal_endorsement",
+        "training",
+        "external_release"
+      ],
+      "citation": "Den Haag Kroonvolume internal research prototype package; not official, not validated, not public/client ready.",
+      "readiness": {
+        "retrieve_allowed": true,
+        "quote_allowed": true,
+        "export_allowed": false,
+        "share_external_llm_allowed": false,
+        "train_allowed": false,
+        "citation_ready": true,
+        "user_facing_ready": true
+      },
+      "checksum_sha256": "d9eef59122640ba4d84ee0914c363265c4e5cf1f9d25214bba523b05d4e7ec48",
+      "caveat_flags": [
+        "B008_denominator_caveat",
+        "B014_no_annual_trend",
+        "not_official_not_validated",
+        "no_2024_2025_2026_data",
+        "ahn234_acquisition_period_proxy"
+      ],
+      "requires_human_review": true,
+      "sensitive_exclusion_reason": null
+    },
+    {
+      "id": "kroonvolume_v1_stac_collection_json",
+      "family": "kroonvolume_internal_proxy",
+      "type": "map_raster_pointer",
+      "path": "/home/hans/.openclaw/workspace/kroonvolume-den-haag-openclaw/data/release/internal_research_prototype_gm0518_v1_temporal_labels_patch/stac_collection.json",
+      "relative_path": "stac_collection.json",
+      "namespace": null,
+      "approved": true,
+      "approved_for": [
+        "internal_student_challenge",
+        "internal_research_prototype"
+      ],
+      "not_approved_for": [
+        "public",
+        "client",
+        "official",
+        "municipal_endorsement",
+        "training",
+        "external_release"
+      ],
+      "citation": "Den Haag Kroonvolume internal research prototype package; not official, not validated, not public/client ready.",
+      "readiness": {
+        "retrieve_allowed": true,
+        "quote_allowed": false,
+        "export_allowed": false,
+        "share_external_llm_allowed": false,
+        "train_allowed": false,
+        "citation_ready": false,
+        "user_facing_ready": false
+      },
+      "checksum_sha256": "5ec20299e0d9184ea2bcd42615ca42ae04364148f12e9bc3fbbc33cdfff6150d",
+      "caveat_flags": [
+        "B008_denominator_caveat",
+        "B014_no_annual_trend",
+        "not_official_not_validated",
+        "no_2024_2025_2026_data",
+        "ahn234_acquisition_period_proxy"
+      ],
+      "requires_human_review": true,
+      "sensitive_exclusion_reason": null
+    },
+    {
+      "id": "kroonvolume_v2_datapackage_json",
+      "family": "kroonvolume_internal_proxy",
+      "type": "datapackage",
+      "path": "/home/hans/.openclaw/workspace/kroonvolume-den-haag-openclaw/data/release/internal_research_prototype_gm0518_v2_ahn5_separate_layer/datapackage.json",
+      "relative_path": "datapackage.json",
+      "namespace": null,
+      "approved": true,
+      "approved_for": [
+        "internal_student_challenge",
+        "internal_research_prototype"
+      ],
+      "not_approved_for": [
+        "public",
+        "client",
+        "official",
+        "municipal_endorsement",
+        "training",
+        "external_release"
+      ],
+      "citation": "Den Haag Kroonvolume internal research prototype package; not official, not validated, not public/client ready.",
+      "readiness": {
+        "retrieve_allowed": true,
+        "quote_allowed": false,
+        "export_allowed": false,
+        "share_external_llm_allowed": false,
+        "train_allowed": false,
+        "citation_ready": false,
+        "user_facing_ready": false
+      },
+      "checksum_sha256": "c6e25b22e4a9954cf8f156f2096f75fd6575b74c1a935be6deca1e09b7566824",
+      "caveat_flags": [
+        "B008_denominator_caveat",
+        "B014_no_annual_trend",
+        "not_official_not_validated",
+        "no_2024_2025_2026_data",
+        "ahn5_separate_layer_only",
+        "do_not_merge_with_ahn234"
+      ],
+      "requires_human_review": true,
+      "sensitive_exclusion_reason": null
+    },
+    {
+      "id": "kroonvolume_v2_artifact_catalog_csv",
+      "family": "kroonvolume_internal_proxy",
+      "type": "artifact_catalog",
+      "path": "/home/hans/.openclaw/workspace/kroonvolume-den-haag-openclaw/data/release/internal_research_prototype_gm0518_v2_ahn5_separate_layer/artifact_catalog.csv",
+      "relative_path": "artifact_catalog.csv",
+      "namespace": null,
+      "approved": true,
+      "approved_for": [
+        "internal_student_challenge",
+        "internal_research_prototype"
+      ],
+      "not_approved_for": [
+        "public",
+        "client",
+        "official",
+        "municipal_endorsement",
+        "training",
+        "external_release"
+      ],
+      "citation": "Den Haag Kroonvolume internal research prototype package; not official, not validated, not public/client ready.",
+      "readiness": {
+        "retrieve_allowed": true,
+        "quote_allowed": false,
+        "export_allowed": false,
+        "share_external_llm_allowed": false,
+        "train_allowed": false,
+        "citation_ready": false,
+        "user_facing_ready": false
+      },
+      "checksum_sha256": "cf24509456d966fc2559e8478129b28e98df26d91d79afbdafc895682e8a06e6",
+      "caveat_flags": [
+        "B008_denominator_caveat",
+        "B014_no_annual_trend",
+        "not_official_not_validated",
+        "no_2024_2025_2026_data",
+        "ahn5_separate_layer_only",
+        "do_not_merge_with_ahn234"
+      ],
+      "requires_human_review": true,
+      "sensitive_exclusion_reason": null
+    },
+    {
+      "id": "kroonvolume_v2_artifact_catalog_sqlite",
+      "family": "kroonvolume_internal_proxy",
+      "type": "artifact_catalog",
+      "path": "/home/hans/.openclaw/workspace/kroonvolume-den-haag-openclaw/data/release/internal_research_prototype_gm0518_v2_ahn5_separate_layer/artifact_catalog.sqlite",
+      "relative_path": "artifact_catalog.sqlite",
+      "namespace": null,
+      "approved": true,
+      "approved_for": [
+        "internal_student_challenge",
+        "internal_research_prototype"
+      ],
+      "not_approved_for": [
+        "public",
+        "client",
+        "official",
+        "municipal_endorsement",
+        "training",
+        "external_release"
+      ],
+      "citation": "Den Haag Kroonvolume internal research prototype package; not official, not validated, not public/client ready.",
+      "readiness": {
+        "retrieve_allowed": true,
+        "quote_allowed": false,
+        "export_allowed": false,
+        "share_external_llm_allowed": false,
+        "train_allowed": false,
+        "citation_ready": false,
+        "user_facing_ready": false
+      },
+      "checksum_sha256": "0b08ed513e9cd31363a9c8c10402d9297d4c1f667b273dcd5cc4039f33126639",
+      "caveat_flags": [
+        "B008_denominator_caveat",
+        "B014_no_annual_trend",
+        "not_official_not_validated",
+        "no_2024_2025_2026_data",
+        "ahn5_separate_layer_only",
+        "do_not_merge_with_ahn234"
+      ],
+      "requires_human_review": true,
+      "sensitive_exclusion_reason": null
+    },
+    {
+      "id": "kroonvolume_v2_data_dictionary_csv",
+      "family": "kroonvolume_internal_proxy",
+      "type": "datapackage",
+      "path": "/home/hans/.openclaw/workspace/kroonvolume-den-haag-openclaw/data/release/internal_research_prototype_gm0518_v2_ahn5_separate_layer/data_dictionary.csv",
+      "relative_path": "data_dictionary.csv",
+      "namespace": null,
+      "approved": true,
+      "approved_for": [
+        "internal_student_challenge",
+        "internal_research_prototype"
+      ],
+      "not_approved_for": [
+        "public",
+        "client",
+        "official",
+        "municipal_endorsement",
+        "training",
+        "external_release"
+      ],
+      "citation": "Den Haag Kroonvolume internal research prototype package; not official, not validated, not public/client ready.",
+      "readiness": {
+        "retrieve_allowed": true,
+        "quote_allowed": false,
+        "export_allowed": false,
+        "share_external_llm_allowed": false,
+        "train_allowed": false,
+        "citation_ready": false,
+        "user_facing_ready": false
+      },
+      "checksum_sha256": "22818e7b8bc3cf8d73d2a08ba35cd026b137b94c1dfad1c8b5c503b2f18653e2",
+      "caveat_flags": [
+        "B008_denominator_caveat",
+        "B014_no_annual_trend",
+        "not_official_not_validated",
+        "no_2024_2025_2026_data",
+        "ahn5_separate_layer_only",
+        "do_not_merge_with_ahn234"
+      ],
+      "requires_human_review": true,
+      "sensitive_exclusion_reason": null
+    },
+    {
+      "id": "kroonvolume_v2_provenance_manifest_json",
+      "family": "kroonvolume_internal_proxy",
+      "type": "provenance",
+      "path": "/home/hans/.openclaw/workspace/kroonvolume-den-haag-openclaw/data/release/internal_research_prototype_gm0518_v2_ahn5_separate_layer/provenance_manifest.json",
+      "relative_path": "provenance_manifest.json",
+      "namespace": null,
+      "approved": true,
+      "approved_for": [
+        "internal_student_challenge",
+        "internal_research_prototype"
+      ],
+      "not_approved_for": [
+        "public",
+        "client",
+        "official",
+        "municipal_endorsement",
+        "training",
+        "external_release"
+      ],
+      "citation": "Den Haag Kroonvolume internal research prototype package; not official, not validated, not public/client ready.",
+      "readiness": {
+        "retrieve_allowed": true,
+        "quote_allowed": false,
+        "export_allowed": false,
+        "share_external_llm_allowed": false,
+        "train_allowed": false,
+        "citation_ready": false,
+        "user_facing_ready": false
+      },
+      "checksum_sha256": "f0c3c1047677c2841192290de1faad2f6dab6d1307d20e63cd1adc428672f6bc",
+      "caveat_flags": [
+        "B008_denominator_caveat",
+        "B014_no_annual_trend",
+        "not_official_not_validated",
+        "no_2024_2025_2026_data",
+        "ahn5_separate_layer_only",
+        "do_not_merge_with_ahn234"
+      ],
+      "requires_human_review": true,
+      "sensitive_exclusion_reason": null
+    },
+    {
+      "id": "kroonvolume_v2_checksums_sha256",
+      "family": "kroonvolume_internal_proxy",
+      "type": "checksum",
+      "path": "/home/hans/.openclaw/workspace/kroonvolume-den-haag-openclaw/data/release/internal_research_prototype_gm0518_v2_ahn5_separate_layer/checksums.sha256",
+      "relative_path": "checksums.sha256",
+      "namespace": null,
+      "approved": true,
+      "approved_for": [
+        "internal_student_challenge",
+        "internal_research_prototype"
+      ],
+      "not_approved_for": [
+        "public",
+        "client",
+        "official",
+        "municipal_endorsement",
+        "training",
+        "external_release"
+      ],
+      "citation": "Den Haag Kroonvolume internal research prototype package; not official, not validated, not public/client ready.",
+      "readiness": {
+        "retrieve_allowed": true,
+        "quote_allowed": false,
+        "export_allowed": false,
+        "share_external_llm_allowed": false,
+        "train_allowed": false,
+        "citation_ready": false,
+        "user_facing_ready": false
+      },
+      "checksum_sha256": "315973b491fd3dcd656c5ecb48fd476336ee18b453be7db7feca9814a09fe84b",
+      "caveat_flags": [
+        "B008_denominator_caveat",
+        "B014_no_annual_trend",
+        "not_official_not_validated",
+        "no_2024_2025_2026_data",
+        "ahn5_separate_layer_only",
+        "do_not_merge_with_ahn234"
+      ],
+      "requires_human_review": true,
+      "sensitive_exclusion_reason": null
+    },
+    {
+      "id": "kroonvolume_v2_README_md",
+      "family": "kroonvolume_internal_proxy",
+      "type": "readiness_note",
+      "path": "/home/hans/.openclaw/workspace/kroonvolume-den-haag-openclaw/data/release/internal_research_prototype_gm0518_v2_ahn5_separate_layer/README.md",
+      "relative_path": "README.md",
+      "namespace": null,
+      "approved": true,
+      "approved_for": [
+        "internal_student_challenge",
+        "internal_research_prototype"
+      ],
+      "not_approved_for": [
+        "public",
+        "client",
+        "official",
+        "municipal_endorsement",
+        "training",
+        "external_release"
+      ],
+      "citation": "Den Haag Kroonvolume internal research prototype package; not official, not validated, not public/client ready.",
+      "readiness": {
+        "retrieve_allowed": true,
+        "quote_allowed": false,
+        "export_allowed": false,
+        "share_external_llm_allowed": false,
+        "train_allowed": false,
+        "citation_ready": false,
+        "user_facing_ready": false
+      },
+      "checksum_sha256": "0eac4b269b9f1daa910918df3e67d2f0d0a996e1b13f507c92d772334fa78d31",
+      "caveat_flags": [
+        "B008_denominator_caveat",
+        "B014_no_annual_trend",
+        "not_official_not_validated",
+        "no_2024_2025_2026_data",
+        "ahn5_separate_layer_only",
+        "do_not_merge_with_ahn234"
+      ],
+      "requires_human_review": true,
+      "sensitive_exclusion_reason": null
+    },
+    {
+      "id": "kroonvolume_v2_release_readiness_note_md",
+      "family": "kroonvolume_internal_proxy",
+      "type": "readiness_note",
+      "path": "/home/hans/.openclaw/workspace/kroonvolume-den-haag-openclaw/data/release/internal_research_prototype_gm0518_v2_ahn5_separate_layer/release_readiness_note.md",
+      "relative_path": "release_readiness_note.md",
+      "namespace": null,
+      "approved": true,
+      "approved_for": [
+        "internal_student_challenge",
+        "internal_research_prototype"
+      ],
+      "not_approved_for": [
+        "public",
+        "client",
+        "official",
+        "municipal_endorsement",
+        "training",
+        "external_release"
+      ],
+      "citation": "Den Haag Kroonvolume internal research prototype package; not official, not validated, not public/client ready.",
+      "readiness": {
+        "retrieve_allowed": true,
+        "quote_allowed": false,
+        "export_allowed": false,
+        "share_external_llm_allowed": false,
+        "train_allowed": false,
+        "citation_ready": false,
+        "user_facing_ready": false
+      },
+      "checksum_sha256": "ab2acc4adb9d4fb365ce344c371a430126283580294ba73b2d9012d68678dacc",
+      "caveat_flags": [
+        "B008_denominator_caveat",
+        "B014_no_annual_trend",
+        "not_official_not_validated",
+        "no_2024_2025_2026_data",
+        "ahn5_separate_layer_only",
+        "do_not_merge_with_ahn234"
+      ],
+      "requires_human_review": true,
+      "sensitive_exclusion_reason": null
+    },
+    {
+      "id": "kroonvolume_v2_source_rights_summary_md",
+      "family": "kroonvolume_internal_proxy",
+      "type": "readiness_note",
+      "path": "/home/hans/.openclaw/workspace/kroonvolume-den-haag-openclaw/data/release/internal_research_prototype_gm0518_v2_ahn5_separate_layer/source_rights_summary.md",
+      "relative_path": "source_rights_summary.md",
+      "namespace": null,
+      "approved": true,
+      "approved_for": [
+        "internal_student_challenge",
+        "internal_research_prototype"
+      ],
+      "not_approved_for": [
+        "public",
+        "client",
+        "official",
+        "municipal_endorsement",
+        "training",
+        "external_release"
+      ],
+      "citation": "Den Haag Kroonvolume internal research prototype package; not official, not validated, not public/client ready.",
+      "readiness": {
+        "retrieve_allowed": true,
+        "quote_allowed": false,
+        "export_allowed": false,
+        "share_external_llm_allowed": false,
+        "train_allowed": false,
+        "citation_ready": false,
+        "user_facing_ready": false
+      },
+      "checksum_sha256": "8c8bf14251315797187fe58b0ebbd16bb74eaa1a3050c8042870f575e42076a1",
+      "caveat_flags": [
+        "B008_denominator_caveat",
+        "B014_no_annual_trend",
+        "not_official_not_validated",
+        "no_2024_2025_2026_data",
+        "ahn5_separate_layer_only",
+        "do_not_merge_with_ahn234"
+      ],
+      "requires_human_review": true,
+      "sensitive_exclusion_reason": null
+    },
+    {
+      "id": "kroonvolume_v2_can_and_cannot_support_md",
+      "family": "kroonvolume_internal_proxy",
+      "type": "readiness_note",
+      "path": "/home/hans/.openclaw/workspace/kroonvolume-den-haag-openclaw/data/release/internal_research_prototype_gm0518_v2_ahn5_separate_layer/can_and_cannot_support.md",
+      "relative_path": "can_and_cannot_support.md",
+      "namespace": null,
+      "approved": true,
+      "approved_for": [
+        "internal_student_challenge",
+        "internal_research_prototype"
+      ],
+      "not_approved_for": [
+        "public",
+        "client",
+        "official",
+        "municipal_endorsement",
+        "training",
+        "external_release"
+      ],
+      "citation": "Den Haag Kroonvolume internal research prototype package; not official, not validated, not public/client ready.",
+      "readiness": {
+        "retrieve_allowed": true,
+        "quote_allowed": false,
+        "export_allowed": false,
+        "share_external_llm_allowed": false,
+        "train_allowed": false,
+        "citation_ready": false,
+        "user_facing_ready": false
+      },
+      "checksum_sha256": "675b44e946a1b3c18f97a7b8acb4a697fb3ba06ab7c9e314785865302d5c66a3",
+      "caveat_flags": [
+        "B008_denominator_caveat",
+        "B014_no_annual_trend",
+        "not_official_not_validated",
+        "no_2024_2025_2026_data",
+        "ahn5_separate_layer_only",
+        "do_not_merge_with_ahn234"
+      ],
+      "requires_human_review": true,
+      "sensitive_exclusion_reason": null
+    },
+    {
+      "id": "kroonvolume_v2_not_official_not_validated_statement_md",
+      "family": "kroonvolume_internal_proxy",
+      "type": "readiness_note",
+      "path": "/home/hans/.openclaw/workspace/kroonvolume-den-haag-openclaw/data/release/internal_research_prototype_gm0518_v2_ahn5_separate_layer/not_official_not_validated_statement.md",
+      "relative_path": "not_official_not_validated_statement.md",
+      "namespace": null,
+      "approved": true,
+      "approved_for": [
+        "internal_student_challenge",
+        "internal_research_prototype"
+      ],
+      "not_approved_for": [
+        "public",
+        "client",
+        "official",
+        "municipal_endorsement",
+        "training",
+        "external_release"
+      ],
+      "citation": "Den Haag Kroonvolume internal research prototype package; not official, not validated, not public/client ready.",
+      "readiness": {
+        "retrieve_allowed": true,
+        "quote_allowed": false,
+        "export_allowed": false,
+        "share_external_llm_allowed": false,
+        "train_allowed": false,
+        "citation_ready": false,
+        "user_facing_ready": false
+      },
+      "checksum_sha256": "f1da75547d056726f8dec7f01cc2867d498557ced5643dffbd0a1d01926c1a0a",
+      "caveat_flags": [
+        "B008_denominator_caveat",
+        "B014_no_annual_trend",
+        "not_official_not_validated",
+        "no_2024_2025_2026_data",
+        "ahn5_separate_layer_only",
+        "do_not_merge_with_ahn234"
+      ],
+      "requires_human_review": true,
+      "sensitive_exclusion_reason": null
+    },
+    {
+      "id": "kroonvolume_v2_no_annual_trend_statement_md",
+      "family": "kroonvolume_internal_proxy",
+      "type": "readiness_note",
+      "path": "/home/hans/.openclaw/workspace/kroonvolume-den-haag-openclaw/data/release/internal_research_prototype_gm0518_v2_ahn5_separate_layer/no_annual_trend_statement.md",
+      "relative_path": "no_annual_trend_statement.md",
+      "namespace": null,
+      "approved": true,
+      "approved_for": [
+        "internal_student_challenge",
+        "internal_research_prototype"
+      ],
+      "not_approved_for": [
+        "public",
+        "client",
+        "official",
+        "municipal_endorsement",
+        "training",
+        "external_release"
+      ],
+      "citation": "Den Haag Kroonvolume internal research prototype package; not official, not validated, not public/client ready.",
+      "readiness": {
+        "retrieve_allowed": true,
+        "quote_allowed": false,
+        "export_allowed": false,
+        "share_external_llm_allowed": false,
+        "train_allowed": false,
+        "citation_ready": false,
+        "user_facing_ready": false
+      },
+      "checksum_sha256": "c7961252b943c8f4ddc4d186942ff9af5f4f022477b862907b36bcf7c613efa6",
+      "caveat_flags": [
+        "B008_denominator_caveat",
+        "B014_no_annual_trend",
+        "not_official_not_validated",
+        "no_2024_2025_2026_data",
+        "ahn5_separate_layer_only",
+        "do_not_merge_with_ahn234"
+      ],
+      "requires_human_review": true,
+      "sensitive_exclusion_reason": null
+    },
+    {
+      "id": "kroonvolume_v2_no_2024_2025_2026_data_statement_md",
+      "family": "kroonvolume_internal_proxy",
+      "type": "readiness_note",
+      "path": "/home/hans/.openclaw/workspace/kroonvolume-den-haag-openclaw/data/release/internal_research_prototype_gm0518_v2_ahn5_separate_layer/no_2024_2025_2026_data_statement.md",
+      "relative_path": "no_2024_2025_2026_data_statement.md",
+      "namespace": null,
+      "approved": true,
+      "approved_for": [
+        "internal_student_challenge",
+        "internal_research_prototype"
+      ],
+      "not_approved_for": [
+        "public",
+        "client",
+        "official",
+        "municipal_endorsement",
+        "training",
+        "external_release"
+      ],
+      "citation": "Den Haag Kroonvolume internal research prototype package; not official, not validated, not public/client ready.",
+      "readiness": {
+        "retrieve_allowed": true,
+        "quote_allowed": false,
+        "export_allowed": false,
+        "share_external_llm_allowed": false,
+        "train_allowed": false,
+        "citation_ready": false,
+        "user_facing_ready": false
+      },
+      "checksum_sha256": "2f731cd862c2f5a59f6f56196dabc66855c65135014509b3754b89e42eec019a",
+      "caveat_flags": [
+        "B008_denominator_caveat",
+        "B014_no_annual_trend",
+        "not_official_not_validated",
+        "no_2024_2025_2026_data",
+        "ahn5_separate_layer_only",
+        "do_not_merge_with_ahn234"
+      ],
+      "requires_human_review": true,
+      "sensitive_exclusion_reason": null
+    },
+    {
+      "id": "kroonvolume_v2_validation_summary_md",
+      "family": "kroonvolume_internal_proxy",
+      "type": "readiness_note",
+      "path": "/home/hans/.openclaw/workspace/kroonvolume-den-haag-openclaw/data/release/internal_research_prototype_gm0518_v2_ahn5_separate_layer/validation_summary.md",
+      "relative_path": "validation_summary.md",
+      "namespace": null,
+      "approved": true,
+      "approved_for": [
+        "internal_student_challenge",
+        "internal_research_prototype"
+      ],
+      "not_approved_for": [
+        "public",
+        "client",
+        "official",
+        "municipal_endorsement",
+        "training",
+        "external_release"
+      ],
+      "citation": "Den Haag Kroonvolume internal research prototype package; not official, not validated, not public/client ready.",
+      "readiness": {
+        "retrieve_allowed": true,
+        "quote_allowed": false,
+        "export_allowed": false,
+        "share_external_llm_allowed": false,
+        "train_allowed": false,
+        "citation_ready": false,
+        "user_facing_ready": false
+      },
+      "checksum_sha256": "6d1f6753200e675f5ee6f6446c430f177eb1986924d299d8cad75739797c352d",
+      "caveat_flags": [
+        "B008_denominator_caveat",
+        "B014_no_annual_trend",
+        "not_official_not_validated",
+        "no_2024_2025_2026_data",
+        "ahn5_separate_layer_only",
+        "do_not_merge_with_ahn234"
+      ],
+      "requires_human_review": true,
+      "sensitive_exclusion_reason": null
+    },
+    {
+      "id": "kroonvolume_v2_human_review_handoff_md",
+      "family": "kroonvolume_internal_proxy",
+      "type": "readiness_note",
+      "path": "/home/hans/.openclaw/workspace/kroonvolume-den-haag-openclaw/data/release/internal_research_prototype_gm0518_v2_ahn5_separate_layer/human_review_handoff.md",
+      "relative_path": "human_review_handoff.md",
+      "namespace": null,
+      "approved": true,
+      "approved_for": [
+        "internal_student_challenge",
+        "internal_research_prototype"
+      ],
+      "not_approved_for": [
+        "public",
+        "client",
+        "official",
+        "municipal_endorsement",
+        "training",
+        "external_release"
+      ],
+      "citation": "Den Haag Kroonvolume internal research prototype package; not official, not validated, not public/client ready.",
+      "readiness": {
+        "retrieve_allowed": true,
+        "quote_allowed": false,
+        "export_allowed": false,
+        "share_external_llm_allowed": false,
+        "train_allowed": false,
+        "citation_ready": false,
+        "user_facing_ready": false
+      },
+      "checksum_sha256": "71d73c80f4daa2b3b605d1c525295def8cd70c981aa82e865b1fb5d84fd3dff8",
+      "caveat_flags": [
+        "B008_denominator_caveat",
+        "B014_no_annual_trend",
+        "not_official_not_validated",
+        "no_2024_2025_2026_data",
+        "ahn5_separate_layer_only",
+        "do_not_merge_with_ahn234"
+      ],
+      "requires_human_review": true,
+      "sensitive_exclusion_reason": null
+    },
+    {
+      "id": "kroonvolume_v2_ahn5_separate_layer_statement_md",
+      "family": "kroonvolume_internal_proxy",
+      "type": "readiness_note",
+      "path": "/home/hans/.openclaw/workspace/kroonvolume-den-haag-openclaw/data/release/internal_research_prototype_gm0518_v2_ahn5_separate_layer/ahn5_separate_layer_statement.md",
+      "relative_path": "ahn5_separate_layer_statement.md",
+      "namespace": null,
+      "approved": true,
+      "approved_for": [
+        "internal_student_challenge",
+        "internal_research_prototype"
+      ],
+      "not_approved_for": [
+        "public",
+        "client",
+        "official",
+        "municipal_endorsement",
+        "training",
+        "external_release"
+      ],
+      "citation": "Den Haag Kroonvolume internal research prototype package; not official, not validated, not public/client ready.",
+      "readiness": {
+        "retrieve_allowed": true,
+        "quote_allowed": false,
+        "export_allowed": false,
+        "share_external_llm_allowed": false,
+        "train_allowed": false,
+        "citation_ready": false,
+        "user_facing_ready": false
+      },
+      "checksum_sha256": "1ae4510f43b2d65c7f4dd45c645696b0907004ad2de38e7e7b178a8652f8e248",
+      "caveat_flags": [
+        "B008_denominator_caveat",
+        "B014_no_annual_trend",
+        "not_official_not_validated",
+        "no_2024_2025_2026_data",
+        "ahn5_separate_layer_only",
+        "do_not_merge_with_ahn234"
+      ],
+      "requires_human_review": true,
+      "sensitive_exclusion_reason": null
+    },
+    {
+      "id": "kroonvolume_v2_no_merge_with_ahn234_statement_md",
+      "family": "kroonvolume_internal_proxy",
+      "type": "readiness_note",
+      "path": "/home/hans/.openclaw/workspace/kroonvolume-den-haag-openclaw/data/release/internal_research_prototype_gm0518_v2_ahn5_separate_layer/no_merge_with_ahn234_statement.md",
+      "relative_path": "no_merge_with_ahn234_statement.md",
+      "namespace": null,
+      "approved": true,
+      "approved_for": [
+        "internal_student_challenge",
+        "internal_research_prototype"
+      ],
+      "not_approved_for": [
+        "public",
+        "client",
+        "official",
+        "municipal_endorsement",
+        "training",
+        "external_release"
+      ],
+      "citation": "Den Haag Kroonvolume internal research prototype package; not official, not validated, not public/client ready.",
+      "readiness": {
+        "retrieve_allowed": true,
+        "quote_allowed": false,
+        "export_allowed": false,
+        "share_external_llm_allowed": false,
+        "train_allowed": false,
+        "citation_ready": false,
+        "user_facing_ready": false
+      },
+      "checksum_sha256": "34052d6252b5e5156349da8c8427ee1fc0c8555d1d554b49ede093f3f1784945",
+      "caveat_flags": [
+        "B008_denominator_caveat",
+        "B014_no_annual_trend",
+        "not_official_not_validated",
+        "no_2024_2025_2026_data",
+        "ahn5_separate_layer_only",
+        "do_not_merge_with_ahn234"
+      ],
+      "requires_human_review": true,
+      "sensitive_exclusion_reason": null
+    },
+    {
+      "id": "kroonvolume_v2_ahn5_gm0518_kroonvolume_proxy_v2_csv",
+      "family": "kroonvolume_internal_proxy",
+      "type": "score_table",
+      "path": "/home/hans/.openclaw/workspace/kroonvolume-den-haag-openclaw/data/release/internal_research_prototype_gm0518_v2_ahn5_separate_layer/ahn5_gm0518_kroonvolume_proxy_v2.csv",
+      "relative_path": "ahn5_gm0518_kroonvolume_proxy_v2.csv",
+      "namespace": null,
+      "approved": true,
+      "approved_for": [
+        "internal_student_challenge",
+        "internal_research_prototype"
+      ],
+      "not_approved_for": [
+        "public",
+        "client",
+        "official",
+        "municipal_endorsement",
+        "training",
+        "external_release"
+      ],
+      "citation": "Den Haag Kroonvolume internal research prototype package; not official, not validated, not public/client ready.",
+      "readiness": {
+        "retrieve_allowed": true,
+        "quote_allowed": true,
+        "export_allowed": false,
+        "share_external_llm_allowed": false,
+        "train_allowed": false,
+        "citation_ready": true,
+        "user_facing_ready": true
+      },
+      "checksum_sha256": "c58f00228cd30d4e543c8dc02598e3e2f35106098115856ae4dd20e8b02b0dc0",
+      "caveat_flags": [
+        "B008_denominator_caveat",
+        "B014_no_annual_trend",
+        "not_official_not_validated",
+        "no_2024_2025_2026_data",
+        "ahn5_separate_layer_only",
+        "do_not_merge_with_ahn234"
+      ],
+      "requires_human_review": true,
+      "sensitive_exclusion_reason": null
+    },
+    {
+      "id": "kroonvolume_v2_ahn5_stadsdeel_kroonvolume_proxy_v2_csv",
+      "family": "kroonvolume_internal_proxy",
+      "type": "score_table",
+      "path": "/home/hans/.openclaw/workspace/kroonvolume-den-haag-openclaw/data/release/internal_research_prototype_gm0518_v2_ahn5_separate_layer/ahn5_stadsdeel_kroonvolume_proxy_v2.csv",
+      "relative_path": "ahn5_stadsdeel_kroonvolume_proxy_v2.csv",
+      "namespace": null,
+      "approved": true,
+      "approved_for": [
+        "internal_student_challenge",
+        "internal_research_prototype"
+      ],
+      "not_approved_for": [
+        "public",
+        "client",
+        "official",
+        "municipal_endorsement",
+        "training",
+        "external_release"
+      ],
+      "citation": "Den Haag Kroonvolume internal research prototype package; not official, not validated, not public/client ready.",
+      "readiness": {
+        "retrieve_allowed": true,
+        "quote_allowed": false,
+        "export_allowed": false,
+        "share_external_llm_allowed": false,
+        "train_allowed": false,
+        "citation_ready": false,
+        "user_facing_ready": false
+      },
+      "checksum_sha256": "800579a22c3d79bafc4c40c708a34105937c3a79baa6e03fe9c451d7d17bb1d2",
+      "caveat_flags": [
+        "B008_denominator_caveat",
+        "B014_no_annual_trend",
+        "not_official_not_validated",
+        "no_2024_2025_2026_data",
+        "ahn5_separate_layer_only",
+        "do_not_merge_with_ahn234"
+      ],
+      "requires_human_review": true,
+      "sensitive_exclusion_reason": null
+    },
+    {
+      "id": "kroonvolume_v2_ahn5_wijk_kroonvolume_proxy_v2_csv",
+      "family": "kroonvolume_internal_proxy",
+      "type": "score_table",
+      "path": "/home/hans/.openclaw/workspace/kroonvolume-den-haag-openclaw/data/release/internal_research_prototype_gm0518_v2_ahn5_separate_layer/ahn5_wijk_kroonvolume_proxy_v2.csv",
+      "relative_path": "ahn5_wijk_kroonvolume_proxy_v2.csv",
+      "namespace": null,
+      "approved": true,
+      "approved_for": [
+        "internal_student_challenge",
+        "internal_research_prototype"
+      ],
+      "not_approved_for": [
+        "public",
+        "client",
+        "official",
+        "municipal_endorsement",
+        "training",
+        "external_release"
+      ],
+      "citation": "Den Haag Kroonvolume internal research prototype package; not official, not validated, not public/client ready.",
+      "readiness": {
+        "retrieve_allowed": true,
+        "quote_allowed": false,
+        "export_allowed": false,
+        "share_external_llm_allowed": false,
+        "train_allowed": false,
+        "citation_ready": false,
+        "user_facing_ready": false
+      },
+      "checksum_sha256": "0b441d819f8d503255abe6723b8b81cad5568cfded93fe9a88571ea04499235c",
+      "caveat_flags": [
+        "B008_denominator_caveat",
+        "B014_no_annual_trend",
+        "not_official_not_validated",
+        "no_2024_2025_2026_data",
+        "ahn5_separate_layer_only",
+        "do_not_merge_with_ahn234"
+      ],
+      "requires_human_review": true,
+      "sensitive_exclusion_reason": null
+    },
+    {
+      "id": "kroonvolume_v2_ahn5_buurt_kroonvolume_proxy_v2_csv",
+      "family": "kroonvolume_internal_proxy",
+      "type": "score_table",
+      "path": "/home/hans/.openclaw/workspace/kroonvolume-den-haag-openclaw/data/release/internal_research_prototype_gm0518_v2_ahn5_separate_layer/ahn5_buurt_kroonvolume_proxy_v2.csv",
+      "relative_path": "ahn5_buurt_kroonvolume_proxy_v2.csv",
+      "namespace": null,
+      "approved": true,
+      "approved_for": [
+        "internal_student_challenge",
+        "internal_research_prototype"
+      ],
+      "not_approved_for": [
+        "public",
+        "client",
+        "official",
+        "municipal_endorsement",
+        "training",
+        "external_release"
+      ],
+      "citation": "Den Haag Kroonvolume internal research prototype package; not official, not validated, not public/client ready.",
+      "readiness": {
+        "retrieve_allowed": true,
+        "quote_allowed": false,
+        "export_allowed": false,
+        "share_external_llm_allowed": false,
+        "train_allowed": false,
+        "citation_ready": false,
+        "user_facing_ready": false
+      },
+      "checksum_sha256": "afc6b561cd269bfe9da932e5ce0cb084c34b9c3235f000a52dec1d5db5fe98e4",
+      "caveat_flags": [
+        "B008_denominator_caveat",
+        "B014_no_annual_trend",
+        "not_official_not_validated",
+        "no_2024_2025_2026_data",
+        "ahn5_separate_layer_only",
+        "do_not_merge_with_ahn234"
+      ],
+      "requires_human_review": true,
+      "sensitive_exclusion_reason": null
+    },
+    {
+      "id": "kroonvolume_v2_ahn5_tile_kroonvolume_proxy_v2_csv",
+      "family": "kroonvolume_internal_proxy",
+      "type": "score_table",
+      "path": "/home/hans/.openclaw/workspace/kroonvolume-den-haag-openclaw/data/release/internal_research_prototype_gm0518_v2_ahn5_separate_layer/ahn5_tile_kroonvolume_proxy_v2.csv",
+      "relative_path": "ahn5_tile_kroonvolume_proxy_v2.csv",
+      "namespace": null,
+      "approved": true,
+      "approved_for": [
+        "internal_student_challenge",
+        "internal_research_prototype"
+      ],
+      "not_approved_for": [
+        "public",
+        "client",
+        "official",
+        "municipal_endorsement",
+        "training",
+        "external_release"
+      ],
+      "citation": "Den Haag Kroonvolume internal research prototype package; not official, not validated, not public/client ready.",
+      "readiness": {
+        "retrieve_allowed": true,
+        "quote_allowed": false,
+        "export_allowed": false,
+        "share_external_llm_allowed": false,
+        "train_allowed": false,
+        "citation_ready": false,
+        "user_facing_ready": false
+      },
+      "checksum_sha256": "a66fd954b6578a2a0c9d83804fb03fb95b38e4a4dafd6454db4296d700c2a4d3",
+      "caveat_flags": [
+        "B008_denominator_caveat",
+        "B014_no_annual_trend",
+        "not_official_not_validated",
+        "no_2024_2025_2026_data",
+        "ahn5_separate_layer_only",
+        "do_not_merge_with_ahn234"
+      ],
+      "requires_human_review": true,
+      "sensitive_exclusion_reason": null
+    },
+    {
+      "id": "kroonvolume_v2_ahn5_uncertainty_register_v2_csv",
+      "family": "kroonvolume_internal_proxy",
+      "type": "score_table",
+      "path": "/home/hans/.openclaw/workspace/kroonvolume-den-haag-openclaw/data/release/internal_research_prototype_gm0518_v2_ahn5_separate_layer/ahn5_uncertainty_register_v2.csv",
+      "relative_path": "ahn5_uncertainty_register_v2.csv",
+      "namespace": null,
+      "approved": true,
+      "approved_for": [
+        "internal_student_challenge",
+        "internal_research_prototype"
+      ],
+      "not_approved_for": [
+        "public",
+        "client",
+        "official",
+        "municipal_endorsement",
+        "training",
+        "external_release"
+      ],
+      "citation": "Den Haag Kroonvolume internal research prototype package; not official, not validated, not public/client ready.",
+      "readiness": {
+        "retrieve_allowed": true,
+        "quote_allowed": false,
+        "export_allowed": false,
+        "share_external_llm_allowed": false,
+        "train_allowed": false,
+        "citation_ready": false,
+        "user_facing_ready": false
+      },
+      "checksum_sha256": "7399a94d5a0396d0c79852f289d8289ef4a63d982a738a500345c86a8997f9d8",
+      "caveat_flags": [
+        "B008_denominator_caveat",
+        "B014_no_annual_trend",
+        "not_official_not_validated",
+        "no_2024_2025_2026_data",
+        "ahn5_separate_layer_only",
+        "do_not_merge_with_ahn234"
+      ],
+      "requires_human_review": true,
+      "sensitive_exclusion_reason": null
+    },
+    {
+      "id": "kroonvolume_v2_ahn5_validation_readiness_matrix_v2_csv",
+      "family": "kroonvolume_internal_proxy",
+      "type": "score_table",
+      "path": "/home/hans/.openclaw/workspace/kroonvolume-den-haag-openclaw/data/release/internal_research_prototype_gm0518_v2_ahn5_separate_layer/ahn5_validation_readiness_matrix_v2.csv",
+      "relative_path": "ahn5_validation_readiness_matrix_v2.csv",
+      "namespace": null,
+      "approved": true,
+      "approved_for": [
+        "internal_student_challenge",
+        "internal_research_prototype"
+      ],
+      "not_approved_for": [
+        "public",
+        "client",
+        "official",
+        "municipal_endorsement",
+        "training",
+        "external_release"
+      ],
+      "citation": "Den Haag Kroonvolume internal research prototype package; not official, not validated, not public/client ready.",
+      "readiness": {
+        "retrieve_allowed": true,
+        "quote_allowed": true,
+        "export_allowed": false,
+        "share_external_llm_allowed": false,
+        "train_allowed": false,
+        "citation_ready": true,
+        "user_facing_ready": true
+      },
+      "checksum_sha256": "df3699141c14ed860d4154948dcda0fac5216dfdf69bbb91a06815ade7b4cdb6",
+      "caveat_flags": [
+        "B008_denominator_caveat",
+        "B014_no_annual_trend",
+        "not_official_not_validated",
+        "no_2024_2025_2026_data",
+        "ahn5_separate_layer_only",
+        "do_not_merge_with_ahn234"
+      ],
+      "requires_human_review": true,
+      "sensitive_exclusion_reason": null
+    },
+    {
+      "id": "kroonvolume_v2_stac_collection_json",
+      "family": "kroonvolume_internal_proxy",
+      "type": "map_raster_pointer",
+      "path": "/home/hans/.openclaw/workspace/kroonvolume-den-haag-openclaw/data/release/internal_research_prototype_gm0518_v2_ahn5_separate_layer/stac_collection.json",
+      "relative_path": "stac_collection.json",
+      "namespace": null,
+      "approved": true,
+      "approved_for": [
+        "internal_student_challenge",
+        "internal_research_prototype"
+      ],
+      "not_approved_for": [
+        "public",
+        "client",
+        "official",
+        "municipal_endorsement",
+        "training",
+        "external_release"
+      ],
+      "citation": "Den Haag Kroonvolume internal research prototype package; not official, not validated, not public/client ready.",
+      "readiness": {
+        "retrieve_allowed": true,
+        "quote_allowed": true,
+        "export_allowed": false,
+        "share_external_llm_allowed": false,
+        "train_allowed": false,
+        "citation_ready": true,
+        "user_facing_ready": true
+      },
+      "checksum_sha256": "97a69b6a9be7595c5e797001d79766a93beadd03efd8ea35f08c60d7a6d2464b",
+      "caveat_flags": [
+        "B008_denominator_caveat",
+        "B014_no_annual_trend",
+        "not_official_not_validated",
+        "no_2024_2025_2026_data",
+        "ahn5_separate_layer_only",
+        "do_not_merge_with_ahn234"
+      ],
+      "requires_human_review": true,
+      "sensitive_exclusion_reason": null
+    },
+    {
+      "id": "south_holland_manifest_json",
+      "family": "south_holland_student_retrieval",
+      "type": "datapackage",
+      "path": "/home/hans/.openclaw/workspace/knowledge_base/meta_index/south_holland_lighthouse_external_ready_2026-05-26/manifest.json",
+      "relative_path": "manifest.json",
+      "namespace": "south_holland_lighthouse_external_ready",
+      "approved": true,
+      "approved_for": [
+        "internal_student_challenge"
+      ],
+      "not_approved_for": [
+        "public",
+        "client",
+        "official",
+        "municipal_endorsement",
+        "training",
+        "external_release"
+      ],
+      "citation": "South Holland Lighthouse controlled internal UvA student challenge retrieval package; namespace label legacy external_ready is not public/client readiness.",
+      "readiness": {
+        "retrieve_allowed": true,
+        "quote_allowed": false,
+        "export_allowed": false,
+        "share_external_llm_allowed": false,
+        "train_allowed": false,
+        "citation_ready": false,
+        "user_facing_ready": false
+      },
+      "checksum_sha256": "4652fb99c71b21b2d58b9c266f62d1aba048412724a7e858c810ffcf4262048a",
+      "caveat_flags": [
+        "controlled_internal_student_challenge_only",
+        "legacy_external_ready_namespace_not_public",
+        "excluded_rows_not_retrievable",
+        "iucn_rows_included_0",
+        "training_allowed_chunks_0"
+      ],
+      "requires_human_review": true,
+      "sensitive_exclusion_reason": null
+    },
+    {
+      "id": "south_holland_metadata_structure_json",
+      "family": "south_holland_student_retrieval",
+      "type": "provenance",
+      "path": "/home/hans/.openclaw/workspace/knowledge_base/meta_index/south_holland_lighthouse_external_ready_2026-05-26/metadata_structure.json",
+      "relative_path": "metadata_structure.json",
+      "namespace": "south_holland_lighthouse_external_ready",
+      "approved": true,
+      "approved_for": [
+        "internal_student_challenge"
+      ],
+      "not_approved_for": [
+        "public",
+        "client",
+        "official",
+        "municipal_endorsement",
+        "training",
+        "external_release"
+      ],
+      "citation": "South Holland Lighthouse controlled internal UvA student challenge retrieval package; namespace label legacy external_ready is not public/client readiness.",
+      "readiness": {
+        "retrieve_allowed": true,
+        "quote_allowed": false,
+        "export_allowed": false,
+        "share_external_llm_allowed": false,
+        "train_allowed": false,
+        "citation_ready": false,
+        "user_facing_ready": false
+      },
+      "checksum_sha256": "a15d1ae4e2f360d9c9c4ddd9f570262faf6f626e750f79655b81c9a09f315949",
+      "caveat_flags": [
+        "controlled_internal_student_challenge_only",
+        "legacy_external_ready_namespace_not_public",
+        "excluded_rows_not_retrievable",
+        "iucn_rows_included_0",
+        "training_allowed_chunks_0"
+      ],
+      "requires_human_review": true,
+      "sensitive_exclusion_reason": null
+    },
+    {
+      "id": "south_holland_chunks_vector_ready_jsonl",
+      "family": "south_holland_student_retrieval",
+      "type": "text_chunk_export",
+      "path": "/home/hans/.openclaw/workspace/knowledge_base/meta_index/south_holland_lighthouse_external_ready_2026-05-26/chunks_vector_ready.jsonl",
+      "relative_path": "chunks_vector_ready.jsonl",
+      "namespace": "south_holland_lighthouse_external_ready",
+      "approved": true,
+      "approved_for": [
+        "internal_student_challenge"
+      ],
+      "not_approved_for": [
+        "public",
+        "client",
+        "official",
+        "municipal_endorsement",
+        "training",
+        "external_release"
+      ],
+      "citation": "South Holland Lighthouse controlled internal UvA student challenge retrieval package; namespace label legacy external_ready is not public/client readiness.",
+      "readiness": {
+        "retrieve_allowed": true,
+        "quote_allowed": false,
+        "export_allowed": false,
+        "share_external_llm_allowed": false,
+        "train_allowed": false,
+        "citation_ready": false,
+        "user_facing_ready": false
+      },
+      "checksum_sha256": "ce93edc235043d99527e48550a42213f54cfb9b23c43d42b9154e7c71e29b3d8",
+      "caveat_flags": [
+        "controlled_internal_student_challenge_only",
+        "legacy_external_ready_namespace_not_public",
+        "excluded_rows_not_retrievable",
+        "iucn_rows_included_0",
+        "training_allowed_chunks_0"
+      ],
+      "requires_human_review": true,
+      "sensitive_exclusion_reason": null
+    },
+    {
+      "id": "south_holland_internal_student_challenge_ready_manifest_csv",
+      "family": "south_holland_student_retrieval",
+      "type": "artifact_catalog",
+      "path": "/home/hans/.openclaw/workspace/knowledge_base/meta_index/south_holland_lighthouse_external_ready_2026-05-26/internal_student_challenge_ready_manifest.csv",
+      "relative_path": "internal_student_challenge_ready_manifest.csv",
+      "namespace": "south_holland_lighthouse_external_ready",
+      "approved": true,
+      "approved_for": [
+        "internal_student_challenge"
+      ],
+      "not_approved_for": [
+        "public",
+        "client",
+        "official",
+        "municipal_endorsement",
+        "training",
+        "external_release"
+      ],
+      "citation": "South Holland Lighthouse controlled internal UvA student challenge retrieval package; namespace label legacy external_ready is not public/client readiness.",
+      "readiness": {
+        "retrieve_allowed": true,
+        "quote_allowed": false,
+        "export_allowed": false,
+        "share_external_llm_allowed": false,
+        "train_allowed": false,
+        "citation_ready": false,
+        "user_facing_ready": false
+      },
+      "checksum_sha256": "5a3f4792c6c41b4d36cbe5b20d7c9b329441d3c2d04e9302226b36529b233bf2",
+      "caveat_flags": [
+        "controlled_internal_student_challenge_only",
+        "legacy_external_ready_namespace_not_public",
+        "excluded_rows_not_retrievable",
+        "iucn_rows_included_0",
+        "training_allowed_chunks_0"
+      ],
+      "requires_human_review": true,
+      "sensitive_exclusion_reason": null
+    },
+    {
+      "id": "south_holland_internal_student_challenge_ready_manifest_json",
+      "family": "south_holland_student_retrieval",
+      "type": "artifact_catalog",
+      "path": "/home/hans/.openclaw/workspace/knowledge_base/meta_index/south_holland_lighthouse_external_ready_2026-05-26/internal_student_challenge_ready_manifest.json",
+      "relative_path": "internal_student_challenge_ready_manifest.json",
+      "namespace": "south_holland_lighthouse_external_ready",
+      "approved": true,
+      "approved_for": [
+        "internal_student_challenge"
+      ],
+      "not_approved_for": [
+        "public",
+        "client",
+        "official",
+        "municipal_endorsement",
+        "training",
+        "external_release"
+      ],
+      "citation": "South Holland Lighthouse controlled internal UvA student challenge retrieval package; namespace label legacy external_ready is not public/client readiness.",
+      "readiness": {
+        "retrieve_allowed": true,
+        "quote_allowed": false,
+        "export_allowed": false,
+        "share_external_llm_allowed": false,
+        "train_allowed": false,
+        "citation_ready": false,
+        "user_facing_ready": false
+      },
+      "checksum_sha256": "308a17dbd2ffcaabdad315f4e10383009eca74bb93105a4b91b00b950e647fee",
+      "caveat_flags": [
+        "controlled_internal_student_challenge_only",
+        "legacy_external_ready_namespace_not_public",
+        "excluded_rows_not_retrievable",
+        "iucn_rows_included_0",
+        "training_allowed_chunks_0"
+      ],
+      "requires_human_review": true,
+      "sensitive_exclusion_reason": null
+    },
+    {
+      "id": "south_holland_student_manifest_csv",
+      "family": "south_holland_student_retrieval",
+      "type": "artifact_catalog",
+      "path": "/home/hans/.openclaw/workspace/knowledge_base/meta_index/south_holland_lighthouse_external_ready_2026-05-26/student_manifest.csv",
+      "relative_path": "student_manifest.csv",
+      "namespace": "south_holland_lighthouse_external_ready",
+      "approved": true,
+      "approved_for": [
+        "internal_student_challenge"
+      ],
+      "not_approved_for": [
+        "public",
+        "client",
+        "official",
+        "municipal_endorsement",
+        "training",
+        "external_release"
+      ],
+      "citation": "South Holland Lighthouse controlled internal UvA student challenge retrieval package; namespace label legacy external_ready is not public/client readiness.",
+      "readiness": {
+        "retrieve_allowed": true,
+        "quote_allowed": false,
+        "export_allowed": false,
+        "share_external_llm_allowed": false,
+        "train_allowed": false,
+        "citation_ready": false,
+        "user_facing_ready": false
+      },
+      "checksum_sha256": "94b73a84464f4c51dc1efa03689c43382a8d10d6c7badc50f164beaee8868d82",
+      "caveat_flags": [
+        "controlled_internal_student_challenge_only",
+        "legacy_external_ready_namespace_not_public",
+        "excluded_rows_not_retrievable",
+        "iucn_rows_included_0",
+        "training_allowed_chunks_0"
+      ],
+      "requires_human_review": true,
+      "sensitive_exclusion_reason": null
+    },
+    {
+      "id": "south_holland_reviewed_allowlist_corpus_csv",
+      "family": "south_holland_student_retrieval",
+      "type": "artifact_catalog",
+      "path": "/home/hans/.openclaw/workspace/knowledge_base/meta_index/south_holland_lighthouse_external_ready_2026-05-26/reviewed_allowlist_corpus.csv",
+      "relative_path": "reviewed_allowlist_corpus.csv",
+      "namespace": "south_holland_lighthouse_external_ready",
+      "approved": true,
+      "approved_for": [
+        "internal_student_challenge"
+      ],
+      "not_approved_for": [
+        "public",
+        "client",
+        "official",
+        "municipal_endorsement",
+        "training",
+        "external_release"
+      ],
+      "citation": "South Holland Lighthouse controlled internal UvA student challenge retrieval package; namespace label legacy external_ready is not public/client readiness.",
+      "readiness": {
+        "retrieve_allowed": true,
+        "quote_allowed": false,
+        "export_allowed": false,
+        "share_external_llm_allowed": false,
+        "train_allowed": false,
+        "citation_ready": false,
+        "user_facing_ready": false
+      },
+      "checksum_sha256": "81d9b286554c3dfa83f94310b27bd90d1e87e923b1519e291ee9c32be9576dc0",
+      "caveat_flags": [
+        "controlled_internal_student_challenge_only",
+        "legacy_external_ready_namespace_not_public",
+        "excluded_rows_not_retrievable",
+        "iucn_rows_included_0",
+        "training_allowed_chunks_0"
+      ],
+      "requires_human_review": true,
+      "sensitive_exclusion_reason": null
+    },
+    {
+      "id": "south_holland_rights_boundary_documentation_md",
+      "family": "south_holland_student_retrieval",
+      "type": "readiness_note",
+      "path": "/home/hans/.openclaw/workspace/knowledge_base/meta_index/south_holland_lighthouse_external_ready_2026-05-26/rights_boundary_documentation.md",
+      "relative_path": "rights_boundary_documentation.md",
+      "namespace": "south_holland_lighthouse_external_ready",
+      "approved": true,
+      "approved_for": [
+        "internal_student_challenge"
+      ],
+      "not_approved_for": [
+        "public",
+        "client",
+        "official",
+        "municipal_endorsement",
+        "training",
+        "external_release"
+      ],
+      "citation": "South Holland Lighthouse controlled internal UvA student challenge retrieval package; namespace label legacy external_ready is not public/client readiness.",
+      "readiness": {
+        "retrieve_allowed": true,
+        "quote_allowed": false,
+        "export_allowed": false,
+        "share_external_llm_allowed": false,
+        "train_allowed": false,
+        "citation_ready": false,
+        "user_facing_ready": false
+      },
+      "checksum_sha256": "75c43718a08812da3b198400b4995cf6fb621586d13b14427958ad123cd4d9d3",
+      "caveat_flags": [
+        "controlled_internal_student_challenge_only",
+        "legacy_external_ready_namespace_not_public",
+        "excluded_rows_not_retrievable",
+        "iucn_rows_included_0",
+        "training_allowed_chunks_0"
+      ],
+      "requires_human_review": true,
+      "sensitive_exclusion_reason": null
+    },
+    {
+      "id": "prototype_proof_TEAM_PLATYPUS_PROGRESS_LEDGER_md",
+      "family": "prototype_proof",
+      "type": "smoke_report",
+      "path": "/home/hans/.openclaw/workspace/team_comms/TEAM_PLATYPUS_PROGRESS_LEDGER.md",
+      "relative_path": "TEAM_PLATYPUS_PROGRESS_LEDGER.md",
+      "namespace": null,
+      "approved": true,
+      "approved_for": [
+        "internal_student_challenge"
+      ],
+      "not_approved_for": [
+        "public",
+        "client",
+        "official",
+        "municipal_endorsement",
+        "training",
+        "external_release"
+      ],
+      "citation": "Team Platypus internal prototype progress/proof context only; not scientific source data.",
+      "readiness": {
+        "retrieve_allowed": true,
+        "quote_allowed": false,
+        "export_allowed": false,
+        "share_external_llm_allowed": false,
+        "train_allowed": false,
+        "citation_ready": false,
+        "user_facing_ready": false
+      },
+      "checksum_sha256": "c95b40f0310b8bafcadb789e518f017af9738ba058ac0e3e529be2b84eb030a8",
+      "caveat_flags": [
+        "prototype_status_context_only",
+        "not_scientific_source_data",
+        "action_export_gates_red_or_amber"
+      ],
+      "requires_human_review": true,
+      "sensitive_exclusion_reason": null
+    },
+    {
+      "id": "prototype_proof_latest_md",
+      "family": "prototype_proof",
+      "type": "smoke_report",
+      "path": "/home/hans/.openclaw/workspace/evaluation_audit/team_platypus_daily_check/latest.md",
+      "relative_path": "latest.md",
+      "namespace": null,
+      "approved": true,
+      "approved_for": [
+        "internal_student_challenge"
+      ],
+      "not_approved_for": [
+        "public",
+        "client",
+        "official",
+        "municipal_endorsement",
+        "training",
+        "external_release"
+      ],
+      "citation": "Team Platypus internal prototype progress/proof context only; not scientific source data.",
+      "readiness": {
+        "retrieve_allowed": true,
+        "quote_allowed": false,
+        "export_allowed": false,
+        "share_external_llm_allowed": false,
+        "train_allowed": false,
+        "citation_ready": false,
+        "user_facing_ready": false
+      },
+      "checksum_sha256": "abab58d258af521790b84bb5bac6b8179c73e05bcfe4b837ce4c42449fa632a7",
+      "caveat_flags": [
+        "prototype_status_context_only",
+        "not_scientific_source_data",
+        "action_export_gates_red_or_amber"
+      ],
+      "requires_human_review": true,
+      "sensitive_exclusion_reason": null
+    },
+    {
+      "id": "prototype_proof_23_Full_Prototype_Test_Report_Platypus_2026-06-10_md",
+      "family": "prototype_proof",
+      "type": "smoke_report",
+      "path": "/home/hans/Documents/uva-challenge/23_Full_Prototype_Test_Report_Platypus_2026-06-10.md",
+      "relative_path": "23_Full_Prototype_Test_Report_Platypus_2026-06-10.md",
+      "namespace": null,
+      "approved": true,
+      "approved_for": [
+        "internal_student_challenge"
+      ],
+      "not_approved_for": [
+        "public",
+        "client",
+        "official",
+        "municipal_endorsement",
+        "training",
+        "external_release"
+      ],
+      "citation": "Team Platypus internal prototype progress/proof context only; not scientific source data.",
+      "readiness": {
+        "retrieve_allowed": true,
+        "quote_allowed": false,
+        "export_allowed": false,
+        "share_external_llm_allowed": false,
+        "train_allowed": false,
+        "citation_ready": false,
+        "user_facing_ready": false
+      },
+      "checksum_sha256": "43ba53765131394831703d61012ca4e2313d3e429ea33f6661781a56297111dd",
+      "caveat_flags": [
+        "prototype_status_context_only",
+        "not_scientific_source_data",
+        "action_export_gates_red_or_amber"
+      ],
+      "requires_human_review": true,
+      "sensitive_exclusion_reason": null
+    },
+    {
+      "id": "prototype_proof_Team_Platypus_Kroonvolume_Smoke_Artifact_Explainer_REVIEWED_NatureDesk_md",
+      "family": "prototype_proof",
+      "type": "smoke_report",
+      "path": "/home/hans/Documents/uva-challenge/Smoke Test Kroonvolume/Team_Platypus_Kroonvolume_Smoke_Artifact_Explainer_REVIEWED_NatureDesk.md",
+      "relative_path": "Team_Platypus_Kroonvolume_Smoke_Artifact_Explainer_REVIEWED_NatureDesk.md",
+      "namespace": null,
+      "approved": true,
+      "approved_for": [
+        "internal_student_challenge"
+      ],
+      "not_approved_for": [
+        "public",
+        "client",
+        "official",
+        "municipal_endorsement",
+        "training",
+        "external_release"
+      ],
+      "citation": "Team Platypus internal prototype progress/proof context only; not scientific source data.",
+      "readiness": {
+        "retrieve_allowed": true,
+        "quote_allowed": false,
+        "export_allowed": false,
+        "share_external_llm_allowed": false,
+        "train_allowed": false,
+        "citation_ready": false,
+        "user_facing_ready": false
+      },
+      "checksum_sha256": "4ed2cb8c950e544e3a1e493618b410d9e1931dbf2d9dc3d90c1e7864e5cc3018",
+      "caveat_flags": [
+        "prototype_status_context_only",
+        "not_scientific_source_data",
+        "action_export_gates_red_or_amber"
+      ],
+      "requires_human_review": true,
+      "sensitive_exclusion_reason": null
+    },
+    {
+      "id": "prototype_proof_TEAM_PLATYPUS_FORGE_OWNER_EXECUTED_KROONVOLUME_SMOKE_ROUTE_2026-06-08_md",
+      "family": "prototype_proof",
+      "type": "smoke_report",
+      "path": "/home/hans/.openclaw/workspace/team_comms/TEAM_PLATYPUS_FORGE_OWNER_EXECUTED_KROONVOLUME_SMOKE_ROUTE_2026-06-08.md",
+      "relative_path": "TEAM_PLATYPUS_FORGE_OWNER_EXECUTED_KROONVOLUME_SMOKE_ROUTE_2026-06-08.md",
+      "namespace": null,
+      "approved": true,
+      "approved_for": [
+        "internal_student_challenge"
+      ],
+      "not_approved_for": [
+        "public",
+        "client",
+        "official",
+        "municipal_endorsement",
+        "training",
+        "external_release"
+      ],
+      "citation": "Team Platypus internal prototype progress/proof context only; not scientific source data.",
+      "readiness": {
+        "retrieve_allowed": true,
+        "quote_allowed": false,
+        "export_allowed": false,
+        "share_external_llm_allowed": false,
+        "train_allowed": false,
+        "citation_ready": false,
+        "user_facing_ready": false
+      },
+      "checksum_sha256": "f106c398ef691ce5201a5db1d6ddd9e4eec49131122d81664bef89a0af9c873c",
+      "caveat_flags": [
+        "prototype_status_context_only",
+        "not_scientific_source_data",
+        "action_export_gates_red_or_amber"
+      ],
+      "requires_human_review": true,
+      "sensitive_exclusion_reason": null
+    },
+    {
+      "id": "method_context_terra_nostra_den_haag_kroonoppervlaktemeting_method_2024_yaml",
+      "family": "method_context",
+      "type": "method_context",
+      "path": "/home/hans/.openclaw/workspace/knowledge_base/methods/terra_nostra_den_haag_kroonoppervlaktemeting_method_2024.yaml",
+      "relative_path": "terra_nostra_den_haag_kroonoppervlaktemeting_method_2024.yaml",
+      "namespace": null,
+      "approved": true,
+      "approved_for": [
+        "internal_research_prototype"
+      ],
+      "not_approved_for": [
+        "public",
+        "client",
+        "official",
+        "municipal_endorsement",
+        "training",
+        "external_release"
+      ],
+      "citation": "Internal method context only; not direct answer evidence unless a route-specific manifest row allows it.",
+      "readiness": {
+        "retrieve_allowed": true,
+        "quote_allowed": false,
+        "export_allowed": false,
+        "share_external_llm_allowed": false,
+        "train_allowed": false,
+        "citation_ready": false,
+        "user_facing_ready": false
+      },
+      "checksum_sha256": "aff929efe85be7a48b605953b485c4cd0e0c01653dda269d3f8095dd6e972978",
+      "caveat_flags": [
+        "method_context_only",
+        "quote_export_train_closed_or_pending"
+      ],
+      "requires_human_review": true,
+      "sensitive_exclusion_reason": null
+    },
+    {
+      "id": "method_context_norminstituut_bomen_boomkroonvolume_berekenen_2025_yaml",
+      "family": "method_context",
+      "type": "method_context",
+      "path": "/home/hans/.openclaw/workspace/knowledge_base/methods/norminstituut_bomen_boomkroonvolume_berekenen_2025.yaml",
+      "relative_path": "norminstituut_bomen_boomkroonvolume_berekenen_2025.yaml",
+      "namespace": null,
+      "approved": true,
+      "approved_for": [
+        "internal_research_prototype"
+      ],
+      "not_approved_for": [
+        "public",
+        "client",
+        "official",
+        "municipal_endorsement",
+        "training",
+        "external_release"
+      ],
+      "citation": "Internal method context only; not direct answer evidence unless a route-specific manifest row allows it.",
+      "readiness": {
+        "retrieve_allowed": true,
+        "quote_allowed": false,
+        "export_allowed": false,
+        "share_external_llm_allowed": false,
+        "train_allowed": false,
+        "citation_ready": false,
+        "user_facing_ready": false
+      },
+      "checksum_sha256": "70810f0fc204bc792b72afdbec9ea1ad872defe365d3c059c48b6d9f165f87ef",
+      "caveat_flags": [
+        "method_context_only",
+        "quote_export_train_closed_or_pending"
+      ],
+      "requires_human_review": true,
+      "sensitive_exclusion_reason": null
+    },
+    {
+      "id": "method_context_bon_in_a_box_2026_yaml",
+      "family": "method_context",
+      "type": "method_context",
+      "path": "/home/hans/.openclaw/workspace/knowledge_base/science/bon_in_a_box_2026.yaml",
+      "relative_path": "bon_in_a_box_2026.yaml",
+      "namespace": null,
+      "approved": true,
+      "approved_for": [
+        "internal_research_prototype"
+      ],
+      "not_approved_for": [
+        "public",
+        "client",
+        "official",
+        "municipal_endorsement",
+        "training",
+        "external_release"
+      ],
+      "citation": "Internal method context only; not direct answer evidence unless a route-specific manifest row allows it.",
+      "readiness": {
+        "retrieve_allowed": true,
+        "quote_allowed": false,
+        "export_allowed": false,
+        "share_external_llm_allowed": false,
+        "train_allowed": false,
+        "citation_ready": false,
+        "user_facing_ready": false
+      },
+      "checksum_sha256": "a91f2dfc2001f8fb7bdc15bb6dfc483b99a2d0844bbdd5763427287d3c2b16e7",
+      "caveat_flags": [
+        "method_context_only",
+        "quote_export_train_closed_or_pending"
+      ],
+      "requires_human_review": true,
+      "sensitive_exclusion_reason": null
+    }
+  ]
+}

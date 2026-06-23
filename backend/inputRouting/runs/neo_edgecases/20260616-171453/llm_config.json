@@ -1,0 +1,11 @@
+{
+  "pipeline": "neo",
+  "mode": "tiny_aoi",
+  "entities": [
+    "crown"
+  ],
+  "max_pages": 1,
+  "admin_unit_level": "wijk",
+  "admin_unit_preset": "all_wijken",
+  "metric_theme": "all_metric_themes"
+}

@@ -1,0 +1,38 @@
+{
+  "root": "/sources/commercial_internal/neo_signaleyes/den_haag_2026-06-15",
+  "mode": "metadata",
+  "entities": [
+    "crown",
+    "centerpoint"
+  ],
+  "selector_context": {
+    "admin_unit_level": "wijk",
+    "admin_unit_preset": "all_wijken",
+    "metric_theme": "all_metric_themes",
+    "note": "Selector context is recorded for downstream comparison/explanation only; it does not alter the protected NEO retrieval AOI or source-rights boundary."
+  },
+  "provenance_path": "/sources/commercial_internal/neo_signaleyes/den_haag_2026-06-15/provenance/neo_signaleyes_pipeline41_metadata_provenance.json",
+  "checksum_path": "/sources/commercial_internal/neo_signaleyes/den_haag_2026-06-15/provenance/neo_signaleyes_pipeline41_metadata_checksums.sha256",
+  "counts_path": "/sources/commercial_internal/neo_signaleyes/den_haag_2026-06-15/provenance/neo_signaleyes_pipeline41_metadata_counts.json",
+  "results": {
+    "mode": "metadata",
+    "entities": [
+      {
+        "entity": "crown",
+        "endpoint": "/source/tree/crown/metadata",
+        "status_code": 200,
+        "content_type": "application/json",
+        "output_path": "/sources/commercial_internal/neo_signaleyes/den_haag_2026-06-15/metadata/crown_metadata.json",
+        "sha256": "9cafdaf8b08d24af8d45c764ce1b6a46fdb15bb27800ff8d44de1b8188312529"
+      },
+      {
+        "entity": "centerpoint",
+        "endpoint": "/source/tree/centerpoint/metadata",
+        "status_code": 200,
+        "content_type": "application/json",
+        "output_path": "/sources/commercial_internal/neo_signaleyes/den_haag_2026-06-15/metadata/centerpoint_metadata.json",
+        "sha256": "fc4f0aa19f684a277acf9a9f23d7f16da1384b129b5c816546125fe7da9f08fc"
+      }
+    ]
+  }
+}

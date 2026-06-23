@@ -1,0 +1,12 @@
+{
+  "pipeline": "neo",
+  "mode": "tiny_aoi",
+  "entities": [
+    "crown",
+    "centerpoint"
+  ],
+  "max_pages": 1,
+  "admin_unit_level": "wijk",
+  "admin_unit_preset": "WK051807",
+  "metric_theme": "all_metric_themes"
+}

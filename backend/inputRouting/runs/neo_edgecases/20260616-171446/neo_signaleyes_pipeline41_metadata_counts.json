@@ -1,0 +1,23 @@
+{
+  "mode": "metadata",
+  "entities": [
+    {
+      "entity": "crown",
+      "mode": null,
+      "geo_type": null,
+      "total_pages_reported": null,
+      "pages_retrieved": null,
+      "feature_count": null,
+      "schema_path": null
+    },
+    {
+      "entity": "centerpoint",
+      "mode": null,
+      "geo_type": null,
+      "total_pages_reported": null,
+      "pages_retrieved": null,
+      "feature_count": null,
+      "schema_path": null
+    }
+  ]
+}
