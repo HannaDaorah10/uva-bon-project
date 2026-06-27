@@ -45,6 +45,7 @@ lerna-debug.log*
 *.pfx
 secrets/
 credentials/
+.gitignore
 
 # Logs and runtime files
 logs/
