@@ -60,6 +60,7 @@ ALLOWED_ROOTS = tuple(
         "/home/hans/.openclaw/workspace/team_comms",
         "/home/hans/.openclaw/workspace/evaluation_audit",
         "/home/hans/Documents/uva-challenge",
+        "/home/uva-bon/naturedesk/uva-bon-project/runtime_evidence/kroonvolume",
     )
 )
 

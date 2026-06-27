@@ -15,6 +15,7 @@ from handlers.workflow_rag import (
     THE_HAGUE_OVERVIEW_QUERY,
     handle_workflow_rag,
     parse_query_understanding_payload,
+    run_diver_curator_workflow,
     retrieval_question_for_user_question,
     retrieval_questions_for_user_question,
 )
@@ -443,6 +444,13 @@ class DemoHandlerSmokeTests(unittest.TestCase):
         self.assertTrue(result.refused)
         self.assertEqual(result.refusal_reason, "retrieval_contract_unavailable")
         workflow.assert_called_once_with(THE_HAGUE_OVERVIEW_QUERY)
+
+    def test_workflow_rag_permission_denied_workflow_path_fails_closed(self):
+        with mock.patch("handlers.workflow_rag.Path.is_file", side_effect=PermissionError):
+            payload, failure = run_diver_curator_workflow("What info do you have of The Hague?")
+
+        self.assertIsNone(payload)
+        self.assertIn("not available", failure)
 
     def test_workflow_rag_refuses_weak_evidence(self):
         with mock.patch(

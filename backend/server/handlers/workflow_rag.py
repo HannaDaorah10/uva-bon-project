@@ -251,7 +251,11 @@ def run_diver_curator_workflow(question: str) -> tuple[dict[str, Any] | None, st
     timeout_seconds = _int_from_env("NATUREDESK_RETRIEVAL_TIMEOUT_SECONDS", DEFAULT_TIMEOUT_SECONDS)
 
     script = Path(workflow_path)
-    if not script.is_file():
+    try:
+        script_available = script.is_file()
+    except OSError:
+        script_available = False
+    if not script_available:
         return None, (
             "The controlled retrieval workflow is not available to the backend runtime. "
             "Set NATUREDESK_DIVER_CURATOR_WORKFLOW to a readable workflow path."
