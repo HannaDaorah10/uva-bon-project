@@ -15,6 +15,7 @@ htmlcov/
 pip-wheel-metadata/
 backend/__pycache__/*
 backend/synthesis/*
+!backend/synthesis/README.md
 
 # Python environments
 .venv/
@@ -56,6 +57,7 @@ logs/
 *.seed
 *.pid.lock
 runtime_evidence/*
+!runtime_evidence/README.md
 
 # Local databases and scratch outputs
 *.sqlite
