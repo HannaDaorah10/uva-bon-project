@@ -175,7 +175,7 @@ input {
 .model-trigger:hover,
 .upload-btn:hover {
   border-color: rgb(67 118 58 / 55%);
-  color: var(--ink);
+   color: var(--ink);
   transform: translateY(-1px);
 }
 

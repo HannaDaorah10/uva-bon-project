@@ -13,6 +13,8 @@ htmlcov/
 *.egg-info/
 .eggs/
 pip-wheel-metadata/
+backend/__pycache__/*
+backend/synthesis/*
 
 # Python environments
 .venv/
